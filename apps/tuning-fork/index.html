@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tuning Fork</title>
+
+<!-- Social preview. Replace SITE_URL with the deployed URL (no trailing slash).
+     og-fork.png goes in the site root next to index.html. -->
+<meta property="og:title" content="Tuning Fork" />
+<meta property="og:description" content="Hold it and it rings a true A-440, generated on the spot. The waveform is the real signal, drawn live. No sample, no recording." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="SITE_URL/og-fork.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Tuning Fork" />
+<meta name="twitter:description" content="A exact. 440.00 Hz. Made, not sampled." />
+<meta name="twitter:image" content="SITE_URL/og-fork.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --felt:#12100E; --felt2:#1B1712; --brass:#C9A24B; --brass-l:#F0D68A; --brass-d:#8A6D22;
+    --cream:#EDE6D2; --soft:#9A9584; --scope:#0C1410; --trace:#7CE0A0; --amber:#E7B24A;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{
+    min-height:100svh; display:flex; flex-direction:column; overflow-x:hidden;
+    color:var(--cream); font-family:"JetBrains Mono",monospace;
+    background:
+      radial-gradient(ellipse at 50% 8%, rgba(240,214,138,.10), transparent 55%),
+      repeating-linear-gradient(0deg, transparent 0 4px, rgba(255,255,255,.012) 4px 5px),
+      linear-gradient(180deg, var(--felt2), var(--felt));
+  }
+  header{text-align:center;padding:clamp(14px,3svh,26px) 16px clamp(4px,1svh,10px)}
+  .kicker{margin:0;font-size:clamp(.54rem,1.8vw,.68rem);letter-spacing:.26em;text-transform:uppercase;color:var(--brass)}
+  h1{margin:.06em 0 .04em;font-family:"Cormorant Garamond",serif;font-weight:700;
+    font-size:clamp(2.6rem,min(13vw,9svh),5rem);letter-spacing:.02em;color:var(--cream);
+    text-shadow:0 2px 0 var(--brass-d),0 4px 22px rgba(0,0,0,.6)}
+  .sub{margin:0;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:clamp(.9rem,2.6vw,1.15rem);color:var(--soft)}
+
+  main{flex:1;width:100%;max-width:720px;margin:0 auto;padding:0 clamp(12px,3vw,22px) clamp(16px,3svh,30px);
+    display:flex;flex-direction:column;align-items:center}
+
+  .stage{display:flex;align-items:center;gap:clamp(14px,4vw,40px);width:100%;justify-content:center;margin:clamp(4px,1.4svh,14px) 0}
+  .fork-wrap{width:clamp(78px,17vw,120px);flex:none;filter:drop-shadow(0 8px 16px rgba(0,0,0,.6))}
+  .fork-wrap svg{display:block;width:100%;height:auto}
+  .prong{transform-box:fill-box;transform-origin:50% 100%}
+  .ringing .prong.l{animation:vibL .09s linear infinite}
+  .ringing .prong.r{animation:vibR .09s linear infinite}
+  @keyframes vibL{0%,100%{transform:translateX(0)}50%{transform:translateX(-1.4px)}}
+  @keyframes vibR{0%,100%{transform:translateX(0)}50%{transform:translateX(1.4px)}}
+
+  .scope{
+    flex:1;max-width:440px;background:var(--scope);border:2px solid #26332A;border-radius:6px;
+    box-shadow:inset 0 0 26px rgba(0,0,0,.7);overflow:hidden
+  }
+  .scope canvas{display:block;width:100%;height:auto}
+
+  .readout{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:0;width:100%;max-width:520px;
+    border:1px solid #33291680;border-radius:4px;margin-top:clamp(8px,1.8svh,16px);overflow:hidden
+  }
+  .readout div{padding:10px 8px;text-align:center;border-right:1px solid #33291640}
+  .readout div:last-child{border-right:0}
+  .readout b{display:block;font-size:.52rem;letter-spacing:.16em;color:var(--brass);margin-bottom:4px}
+  .readout span{font-size:clamp(1rem,4vw,1.4rem);font-weight:700;color:var(--cream)}
+  .readout .note{font-family:"Cormorant Garamond",serif;font-size:clamp(1.4rem,5vw,1.9rem)}
+
+  .pitchlabel{margin:clamp(12px,2.4svh,20px) 0 8px;text-align:center;font-size:.58rem;
+    letter-spacing:.22em;text-transform:uppercase;color:var(--brass)}
+  .noterow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .pick{font-family:"Cormorant Garamond",serif;font-weight:700;font-size:clamp(1rem,4vw,1.3rem);letter-spacing:.04em;
+    min-width:58px;padding:12px 16px;border:2px solid #4A3D1E;border-radius:6px;background:#1B1712;color:var(--cream);
+    cursor:pointer;user-select:none;touch-action:none;box-shadow:0 4px 0 #000;transition:transform 80ms ease,box-shadow 80ms ease}
+  .pick[aria-pressed="true"]{border-color:var(--brass);color:var(--felt);background:var(--brass)}
+  .pick.held{transform:translateY(4px);box-shadow:0 1px 0 #000}
+  .pick:focus-visible{outline:3px solid var(--brass-l);outline-offset:2px}
+
+  .strike{
+    margin-top:clamp(12px,2.4svh,20px);
+    font-family:"Cormorant Garamond",serif;font-weight:700;font-size:clamp(1.1rem,4vw,1.4rem);
+    letter-spacing:.1em;text-transform:uppercase;color:var(--felt);
+    background:linear-gradient(180deg,var(--brass-l),var(--brass) 45%,var(--brass-d));
+    border:2px solid #4A3D1E;border-radius:999px;padding:15px 42px;cursor:pointer;user-select:none;
+    box-shadow:0 6px 0 var(--brass-d),0 10px 18px rgba(0,0,0,.4);touch-action:none;
+    transition:transform 80ms ease,box-shadow 80ms ease}
+  .strike.held{transform:translateY(5px);box-shadow:0 1px 0 var(--brass-d),0 3px 8px rgba(0,0,0,.4)}
+  .strike:focus-visible{outline:4px solid var(--brass-l);outline-offset:3px}
+  .hint{margin:10px 0 0;font-size:.68rem;letter-spacing:.06em;color:var(--soft);min-height:1.3em}
+
+  footer{flex:none;margin-top:auto}
+  .sig{text-align:center;font-size:.55rem;letter-spacing:.13em;text-transform:uppercase;
+    color:#7A745F;margin:16px 0 10px;padding:0 16px;line-height:1.8}
+  .rail{height:6px;background:linear-gradient(90deg,var(--brass-d),var(--brass) 50%,var(--brass-d))}
+  @media (max-width:520px){ .stage{flex-direction:column;gap:14px} .fork-wrap{width:96px} }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="kicker">Acoustic reference &middot; generated, not sampled</p>
+  <h1>Tuning Fork</h1>
+  <p class="sub">Hold it. It rings a true A&mdash;440.</p>
+</header>
+
+<main>
+  <div class="stage">
+    <div class="fork-wrap" id="forkwrap">
+      <svg viewBox="0 0 80 150" aria-hidden="true">
+        <rect class="prong l" x="20" y="10" width="12" height="86" rx="5" fill="#C9A24B" stroke="#6B520F" stroke-width="2"/>
+        <rect class="prong r" x="48" y="10" width="12" height="86" rx="5" fill="#C9A24B" stroke="#6B520F" stroke-width="2"/>
+        <path d="M20 92 h40 v10 a20 20 0 0 1 -40 0 Z" fill="#C9A24B" stroke="#6B520F" stroke-width="2"/>
+        <rect x="34" y="112" width="12" height="34" rx="4" fill="#C9A24B" stroke="#6B520F" stroke-width="2"/>
+      </svg>
+    </div>
+    <div class="scope">
+      <canvas id="scope" width="440" height="200" aria-label="Live oscilloscope of the generated tone"></canvas>
+    </div>
+  </div>
+
+  <div class="readout" aria-live="polite">
+    <div><b>NOTE</b><span class="note" id="rNote">A4</span></div>
+    <div><b>FREQUENCY</b><span id="rFreq">440.00 Hz</span></div>
+    <div><b>PERIOD</b><span id="rPer">2.273 ms</span></div>
+  </div>
+
+  <p class="pitchlabel">Hold any note to hear it</p>
+  <div class="noterow" id="notes" role="group" aria-label="Notes. Press and hold any note to sound it."></div>
+
+  <button class="strike" id="strike" type="button"
+    aria-label="Press and hold to sound the selected note">Hold to ring</button>
+  <p class="hint" id="hint">Or hold the bar for the selected pitch. Release to let it fade.</p>
+</main>
+
+<footer>
+  <p class="sig">A real oscillator &middot; exact pitch, no randomness &middot; nothing stored or sent<br>
+  AI assisted. Human approved. Powered by NLP.</p>
+  <div class="rail" aria-hidden="true"></div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+/* TUNING FORK — Web Audio oscillator + live analyser waveform.
+   MUST : the pitch is exact and generated. The scope shows the real signal.
+   MUST : audio context created on a user gesture (autoplay policy).
+   NEVER: Math.random, network, storage, innerHTML, eval, an audio file.
+   STUB : cents meter from mic input, sweep mode, temperament toggle. */
+
+/* equal temperament, A4 = 440. freq = 440 * 2^((n-69)/12), n = MIDI number */
+var NOTES=[
+  {name:"A3",midi:57},{name:"C4",midi:60},{name:"E4",midi:64},
+  {name:"A4",midi:69},{name:"A5",midi:81}
+];
+function freqOf(midi){ return 440*Math.pow(2,(midi-69)/12); }
+
+var current=NOTES[3];   /* A4 */
+
+var $=function(i){return document.getElementById(i);};
+var AC=null, osc=null, gain=null, analyser=null, data=null, ringing=false;
+
+function ctx(){
+  if(AC) return AC;
+  try{
+    AC=new (window.AudioContext||window.webkitAudioContext)();
+    analyser=AC.createAnalyser(); analyser.fftSize=2048;
+    data=new Uint8Array(analyser.frequencyBinCount);
+    analyser.connect(AC.destination);
+  }catch(e){ AC=null; }
+  return AC;
+}
+
+function ringOn(){
+  var a=ctx(); if(!a) { $("hint").textContent="Audio is unavailable in this browser."; return; }
+  if(a.state==="suspended") a.resume();
+  if(ringing) return;
+  ringing=true;
+  osc=a.createOscillator(); gain=a.createGain();
+  osc.type="sine"; osc.frequency.setValueAtTime(freqOf(current.midi),a.currentTime);
+  /* soft attack so it sounds struck, not switched */
+  gain.gain.setValueAtTime(0.0001,a.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.9,a.currentTime+0.02);
+  osc.connect(gain); gain.connect(analyser);
+  osc.start();
+  $("forkwrap").classList.add("ringing");
+  $("hint").textContent="Ringing "+current.name+"…";
+}
+function ringOff(){
+  if(!ringing) return;
+  ringing=false;
+  var a=AC;
+  try{
+    gain.gain.cancelScheduledValues(a.currentTime);
+    gain.gain.setValueAtTime(gain.gain.value,a.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001,a.currentTime+0.6);   /* let it fade like a real fork */
+    osc.stop(a.currentTime+0.62);
+  }catch(e){}
+  osc=null; gain=null;
+  $("forkwrap").classList.remove("ringing");
+  $("hint").textContent="Press and hold. Release to let it fade.";
+}
+
+/* ---------- scope ---------- */
+var sc=$("scope"), g=sc.getContext("2d"), SW=sc.width, SH=sc.height;
+var DPR=Math.min(window.devicePixelRatio||1,2);
+sc.width=SW*DPR; sc.height=SH*DPR; g.scale(DPR,DPR); sc.style.aspectRatio=SW+" / "+SH;
+var phase=0;
+function drawScope(){
+  g.clearRect(0,0,SW,SH);
+  /* grid */
+  g.strokeStyle="rgba(124,224,160,.10)"; g.lineWidth=1;
+  for(var x=0;x<=SW;x+=SW/8){ g.beginPath(); g.moveTo(x,0); g.lineTo(x,SH); g.stroke(); }
+  for(var y=0;y<=SH;y+=SH/4){ g.beginPath(); g.moveTo(0,y); g.lineTo(SW,y); g.stroke(); }
+  g.strokeStyle="rgba(124,224,160,.22)"; g.beginPath(); g.moveTo(0,SH/2); g.lineTo(SW,SH/2); g.stroke();
+
+  g.lineWidth=2.4; g.strokeStyle="#7CE0A0"; g.shadowColor="#7CE0A0"; g.shadowBlur=8;
+  g.beginPath();
+  if(ringing && analyser){
+    analyser.getByteTimeDomainData(data);
+    /* draw ~3 cycles: window the buffer to the wave period */
+    var per=AC.sampleRate/freqOf(current.midi);
+    var span=Math.min(data.length, Math.floor(per*3));
+    for(var i=0;i<span;i++){
+      var v=(data[i]-128)/128;
+      var px=i/span*SW, py=SH/2 - v*(SH*0.38);
+      if(i===0) g.moveTo(px,py); else g.lineTo(px,py);
+    }
+  }else{
+    /* idle: a calm drawn sine so the scope is never blank */
+    phase+=0.03;
+    for(var j=0;j<=SW;j++){
+      var yy=SH/2 - Math.sin(j/SW*Math.PI*4 + phase)*(SH*0.16);
+      if(j===0) g.moveTo(j,yy); else g.lineTo(j,yy);
+    }
+  }
+  g.stroke(); g.shadowBlur=0;
+  requestAnimationFrame(drawScope);
+}
+requestAnimationFrame(drawScope);
+
+/* ---------- readout ---------- */
+function setReadout(){
+  var f=freqOf(current.midi);
+  $("rNote").textContent=current.name;
+  $("rFreq").textContent=f.toFixed(2)+" Hz";
+  $("rPer").textContent=(1000/f).toFixed(3)+" ms";
+  if(ringing && osc){ osc.frequency.setValueAtTime(f,AC.currentTime); }
+}
+
+/* note picker: each note is directly press-and-hold to play.
+   pressing a note also selects it, so the bar below rings the same pitch. */
+function selectNote(nt,btn){
+  current=nt;
+  Array.prototype.forEach.call($("notes").children,function(c){ c.setAttribute("aria-pressed", String(c===btn)); });
+  setReadout();
+}
+NOTES.forEach(function(nt){
+  var b=document.createElement("button");
+  b.className="pick"; b.type="button"; b.textContent=nt.name;
+  b.setAttribute("aria-pressed", String(nt===current));
+  var kh=false;
+  b.addEventListener("pointerdown",function(e){ e.preventDefault(); selectNote(nt,b); b.classList.add("held"); ringOn(); });
+  b.addEventListener("pointerup",function(){ b.classList.remove("held"); ringOff(); });
+  b.addEventListener("pointercancel",function(){ b.classList.remove("held"); ringOff(); });
+  b.addEventListener("pointerleave",function(){ if(b.classList.contains("held")){ b.classList.remove("held"); ringOff(); } });
+  b.addEventListener("keydown",function(e){ if((e.key===" "||e.key==="Enter")&&!kh){ kh=true; e.preventDefault(); selectNote(nt,b); ringOn(); } });
+  b.addEventListener("keyup",function(e){ if(e.key===" "||e.key==="Enter"){ kh=false; ringOff(); } });
+  $("notes").appendChild(b);
+});
+
+/* ---------- hold interaction ---------- */
+var btn=$("strike"), keyHeld=false;
+function press(e){ if(e){e.preventDefault();} btn.classList.add("held"); ringOn(); }
+function letgo(){ btn.classList.remove("held"); ringOff(); }
+btn.addEventListener("pointerdown",press);
+window.addEventListener("pointerup",letgo);
+btn.addEventListener("pointercancel",letgo);
+btn.addEventListener("keydown",function(e){ if((e.key===" "||e.key==="Enter")&&!keyHeld){ keyHeld=true; press(e); } });
+btn.addEventListener("keyup",function(e){ if(e.key===" "||e.key==="Enter"){ keyHeld=false; letgo(); } });
+
+setReadout();
+window.__freqOf=freqOf;   /* pure engine, exposed for verification */
+})();
+</script>
+</body>
+</html>

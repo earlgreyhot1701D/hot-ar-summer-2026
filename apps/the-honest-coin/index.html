@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Honest Coin</title>
+
+<!-- Social preview. Replace SITE_URL with the deployed URL (no trailing slash).
+     og-coin.png goes in the site root next to index.html. -->
+<meta property="og:title" content="The Honest Coin" />
+<meta property="og:description" content="A coin flip that shows its work: the timestamp, the hash, the arithmetic. Same millisecond, same flip. Always." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="SITE_URL/og-coin.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="The Honest Coin" />
+<meta name="twitter:description" content="SCALE: 1 FLIP = 1 FLIP. NO RANDOMNESS SPECIFIED." />
+<meta name="twitter:image" content="SITE_URL/og-coin.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bp:#17347A; --bp-deep:#0D1E47;
+    --line:#D2E0F8; --faint:#3D5CA6; --white:#F0F6FF;
+    --cyan:#00F0FF; /* High-contrast blueprint highlight color */
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;min-height:100%;}
+  body{
+    min-height:100svh;
+    overflow-x:hidden; overflow-y:auto;
+    display:flex; flex-direction:column;
+    color:var(--line);
+    font-family:"JetBrains Mono",monospace;
+    background:
+      repeating-linear-gradient(0deg, transparent 0 24px, rgba(210,224,248,0.07) 24px 25px),
+      repeating-linear-gradient(90deg, transparent 0 24px, rgba(210,224,248,0.07) 24px 25px),
+      repeating-linear-gradient(0deg, transparent 0 120px, rgba(210,224,248,0.12) 120px 121px),
+      repeating-linear-gradient(90deg, transparent 0 120px, rgba(210,224,248,0.12) 120px 121px),
+      var(--bp);
+  }
+
+  .sheet{
+    flex:1; min-height:0;
+    width:min(100%, 900px);
+    margin:clamp(8px,1.6svh,18px) auto;
+    border:3px solid var(--line);
+    outline:1px solid var(--faint); outline-offset:-8px;
+    display:flex; flex-direction:column;
+    padding:clamp(12px,2.4svh,26px) clamp(14px,3vw,30px);
+    position:relative;
+  }
+
+  h1{
+    font-weight:800; text-align:center;
+    font-size:clamp(1.3rem,min(4.6vw,3.4svh),2.2rem);
+    letter-spacing:0.28em; margin:0 0 4px;
+    color:var(--white);
+  }
+  .fig{
+    text-align:center; font-size:clamp(0.62rem,1.9vw,0.8rem);
+    letter-spacing:0.24em; color:var(--line); margin:0 0 clamp(8px,1.8svh,18px);
+  }
+
+  .drawing{
+    flex:1; min-height:0;
+    display:flex; align-items:center; justify-content:center;
+    gap:clamp(14px,3.5vw,40px);
+  }
+  .coin-wrap{ 
+    flex:none; 
+    width:clamp(180px,min(38vw,34svh),320px); 
+    filter: drop-shadow(0px 8px 16px rgba(0,0,0,0.4)) drop-shadow(0px 0px 12px rgba(0, 240, 255, 0.25));
+  }
+  .coin-wrap svg{ display:block; width:100%; height:auto; }
+
+  #coinface {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .callouts{
+    font-size:clamp(0.62rem,1.9vw,0.82rem);
+    line-height:1.7; max-width:330px;
+  }
+  .callouts .co{ margin:0 0 clamp(8px,1.8svh,16px); padding-left:14px;
+    border-left:2px solid var(--line); }
+  .callouts .k{ color:var(--white); }
+  .callouts .v{ color:var(--line); }
+  .callouts .always{ color:var(--line); font-style:normal; opacity:0.85; }
+
+  .controls{ 
+    text-align:center; 
+    margin-top:clamp(6px,1.4svh,14px); 
+    display:flex; justify-content:center; gap:12px;
+  }
+  .btn{
+    font:inherit; font-weight:700; letter-spacing:0.14em;
+    font-size:clamp(0.85rem,2.5vw,1.05rem);
+    color:var(--white); background:transparent;
+    border:2px solid var(--white); border-radius:8px;
+    padding:10px 32px; cursor:pointer;
+    touch-action:manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    transition:all 120ms ease;
+  }
+  .btn-primary {
+    border-width:3px;
+    border-color:var(--white);
+    box-shadow: 0 0 10px rgba(240,246,255,0.15);
+  }
+  .btn-primary:hover{ background:rgba(240,246,255,0.15); box-shadow: 0 0 14px rgba(240,246,255,0.3); }
+  .btn-secondary {
+    border-color:var(--faint);
+    color:var(--line);
+    opacity:0.8;
+  }
+  .btn-secondary:hover{ border-color:var(--line); color:var(--white); opacity:1; background:rgba(210,224,248,0.08); }
+  .btn:active{ transform:scale(0.98); }
+  .btn:focus-visible{ outline:3px solid var(--cyan); outline-offset:4px; }
+
+  .titleblock{
+    margin-top:clamp(8px,1.8svh,16px);
+    border:2px solid var(--line);
+    display:grid; grid-template-columns:1fr 1fr 1fr;
+    font-size:clamp(0.54rem,1.7vw,0.7rem); letter-spacing:0.08em;
+  }
+  .titleblock div{ padding:7px 10px; border-right:1px solid var(--faint); }
+  .titleblock div:last-child{ border-right:0; }
+  .titleblock b{ color:var(--white); font-weight:700; display:block; margin-bottom:2px; }
+
+  .sig{
+    text-align:center; font-size:0.56rem; letter-spacing:0.12em;
+    text-transform:uppercase; color:#7E96CC; margin:8px 0 calc(8px + env(safe-area-inset-bottom));
+    line-height:1.7;
+  }
+
+  @media (max-width:620px){
+    .drawing{ flex-direction:column; gap:clamp(8px,2svh,16px); }
+    .coin-wrap{ width:clamp(160px,min(52vw,30svh),240px); }
+    .callouts{ max-width:92%; font-size:0.62rem; }
+    .titleblock{ grid-template-columns:1fr; }
+    .titleblock div{ border-right:0; border-bottom:1px solid var(--faint); }
+    .titleblock div:last-child{ border-bottom:0; }
+  }
+  .settle{ animation:settle 420ms ease both; }
+  @keyframes settle{ from{opacity:0;} to{opacity:1;} }
+  @media (prefers-reduced-motion:reduce){ .settle{ animation:none; } .spin-anim{ animation:none !important; } }
+
+  .spin-anim{ animation:coinspin 700ms cubic-bezier(.3,.6,.3,1); }
+  @keyframes coinspin{
+    0%{ transform:scaleX(1); } 25%{ transform:scaleX(0.08); }
+    50%{ transform:scaleX(1); } 75%{ transform:scaleX(0.08); }
+    100%{ transform:scaleX(1); }
+  }
+</style>
+</head>
+<body>
+
+<section class="sheet">
+  <h1>THE HONEST COIN</h1>
+  <p class="fig">FIG. 1 &mdash; DETERMINISTIC FLIP ASSEMBLY &mdash; SHOWN WORK</p>
+
+  <div class="drawing">
+    <div class="coin-wrap">
+      <svg viewBox="0 0 340 340" id="coinsvg">
+        <!-- center lines (drafting convention) -->
+        <line x1="10" y1="170" x2="330" y2="170" stroke="#D2E0F8" stroke-width="1" stroke-dasharray="14 5 3 5" opacity="0.6"/>
+        <line x1="170" y1="10" x2="170" y2="330" stroke="#D2E0F8" stroke-width="1" stroke-dasharray="14 5 3 5" opacity="0.6"/>
+        
+        <g id="coinface">
+          <!-- Deep background fill for contrast -->
+          <circle cx="170" cy="170" r="140" fill="#0D1E47" stroke="#00F0FF" stroke-width="3"/>
+          <circle cx="170" cy="170" r="134" fill="none" stroke="#D2E0F8" stroke-width="1" stroke-dasharray="2 4" opacity="0.7"/>
+          <circle cx="170" cy="170" r="122" fill="none" stroke="#D2E0F8" stroke-width="1.5"/>
+
+          <!-- Cross-Hatching: Top-Left & Lower-Right Quadrants -->
+          <g stroke="#3D5CA6" stroke-width="1.5" clip-path="circle(122px at 170px 170px)">
+            <!-- Lower-right quadrant -->
+            <line x1="170" y1="330" x2="330" y2="170"/><line x1="190" y1="330" x2="330" y2="190"/>
+            <line x1="210" y1="330" x2="330" y2="210"/><line x1="230" y1="330" x2="330" y2="230"/>
+            <line x1="250" y1="330" x2="330" y2="250"/><line x1="270" y1="330" x2="330" y2="270"/>
+            <line x1="150" y1="330" x2="330" y2="150"/><line x1="130" y1="330" x2="330" y2="130"/>
+            <!-- Top-left quadrant -->
+            <line x1="170" y1="10" x2="10" y2="170"/><line x1="150" y1="10" x2="10" y2="150"/>
+            <line x1="130" y1="10" x2="10" y2="130"/><line x1="110" y1="10" x2="10" y2="110"/>
+            <line x1="90" y1="10" x2="10" y2="90"/><line x1="70" y1="10" x2="10" y2="70"/>
+          </g>
+
+          <!-- Radius Dimension Line & Aligned Arrowheads -->
+          <g stroke="#00F0FF" stroke-width="1" opacity="0.6">
+            <line x1="170" y1="170" x2="83" y2="83" stroke-dasharray="3 3"/>
+            <polygon points="170,170 161,167 167,161" fill="#00F0FF"/>
+            <polygon points="83,83 92,86 86,92" fill="#00F0FF"/>
+            <text x="110" y="118" fill="#00F0FF" font-size="8" font-family="JetBrains Mono, monospace" transform="rotate(-45 110 118)" letter-spacing="1">R=140px</text>
+          </g>
+
+          <!-- Precision Alignment Crosshairs / Cyan Highlights -->
+          <path d="M170 42 v12 M170 286 v12 M48 170 h12 M292 170 h12" stroke="#00F0FF" stroke-width="2"/>
+
+          <!-- Center Text Display -->
+          <text id="face" x="170" y="163" text-anchor="middle"
+                font-family="JetBrains Mono, monospace" font-weight="800" font-size="52"
+                letter-spacing="4" fill="#F0F6FF">&mdash;</text>
+          <text id="facesub" x="170" y="200" text-anchor="middle"
+                font-family="JetBrains Mono, monospace" font-size="14"
+                letter-spacing="3" fill="#00F0FF"></text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="callouts" id="callouts" aria-live="polite">
+      <p class="co"><span class="k">AWAITING FLIP.</span><br>
+        <span class="v">Press FLIP. The millisecond you press is the entire input.</span></p>
+      <p class="co"><span class="v">method: FNV-1a hash of the epoch millisecond, taken mod 2.<br>
+        1 &rarr; HEADS &middot; 0 &rarr; TAILS</span></p>
+      <p class="always">same millisecond, same flip. always.</p>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn btn-primary" id="flip" type="button">FLIP</button>
+    <button class="btn btn-secondary" id="reset" type="button">RESET</button>
+  </div>
+
+  <div class="titleblock" aria-hidden="true">
+    <div><b>DWG: THE HONEST COIN</b>REV. A &mdash; NO CHANGES ANTICIPATED</div>
+    <div><b>SCALE: 1 FLIP = 1 FLIP</b>TOLERANCE: NONE REQUIRED</div>
+    <div><b>NO RANDOMNESS SPECIFIED</b>NOTHING STORED OR SENT</div>
+  </div>
+
+  <p class="sig">AI assisted &middot; Human approved &middot; Powered by NLP</p>
+</section>
+
+<script>
+(function(){
+"use strict";
+
+/* FNV-1a 32-bit over the decimal string of the epoch millisecond */
+function fnv1a(str){
+  var h=0x811c9dc5;
+  for(var i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,0x01000193); }
+  return h>>>0;
+}
+
+function pad(n,w){ n=String(n); while(n.length<w) n="0"+n; return n; }
+function isoLocal(d){
+  return d.getFullYear()+"-"+pad(d.getMonth()+1,2)+"-"+pad(d.getDate(),2)
+    +" "+pad(d.getHours(),2)+":"+pad(d.getMinutes(),2)+":"+pad(d.getSeconds(),2)
+    +"."+pad(d.getMilliseconds(),3);
+}
+
+/* the entire engine: one millisecond in, one face out */
+function flipAt(ms){
+  var hash=fnv1a(String(ms));
+  var bit=hash%2;
+  return { ms:ms, hash:hash, hex:"0x"+hash.toString(16).toUpperCase().padStart(8,"0"),
+           bit:bit, face: bit===1 ? "HEADS" : "TAILS" };
+}
+
+var flipBtn=document.getElementById("flip");
+var resetBtn=document.getElementById("reset");
+var busy=false;
+
+function show(r){
+  document.getElementById("face").textContent=r.face;
+  document.getElementById("facesub").textContent="(THIS TIME)";
+  var d=new Date(r.ms);
+  var c=document.getElementById("callouts");
+  while(c.firstChild) c.removeChild(c.firstChild);
+  function co(k,v){
+    var p=document.createElement("p"); p.className="co";
+    var ks=document.createElement("span"); ks.className="k"; ks.textContent=k;
+    var br=document.createElement("br");
+    var vs=document.createElement("span"); vs.className="v"; vs.textContent=v;
+    p.appendChild(ks); p.appendChild(br); p.appendChild(vs);
+    c.appendChild(p);
+  }
+  co("t = "+isoLocal(d), "epoch ms = "+r.ms);
+  co("FNV-1a(ms) = "+r.hex, "= "+r.hash);
+  co(r.hash+" mod 2 = "+r.bit, r.bit+" \u2192 "+r.face+"   ("+(1-r.bit)+" \u2192 "+(r.bit===1?"TAILS":"HEADS")+")");
+  var al=document.createElement("p"); al.className="always";
+  al.textContent="same millisecond, same flip. always.";
+  c.appendChild(al);
+  c.classList.remove("settle"); void c.offsetWidth; c.classList.add("settle");
+}
+
+function resetState(){
+  if(busy) return;
+  document.getElementById("face").textContent="—";
+  document.getElementById("facesub").textContent="";
+  var c=document.getElementById("callouts");
+  while(c.firstChild) c.removeChild(c.firstChild);
+
+  var p1=document.createElement("p"); p1.className="co";
+  var k1=document.createElement("span"); k1.className="k"; k1.textContent="AWAITING FLIP.";
+  var v1=document.createElement("span"); v1.className="v";
+  v1.textContent="Press FLIP. The millisecond you press is the entire input.";
+  p1.appendChild(k1); p1.appendChild(document.createElement("br")); p1.appendChild(v1);
+  c.appendChild(p1);
+
+  var p2=document.createElement("p"); p2.className="co";
+  var v2=document.createElement("span"); v2.className="v";
+  v2.appendChild(document.createTextNode("method: FNV-1a hash of the epoch millisecond, taken mod 2."));
+  v2.appendChild(document.createElement("br"));
+  v2.appendChild(document.createTextNode("1 → HEADS · 0 → TAILS"));
+  p2.appendChild(v2);
+  c.appendChild(p2);
+
+  var p3=document.createElement("p"); p3.className="always";
+  p3.textContent="same millisecond, same flip. always.";
+  c.appendChild(p3);
+  c.classList.remove("settle"); void c.offsetWidth; c.classList.add("settle");
+}
+
+flipBtn.addEventListener("click", function(){
+  if(busy) return;
+  busy=true;
+  var r=flipAt(Date.now());   /* the press IS the input */
+  var coin=document.getElementById("coinface");
+  var reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(reduced){
+    show(r); busy=false; return;
+  }
+  coin.classList.remove("spin-anim"); void coin.getBoundingClientRect();
+  coin.classList.add("spin-anim");
+  setTimeout(function(){ show(r); busy=false; }, 700);
+});
+
+resetBtn.addEventListener("click", resetState);
+
+/* expose the pure engine for verification */
+window.__flipAt = flipAt;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Birthstone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--velvet:#160a10;--card:#f4ecd6;--card2:#e8dcbd;--ink:#2a2016;--soft:#6d5f47;--line:#c8b78f;
+    --gold:#d9b978;--gem:#c21232}
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{min-height:100svh;display:flex;flex-direction:column;overflow-x:hidden;color:#efe6d2;
+    font-family:"JetBrains Mono",monospace;
+    background:radial-gradient(ellipse at 50% 22%, #34141f 0%, #1a0b12 46%, #0a0407 100%),#0a0407}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
+    background:repeating-linear-gradient(45deg,transparent 0 3px,rgba(255,255,255,.012) 3px 4px)}
+  header{text-align:center;padding:clamp(10px,2svh,18px) 16px clamp(2px,.6svh,6px)}
+  .kick{margin:0;font-size:.56rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold)}
+  h1{margin:.04em 0 .04em;font-family:"Cormorant Garamond",serif;font-weight:700;
+    font-size:clamp(2.4rem,10vw,4rem);letter-spacing:.02em;color:#f5e9cf;text-shadow:0 2px 20px rgba(0,0,0,.6)}
+  .sub{margin:0;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:clamp(.9rem,2.6vw,1.1rem);color:#c3b291}
+  main{flex:1;width:100%;max-width:740px;margin:0 auto;padding:0 clamp(12px,3vw,22px) clamp(14px,3svh,26px)}
+
+  .pick{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:clamp(6px,1.4svh,12px) 0}
+  .fld{display:flex;flex-direction:column;align-items:center;gap:4px}
+  .fld label{font-size:.5rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+  select,.pick input{background:#f6efdd;border:1px solid var(--line);border-bottom:2px solid var(--ink);border-radius:3px;
+    padding:10px 12px;font-family:"Cormorant Garamond",serif;font-size:1.15rem;color:var(--ink);min-height:46px}
+  select{cursor:pointer}
+  #year{width:104px;text-align:center}
+  select:focus,.pick input:focus{outline:3px solid var(--gold);outline-offset:2px}
+
+  .plate{border:1px solid #6b5836;border-radius:4px;background:linear-gradient(180deg,var(--card),var(--card2));color:var(--ink);
+    padding:clamp(12px,2.4vw,20px);text-align:center;position:relative;
+    box-shadow:0 20px 50px rgba(0,0,0,.6), 0 0 0 6px rgba(0,0,0,.25), 0 0 60px -10px var(--gem);transition:box-shadow .5s ease}
+  .plate::after{content:"";position:absolute;inset:7px;border:1px solid rgba(42,32,22,.2);pointer-events:none;border-radius:2px}
+  .date-big{font-family:"Cormorant Garamond",serif;font-weight:700;font-size:clamp(1.7rem,6vw,2.7rem);margin:0;line-height:1.05}
+  .weekday{font-size:.62rem;letter-spacing:.24em;text-transform:uppercase;color:var(--gem);margin:4px 0 0;transition:color .4s}
+
+  .gem-wrap{position:relative;margin:clamp(6px,1.4svh,12px) auto clamp(4px,1svh,8px);width:clamp(108px,21vw,146px)}
+  .gem-wrap::before{content:"";position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);
+    width:150%;height:150%;border-radius:50%;background:radial-gradient(circle,var(--gem),transparent 66%);
+    opacity:.5;filter:blur(6px);z-index:0;transition:background .4s}
+  .gem-wrap svg{position:relative;z-index:1;display:block;width:100%;height:auto;filter:drop-shadow(0 10px 10px rgba(0,0,0,.4))}
+  .stone{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:clamp(1.4rem,4.6vw,2rem);margin:0}
+  .stone small{display:block;font-family:"JetBrains Mono",monospace;font-style:normal;font-size:.54rem;
+    letter-spacing:.2em;text-transform:uppercase;color:var(--soft);margin-top:3px}
+
+  .facts{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:clamp(8px,1.6svh,14px);
+    border:1px solid var(--line);border-radius:4px;overflow:hidden;background:rgba(255,255,255,.25)}
+  .facts div{padding:9px 6px;border-right:1px solid var(--line)}
+  .facts div:last-child{border-right:0}
+  .facts b{display:block;font-size:.5rem;letter-spacing:.13em;text-transform:uppercase;color:var(--gem);margin-bottom:4px;transition:color .4s}
+  .facts .v{font-family:"Cormorant Garamond",serif;font-size:clamp(1rem,3vw,1.3rem);font-weight:600;line-height:1.15}
+  .zrange{font-size:.54rem;letter-spacing:.04em;color:var(--soft);margin-top:3px}
+  .help{cursor:help;text-decoration:underline dotted;text-underline-offset:2px}
+  @media(max-width:560px){.facts{grid-template-columns:repeat(2,1fr)}
+    .facts div:nth-child(2){border-right:0}.facts div:nth-child(1),.facts div:nth-child(2){border-bottom:1px solid var(--line)}}
+
+  .receipt{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:clamp(1rem,3vw,1.25rem);
+    color:var(--ink);margin:clamp(8px,1.6svh,14px) 0 0;line-height:1.35}
+  footer{flex:none;margin-top:auto}
+  .sig{text-align:center;font-size:.54rem;letter-spacing:.13em;text-transform:uppercase;color:#8a7a5e;margin:10px 0 8px;line-height:1.7}
+  .rail{height:6px;background:var(--gem);transition:background .4s}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <p class="kick">Almanac of the day</p>
+  <h1>Birthstone</h1>
+  <p class="sub">Pick any day. Read what the calendar fixed to it.</p>
+</header>
+<main>
+  <div class="pick">
+    <div class="fld"><label for="month">Month</label><select id="month"></select></div>
+    <div class="fld"><label for="day">Day</label><select id="day"></select></div>
+    <div class="fld"><label for="year">Year</label><input id="year" type="number" inputmode="numeric" min="1" max="9999" step="1"></div>
+  </div>
+  <div class="plate" id="plate">
+    <p class="date-big" id="dateBig">—</p>
+    <p class="weekday" id="weekday"></p>
+    <div class="gem-wrap" id="gem"></div>
+    <p class="stone" id="stone">—<small id="stoneSub"></small></p>
+    <div class="facts">
+      <div><b>Zodiac</b><span class="v" id="zName">—</span><div class="zrange" id="zRange"></div></div>
+      <div><b>Birth flower</b><span class="v" id="flower">—</span></div>
+      <div><b>Day of year</b><span class="v" id="doy">—</span></div>
+      <div><b class="help" title="ISO 8601 week of the year — weeks start on Monday">Week of year</b><span class="v" id="week">—</span></div>
+    </div>
+    <p class="receipt" id="receipt"></p>
+  </div>
+</main>
+<footer>
+  <p class="sig">Real calendar math &middot; deterministic &middot; nothing stored or sent<br>AI assisted. Human approved. Powered by NLP.</p>
+  <div class="rail" aria-hidden="true"></div>
+</footer>
+<script>
+(function(){
+"use strict";
+var MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+var ABBR=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+var DAYS=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+var STONES=[["Garnet","#7d1f2d"],["Amethyst","#7b4fae"],["Aquamarine","#4bb8bc"],["Diamond","#9cc3dd"],
+  ["Emerald","#2f9e5b"],["Pearl","#d8c9a6"],["Ruby","#c21232"],["Peridot","#8fae1f"],
+  ["Sapphire","#2c62aa"],["Opal","#a9c6cc"],["Topaz","#e0952a"],["Turquoise","#2fb0be"]];
+var FLOWERS=["Carnation","Violet","Daffodil","Daisy","Lily of the Valley","Rose","Larkspur","Gladiolus","Aster","Marigold","Chrysanthemum","Narcissus"];
+/* sign, start (m,d), end (m,d) */
+var ZOD=[
+  {s:"Capricorn",a:[12,22],b:[1,19]},{s:"Aquarius",a:[1,20],b:[2,18]},{s:"Pisces",a:[2,19],b:[3,20]},
+  {s:"Aries",a:[3,21],b:[4,19]},{s:"Taurus",a:[4,20],b:[5,20]},{s:"Gemini",a:[5,21],b:[6,20]},
+  {s:"Cancer",a:[6,21],b:[7,22]},{s:"Leo",a:[7,23],b:[8,22]},{s:"Virgo",a:[8,23],b:[9,22]},
+  {s:"Libra",a:[9,23],b:[10,22]},{s:"Scorpio",a:[10,23],b:[11,21]},{s:"Sagittarius",a:[11,22],b:[12,21]}];
+
+function zodiac(m,d){var v=m*100+d;
+  for(var i=0;i<ZOD.length;i++){var A=ZOD[i].a[0]*100+ZOD[i].a[1],B=ZOD[i].b[0]*100+ZOD[i].b[1];
+    if(A<=B){ if(v>=A&&v<=B) return ZOD[i]; } else { if(v>=A||v<=B) return ZOD[i]; } }
+  return ZOD[0];
+}
+function zRange(z){ return ABBR[z.a[0]-1]+" "+z.a[1]+" – "+ABBR[z.b[0]-1]+" "+z.b[1]; }
+function daysIn(y,m){ return new Date(Date.UTC(y,m,0)).getUTCDate(); }
+function dayOfYear(y,m,d){return Math.round((Date.UTC(y,m-1,d)-Date.UTC(y,0,0))/86400000);}
+function isoWeek(y,m,d){var dt=new Date(Date.UTC(y,m-1,d));var day=(dt.getUTCDay()+6)%7;dt.setUTCDate(dt.getUTCDate()-day+3);
+  var first=new Date(Date.UTC(dt.getUTCFullYear(),0,4));return 1+Math.round(((dt-first)/86400000-3+((first.getUTCDay()+6)%7))/7);}
+function mix(hex,white,t){var c=hex.replace('#','');var r=parseInt(c.substr(0,2),16),g=parseInt(c.substr(2,2),16),b=parseInt(c.substr(4,2),16);
+  var tgt=white?255:0;r=Math.round(r+(tgt-r)*t);g=Math.round(g+(tgt-g)*t);b=Math.round(b+(tgt-b)*t);
+  return '#'+[r,g,b].map(function(x){return x.toString(16).padStart(2,'0');}).join('');}
+
+var NS="http://www.w3.org/2000/svg";
+function sv(t,a){var n=document.createElementNS(NS,t);for(var k in a)if(a.hasOwnProperty(k))n.setAttribute(k,a[k]);return n;}
+function gem(base){
+  var svg=sv("svg",{viewBox:"0 0 200 210",role:"img","aria-label":"a faceted gemstone"});
+  var cx=100,cy=100,R=88,r=46;
+  function oct(rad,rot){var p=[];for(var i=0;i<8;i++){var a=rot+i*Math.PI/4;p.push([cx+Math.cos(a)*rad,cy+Math.sin(a)*rad]);}return p;}
+  var outer=oct(R,-Math.PI/8),table=oct(r,-Math.PI/8);
+  var lite=mix(base,true,.5),dark=mix(base,false,.36),litem=mix(base,true,.22),deep=mix(base,false,.5);
+  svg.appendChild(sv("ellipse",{cx:cx,cy:194,rx:64,ry:11,fill:"rgba(0,0,0,.28)"}));
+  for(var i=0;i<8;i++){var n=(i+1)%8;
+    svg.appendChild(sv("polygon",{points:outer[i].concat(outer[n]).concat(table[n]).concat(table[i]).join(" "),fill:i%2===0?litem:dark,stroke:deep,"stroke-width":"1"}));
+    svg.appendChild(sv("polygon",{points:table[i].concat(table[n]).concat([cx,cy]).join(" "),fill:i%2===0?lite:base,stroke:deep,"stroke-width":"1"}));
+  }
+  svg.appendChild(sv("polygon",{points:table.map(function(p){return p.join(",");}).join(" "),fill:litem,stroke:deep,"stroke-width":"1.5"}));
+  svg.appendChild(sv("polygon",{points:outer.map(function(p){return p.join(",");}).join(" "),fill:"none",stroke:mix(base,true,.15),"stroke-width":"2"}));
+  svg.appendChild(sv("polygon",{points:[outer[5],outer[6],outer[7],table[7],table[6],table[5]].map(function(p){return p.join(",");}).join(" "),fill:"rgba(255,255,255,.28)"}));
+  svg.appendChild(sv("polygon",{points:[table[6],table[7],[cx,cy]].map(function(p){return p.join(",");}).join(" "),fill:"rgba(255,255,255,.6)"}));
+  return svg;
+}
+function ord(n){var s=["th","st","nd","rd"],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
+
+var $=function(i){return document.getElementById(i);};
+var monthSel=$("month"), daySel=$("day"), yearIn=$("year");
+
+/* populate month + year-driven day options, preserving choice */
+function rebuildDays(){
+  var y=+yearIn.value||2000, m=+monthSel.value||1, keep=+daySel.value||1;
+  var max=daysIn(y,m); daySel.textContent="";
+  for(var d=1;d<=max;d++){ var o=document.createElement("option"); o.value=d; o.textContent=d; daySel.appendChild(o); }
+  daySel.value=String(Math.min(keep,max));
+}
+
+function render(){
+  var y=Math.max(1,Math.min(9999,parseInt(yearIn.value,10)||new Date().getFullYear()));
+  var m=+monthSel.value, d=+daySel.value;
+  var stone=STONES[m-1], z=zodiac(m,d), flower=FLOWERS[m-1];
+  var wd=DAYS[new Date(Date.UTC(y,m-1,d)).getUTCDay()];
+  document.documentElement.style.setProperty('--gem',stone[1]);
+  $("dateBig").textContent=MONTHS[m-1]+" "+d+", "+y;
+  $("weekday").textContent="a "+wd;
+  var g=$("gem"); g.textContent=""; g.appendChild(gem(stone[1]));
+  $("stone").firstChild.textContent=stone[0]; $("stoneSub").textContent="birthstone";
+  $("zName").textContent=z.s; $("zRange").textContent=zRange(z);
+  $("flower").textContent=flower;
+  $("doy").textContent=ord(dayOfYear(y,m,d)); $("week").textContent="No. "+isoWeek(y,m,d);
+  $("receipt").textContent="The "+ord(dayOfYear(y,m,d))+" day of "+y+", a "+wd+", under "+z.s+".";
+}
+
+/* wire up */
+MONTHS.forEach(function(name,i){ var o=document.createElement("option"); o.value=i+1; o.textContent=name; monthSel.appendChild(o); });
+var today=new Date();
+yearIn.value=today.getFullYear();
+monthSel.value=today.getMonth()+1;
+rebuildDays();
+daySel.value=today.getDate();
+
+monthSel.addEventListener("change",function(){ rebuildDays(); render(); });
+yearIn.addEventListener("input",function(){ rebuildDays(); render(); });
+yearIn.addEventListener("change",function(){ rebuildDays(); render(); });
+daySel.addEventListener("change",render);
+render();
+
+window.__birthstone=function(y,m,d){return {stone:STONES[m-1],zodiac:zodiac(m,d),flower:FLOWERS[m-1],doy:dayOfYear(y,m,d),week:isoWeek(y,m,d)};};
+})();
+</script>
+</body>
+</html>

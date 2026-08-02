@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What's for Dinner?</title>
+
+<!-- Social preview. Replace SITE_URL with the deployed URL (no trailing slash).
+     og-dinner.png goes in the site root next to index.html. -->
+<meta property="og:title" content="What's for Dinner?" />
+<meta property="og:description" content="Hold to spin. Same hold, same supper. Decided by your hand, not by chance." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="SITE_URL/og-dinner.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="What's for Dinner?" />
+<meta name="twitter:description" content="Tonight's special, decided fairly." />
+<meta name="twitter:image" content="SITE_URL/og-dinner.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Bowlby+One+SC&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --cherry:#C52C37; --cherry-deep:#A01E2A;
+    --turq:#40B4B4; --turq-deep:#268C8E;
+    --cream:#FAF3E0; --ink:#2B2622; --gold:#E0B256;
+    --chrome-a:#E8ECF0; --chrome-b:#B4BCC4; --chrome-c:#8C949E;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;min-height:100%;}
+  body{
+    min-height:100svh; height:100svh;
+    overflow-x:hidden; overflow-y:auto;
+    display:flex; flex-direction:column; align-items:center;
+    color:var(--ink);
+    font-family:"JetBrains Mono",monospace;
+    overflow-x:hidden;
+    /* formica laminate: cream base with fine gold/turquoise/cherry speckle */
+    background-color:var(--cream);
+    background-image:
+      radial-gradient(circle 1.6px at 7px 9px,  rgba(224,178,86,0.55) 98%, transparent),
+      radial-gradient(circle 1.4px at 21px 24px, rgba(64,180,180,0.45) 98%, transparent),
+      radial-gradient(circle 1.3px at 34px 6px,  rgba(197,44,55,0.35) 98%, transparent),
+      radial-gradient(circle 1.2px at 14px 33px, rgba(43,38,34,0.22) 98%, transparent),
+      radial-gradient(circle 1.5px at 30px 18px, rgba(224,178,86,0.35) 98%, transparent);
+    background-size:42px 42px;
+  }
+
+  .chrome{
+    width:100%; height:14px; flex:none;
+    background:linear-gradient(180deg,
+      var(--chrome-a) 0%, var(--chrome-b) 30%, #F8FAFC 50%, var(--chrome-c) 70%, var(--chrome-a) 100%);
+    border-top:1px solid #7A828C; border-bottom:1px solid #7A828C;
+    position:relative; z-index:2;
+  }
+  .burst{
+    position:fixed; width:44px; height:44px; z-index:0;
+    pointer-events:none; opacity:0.85;
+  }
+  .burst.small{ width:30px; height:30px; opacity:0.7; }
+
+  header{
+    width:100%; background:var(--turq);
+    border-bottom:2px solid var(--turq-deep);
+    padding:clamp(8px,1.6svh,16px) 16px;
+    display:flex; justify-content:center;
+  }
+  .sign{
+    background:var(--cream); border:4px solid var(--ink);
+    border-radius:999px;
+    padding:clamp(6px,1.4svh,14px) clamp(22px,6vw,48px);
+    text-align:center;
+    box-shadow:0 0 0 6px rgba(255,255,255,0.25), 0 6px 18px rgba(20,60,60,0.35);
+  }
+  h1{
+    margin:0;
+    font-family:"Pacifico",cursive;
+    font-weight:400;
+    font-size:clamp(1.5rem,min(6vw,4.2svh),3rem);
+    color:var(--cherry);
+    line-height:1.15;
+    text-shadow:1px 2px 0 rgba(43,38,34,0.18);
+  }
+  .tag{
+    margin:4px 0 0;
+    font-size:clamp(0.62rem,1.8vw,0.8rem);
+    letter-spacing:0.28em; font-weight:700;
+  }
+
+  main{
+    position:relative; z-index:3;
+    flex:1; min-height:0; width:100%; max-width:680px;
+    display:flex; flex-direction:column; align-items:center;
+    justify-content:center;
+    padding:clamp(8px,1.6svh,20px) 16px 0;
+  }
+  .slot{
+    display:flex; flex-direction:column; align-items:center;
+    justify-content:flex-start;
+    min-height:clamp(118px,19svh,178px);
+  }
+
+  /* wheel assembly */
+  .wheel-wrap{ position:relative; width:min(86vw,44svh,440px); }
+  .pointer{
+    position:absolute; top:-14px; left:50%; transform:translateX(-50%);
+    width:0; height:0; z-index:3;
+    border-left:16px solid transparent; border-right:16px solid transparent;
+    border-top:34px solid var(--gold);
+    filter:drop-shadow(0 2px 0 var(--ink));
+    transform-origin:50% 0;
+  }
+  .pointer.wobble{ animation:wob 700ms ease; }
+  @keyframes wob{
+    0%{transform:translateX(-50%) rotate(0)} 25%{transform:translateX(-50%) rotate(-10deg)}
+    55%{transform:translateX(-50%) rotate(7deg)} 80%{transform:translateX(-50%) rotate(-3deg)}
+    100%{transform:translateX(-50%) rotate(0)}
+  }
+  .chrome-ring{
+    border-radius:50%;
+    padding:12px;
+    background:conic-gradient(from 0deg,
+      var(--chrome-a), var(--chrome-c), #F8FAFC, var(--chrome-b), var(--chrome-a),
+      var(--chrome-c), #F8FAFC, var(--chrome-b), var(--chrome-a));
+    box-shadow:0 10px 26px rgba(43,38,34,0.28);
+  }
+  svg.wheel{ display:block; width:100%; height:auto; border-radius:50%; }
+  /* rotation is done purely via the SVG rotate(a cx cy) attribute — no CSS
+     transform-origin here; mixing the two displaces the wheel in some browsers */
+  .hub-cap{ pointer-events:none; }
+
+  .slice-label{
+    font-family:"Bowlby One SC","JetBrains Mono",monospace;
+    font-size:14px; letter-spacing:0.02em;
+  }
+
+  /* controls */
+  .controls{ margin-top:clamp(10px,2svh,20px); text-align:center; }
+  .spin{
+    font-family:"Bowlby One SC",monospace;
+    font-size:clamp(1.05rem,3.4vw,1.35rem);
+    letter-spacing:0.08em;
+    color:var(--cream); background:var(--cherry);
+    border:3px solid var(--ink); border-radius:999px;
+    padding:14px 40px 12px; cursor:pointer;
+    box-shadow:0 6px 0 var(--cherry-deep), 0 10px 14px rgba(43,38,34,0.25);
+    transition:transform 80ms ease, box-shadow 80ms ease;
+    touch-action:none; user-select:none; -webkit-user-select:none;
+  }
+  .spin:active, .spin.held{
+    transform:translateY(5px);
+    box-shadow:0 1px 0 var(--cherry-deep), 0 3px 6px rgba(43,38,34,0.25);
+  }
+  .spin:focus-visible{ outline:4px solid var(--turq); outline-offset:3px; }
+  .hint{
+    margin:12px 0 0; font-size:0.74rem; letter-spacing:0.12em; color:#6E6350;
+    min-height:1.3em;
+  }
+
+  /* order ticket result */
+  .ticket{
+    margin:clamp(8px,1.6svh,16px) 0 0;
+    background:#FFFDF6;
+    border:2px solid var(--ink);
+    border-top:6px double var(--ink);
+    border-bottom:2px dashed var(--ink);
+    width:min(88vw,380px);
+    padding:12px 18px 12px;
+    text-align:center;
+    position:relative;
+    box-shadow:4px 5px 0 rgba(43,38,34,0.35);
+  }
+  .t-head{
+    font-size:0.68rem; letter-spacing:0.3em; font-weight:700; margin:0 0 6px;
+  }
+  .t-meal{
+    font-family:"Bowlby One SC",monospace;
+    font-size:clamp(1.3rem,min(6vw,3.4svh),1.9rem);
+    color:var(--cherry); margin:0 0 6px; line-height:1.1;
+  }
+  .t-receipt{
+    font-size:0.64rem; line-height:1.6; color:#6E6350; margin:0 0 9px;
+    border-top:1px dashed #B8AA8C; padding-top:8px;
+  }
+  .respin{
+    touch-action:manipulation;
+    font:inherit; font-size:0.78rem; letter-spacing:0.06em;
+    background:transparent; color:var(--ink);
+    border:2px solid var(--ink); border-radius:999px;
+    padding:8px 18px; cursor:pointer;
+  }
+  .respin:hover{ background:var(--cream); }
+  .respin:focus-visible{ outline:3px solid var(--turq); outline-offset:2px; }
+
+  footer{
+    width:100%; margin-top:clamp(8px,1.4svh,16px); flex:none;
+    position:relative; z-index:1;
+  }
+  .sig{
+    text-align:center; font-size:0.56rem; letter-spacing:0.12em;
+    color:#8A7B60; text-transform:uppercase; margin:0 0 8px; padding:0 16px;
+    line-height:1.6;
+  }
+  .vinyl{ height:8px; background:#A01E28; }
+  .checker{ display:flex; height:clamp(18px,3svh,28px); }
+  footer{ padding-bottom:env(safe-area-inset-bottom); }
+  .checker span{ flex:1; }
+  .checker span:nth-child(odd){ background:var(--ink); }
+  .checker span:nth-child(even){ background:var(--cream); }
+
+  [hidden]{ display:none !important; }
+  .settle{ animation:settle 460ms ease both; }
+  @keyframes settle{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;} }
+  @media (prefers-reduced-motion:reduce){
+    .settle,.pointer.wobble{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="chrome" aria-hidden="true"></div>
+
+<!-- atomic starbursts on the wall -->
+<svg class="burst" style="top:24%;left:5%" viewBox="0 0 40 40" aria-hidden="true"><g stroke="#40B4B4" stroke-width="2.5" stroke-linecap="round"><line x1="20" y1="2" x2="20" y2="38"/><line x1="2" y1="20" x2="38" y2="20"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="31" y1="31" x2="25" y2="25"/><line x1="31" y1="9" x2="25" y2="15"/><line x1="9" y1="31" x2="15" y2="25"/></g><circle cx="20" cy="20" r="3" fill="#40B4B4"/></svg>
+<svg class="burst" style="top:32%;right:6%" viewBox="0 0 40 40" aria-hidden="true"><g stroke="#C52C37" stroke-width="2.5" stroke-linecap="round"><line x1="20" y1="2" x2="20" y2="38"/><line x1="2" y1="20" x2="38" y2="20"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="31" y1="31" x2="25" y2="25"/><line x1="31" y1="9" x2="25" y2="15"/><line x1="9" y1="31" x2="15" y2="25"/></g><circle cx="20" cy="20" r="3" fill="#C52C37"/></svg>
+<svg class="burst small" style="top:64%;left:9%" viewBox="0 0 40 40" aria-hidden="true"><g stroke="#E0B256" stroke-width="2.5" stroke-linecap="round"><line x1="20" y1="2" x2="20" y2="38"/><line x1="2" y1="20" x2="38" y2="20"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="31" y1="31" x2="25" y2="25"/><line x1="31" y1="9" x2="25" y2="15"/><line x1="9" y1="31" x2="15" y2="25"/></g><circle cx="20" cy="20" r="3" fill="#E0B256"/></svg>
+<svg class="burst small" style="top:58%;right:8%" viewBox="0 0 40 40" aria-hidden="true"><g stroke="#40B4B4" stroke-width="2.5" stroke-linecap="round"><line x1="20" y1="2" x2="20" y2="38"/><line x1="2" y1="20" x2="38" y2="20"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="31" y1="31" x2="25" y2="25"/><line x1="31" y1="9" x2="25" y2="15"/><line x1="9" y1="31" x2="15" y2="25"/></g><circle cx="20" cy="20" r="3" fill="#40B4B4"/></svg>
+
+<header>
+  <div class="sign">
+    <h1>What&rsquo;s for Dinner?</h1>
+    <p class="tag">TONIGHT'S SPECIAL &middot; DECIDED FAIRLY</p>
+  </div>
+</header>
+<div class="chrome" aria-hidden="true"></div>
+
+<main>
+  <div class="wheel-wrap">
+    <div class="pointer" id="pointer" aria-hidden="true"></div>
+    <div class="chrome-ring">
+      <svg class="wheel" viewBox="0 0 400 400" aria-hidden="true">
+        <g id="rotor"></g>
+        <g class="hub-cap">
+          <circle cx="200" cy="200" r="34" fill="#E2E6EC" stroke="#2B2622" stroke-width="3"/>
+          <circle cx="200" cy="200" r="17" fill="#C52C37" stroke="#2B2622" stroke-width="2"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <div class="slot">
+  <div class="controls" id="controls">
+    <button class="spin" id="spin" type="button"
+      aria-label="Press and hold to wind the wheel, release to spin">HOLD TO SPIN</button>
+    <p class="hint" id="hint">Press and hold. The longer you wind it, the further it goes.</p>
+  </div>
+
+  <div class="ticket" id="ticket" hidden tabindex="-1" aria-live="polite">
+    <p class="t-head">ORDER UP &mdash; TONIGHT'S SPECIAL</p>
+    <p class="t-meal" id="meal"></p>
+    <p class="t-receipt" id="receipt"></p>
+    <button class="respin" id="respin" type="button">Spin again (we both know why)</button>
+  </div>
+  </div>
+</main>
+
+<footer>
+  <p class="sig">Same hold, same supper &middot; no chance involved &middot; nothing stored or sent<br>AI assisted. Human approved. Powered by NLP.</p>
+  <div class="vinyl" aria-hidden="true"></div>
+  <div class="checker" aria-hidden="true"></div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+
+var MEALS=["SUSHI","TACO NIGHT","BIG SALAD","BURGERS","PASTA","TAKEOUT","BREAKFAST","CEREAL"];
+var CHERRY="#C52C37", TURQ="#40B4B4", CREAM="#FAF3E0", INK="#2B2622";
+var SLICE_FILL=[CHERRY,CREAM,TURQ,CREAM,CHERRY,CREAM,TURQ,CREAM];
+var LABEL_FILL=[CREAM,INK,CREAM,INK,CREAM,INK,CREAM,INK];
+
+var N=MEALS.length, SLICE=360/N;
+var svgns="http://www.w3.org/2000/svg";
+var rotor=document.getElementById("rotor");
+
+/* build the wheel slices + labels once */
+(function build(){
+  var cx=200, cy=200, R=194;
+  function pt(angDeg, r){
+    var a=(angDeg-90)*Math.PI/180;
+    return [cx+Math.cos(a)*r, cy+Math.sin(a)*r];
+  }
+  for(var i=0;i<N;i++){
+    var a0=i*SLICE, a1=(i+1)*SLICE;
+    var p0=pt(a0,R), p1=pt(a1,R);
+    var path=document.createElementNS(svgns,"path");
+    path.setAttribute("d","M"+cx+" "+cy+" L"+p0[0]+" "+p0[1]+" A"+R+" "+R+" 0 0 1 "+p1[0]+" "+p1[1]+" Z");
+    path.setAttribute("fill",SLICE_FILL[i]);
+    path.setAttribute("stroke",INK);
+    path.setAttribute("stroke-width","3");
+    path.setAttribute("data-slice",i);
+    rotor.appendChild(path);
+    var mid=a0+SLICE/2, lp=pt(mid,R*0.60);
+    var t=document.createElementNS(svgns,"text");
+    t.setAttribute("x",lp[0]); t.setAttribute("y",lp[1]);
+    t.setAttribute("text-anchor","middle");
+    t.setAttribute("dominant-baseline","middle");
+    t.setAttribute("class","slice-label");
+    t.setAttribute("fill",LABEL_FILL[i]);
+    /* spoke orientation: text runs along the radius, flipped on the left half
+       so it's never upside down */
+    var rot = mid - 90;
+    if(mid > 180) rot += 180;
+    t.setAttribute("transform","rotate("+rot+" "+lp[0]+" "+lp[1]+")");
+    /* hard cap: long names compress instead of spilling into the next slice */
+    if(MEALS[i].length > 7){
+      t.setAttribute("textLength","118");
+      t.setAttribute("lengthAdjust","spacingAndGlyphs");
+    }
+    t.textContent=MEALS[i];
+    rotor.appendChild(t);
+  }
+})();
+
+/* ---------- audio: synthesized ticks + order bell (no files) ---------- */
+var AC=null;
+function ctx(){
+  if(AC) return AC;
+  try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ AC=null; }
+  return AC;
+}
+function tick(){
+  var ac=ctx(); if(!ac) return;
+  try{
+    var o=ac.createOscillator(), g=ac.createGain();
+    o.type="square"; o.frequency.value=1900;
+    g.gain.setValueAtTime(0.028, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime+0.03);
+    o.connect(g); g.connect(ac.destination);
+    o.start(); o.stop(ac.currentTime+0.035);
+  }catch(e){}
+}
+function bell(){
+  var ac=ctx(); if(!ac) return;
+  try{
+    [880,1320].forEach(function(f,i){
+      var o=ac.createOscillator(), g=ac.createGain();
+      o.type="sine"; o.frequency.value=f;
+      var t0=ac.currentTime+i*0.008;
+      g.gain.setValueAtTime(i?0.05:0.1, t0);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0+0.9);
+      o.connect(g); g.connect(ac.destination);
+      o.start(t0); o.stop(t0+0.95);
+    });
+  }catch(e){}
+}
+
+/* ---------- deterministic engine ---------- */
+/* landing is a pure function of hold duration (ms). Same hold, same supper. */
+function landingFor(holdMs){
+  var h=Math.max(80, Math.min(holdMs, 6000));       /* clamp 80ms..6s */
+  var revs=2 + (h/6000)*6;                          /* 2..8 revolutions, linear in hold */
+  var totalDeg=revs*360;
+  /* slice under the pointer = derived from final angle — deterministic */
+  return totalDeg;
+}
+function sliceAt(angleDeg){
+  var a=((angleDeg%360)+360)%360;
+  /* pointer at top; rotor rotated clockwise by a; slice i occupies [i*SLICE,(i+1)*SLICE) at rest */
+  var under=((360-a)%360);
+  return Math.floor(under/SLICE)%N;
+}
+
+var spinning=false, holding=false, holdStart=0, windAngle=0, raf=0, lastTick=0;
+var spinBtn=document.getElementById("spin"), hint=document.getElementById("hint");
+var pointer=document.getElementById("pointer");
+var reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function setRotor(a){ rotor.setAttribute("transform","rotate("+a+" 200 200)"); }
+
+function windLoop(now){
+  if(!holding) return;
+  var held=now-holdStart;
+  /* wind-up: slow crawl that accelerates with hold */
+  windAngle += 0.4 + Math.min(held/900, 5.5);
+  setRotor(windAngle);
+  if(now-lastTick > Math.max(40, 200 - held/40)){ tick(); lastTick=now; }
+  raf=requestAnimationFrame(windLoop);
+}
+
+function start(e){
+  if(spinning) return;
+  e.preventDefault();
+  holding=true; holdStart=performance.now(); lastTick=0;
+  spinBtn.classList.add("held");
+  hint.textContent="Winding\u2026";
+  document.getElementById("ticket").hidden=true;
+  if(!reduced) raf=requestAnimationFrame(windLoop);
+}
+
+function release(){
+  if(!holding) return;
+  holding=false; cancelAnimationFrame(raf);
+  spinBtn.classList.remove("held");
+  var holdMs=performance.now()-holdStart;
+  var travel=landingFor(holdMs);
+  var startA=windAngle%360;
+  var target=windAngle + travel;
+  var idx=sliceAt(startA + travel);
+  spinning=true;
+  hint.textContent="";
+  if(reduced){
+    windAngle=target; setRotor(target);
+    finish(idx, holdMs);
+    return;
+  }
+  /* decelerating spin with overshoot-and-settle */
+  var dur=1800 + Math.min(holdMs,6000)/6000*1600; /* 1.8s..3.4s */
+  var t0=performance.now(), from=windAngle;
+  var over=12; /* overshoot degrees */
+  function ease(t){ /* easeOutCubic */ return 1-Math.pow(1-t,3); }
+  var tickGap=50;
+  (function animate(now){
+    var t=Math.min((now-t0)/dur,1);
+    var a=from + (target+over-from)*ease(t);
+    setRotor(a);
+    if(now-lastTick > tickGap + t*260){ tick(); lastTick=now; }
+    if(t<1){ requestAnimationFrame(animate); }
+    else{
+      /* settle back the overshoot */
+      var s0=performance.now();
+      (function settleBack(n2){
+        var t2=Math.min((n2-s0)/260,1);
+        setRotor(target+over*(1-t2));
+        if(t2<1) requestAnimationFrame(settleBack);
+        else { windAngle=target; finish(idx, holdMs); }
+      })(performance.now());
+    }
+  })(performance.now());
+}
+
+function finish(idx, holdMs){
+  spinning=false;
+  bell();
+  pointer.classList.remove("wobble"); void pointer.offsetWidth; pointer.classList.add("wobble");
+  /* light the winning slice */
+  var paths=rotor.querySelectorAll("path");
+  paths.forEach(function(p){ p.setAttribute("opacity","0.45"); });
+  paths[idx].setAttribute("opacity","1");
+  paths[idx].setAttribute("stroke-width","5");
+  setTimeout(function(){
+    paths.forEach(function(p){ p.setAttribute("opacity","1"); p.setAttribute("stroke-width","3"); });
+  }, 1600);
+  document.getElementById("meal").textContent=MEALS[idx];
+  var secs=(holdMs/1000).toFixed(1);
+  document.getElementById("receipt").textContent=
+    "held "+secs+"s \u00b7 same hold, same supper \u00b7 no chance involved";
+  document.getElementById("controls").hidden=true;
+  var tk=document.getElementById("ticket");
+  tk.hidden=false;
+  tk.classList.remove("settle"); void tk.offsetWidth; tk.classList.add("settle");
+  tk.focus();
+}
+
+/* pointer events: press-and-hold on the button */
+spinBtn.addEventListener("pointerdown", start);
+spinBtn.addEventListener("pointerup", release);
+spinBtn.addEventListener("pointercancel", release);
+spinBtn.addEventListener("pointerleave", function(){ if(holding) release(); });
+/* keyboard: hold Space/Enter */
+var keyHeld=false;
+spinBtn.addEventListener("keydown", function(e){
+  if((e.key===" "||e.key==="Enter") && !keyHeld && !spinning){
+    keyHeld=true; start(e);
+  }
+});
+spinBtn.addEventListener("keyup", function(e){
+  if(e.key===" "||e.key==="Enter"){ keyHeld=false; release(); }
+});
+
+document.getElementById("respin").addEventListener("click", function(){
+  document.getElementById("ticket").hidden=true;
+  document.getElementById("controls").hidden=false;
+  hint.textContent="Press and hold. The longer you wind it, the further it goes.";
+  spinBtn.focus();
+});
+
+})();
+</script>
+</body>
+</html>

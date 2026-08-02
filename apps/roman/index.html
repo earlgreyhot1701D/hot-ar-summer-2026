@@ -1,0 +1,910 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Convert whole numbers from 1 to 3999 into classic Roman numerals and see how each numeral is built.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Roman | Number to Numeral">
+  <meta property="og:description" content="Enter a number. Read its Roman numeral. See how it was built.">
+  <meta property="og:image" content="SITE_URL/og-roman.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Roman | Number to Numeral">
+  <meta name="twitter:description" content="Enter a number. Read its Roman numeral. See how it was built.">
+  <meta name="twitter:image" content="SITE_URL/og-roman.png">
+  <title>Roman | Number to Numeral</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --limestone: #e9ddc6;
+      --limestone-light: #f6eedf;
+      --limestone-mid: #d4c2a3;
+      --ink: #17283a;
+      --ink-soft: #344250;
+      --oxblood: #722b2e;
+      --brass: #91702f;
+      --brass-light: #c8a85e;
+      --line: rgba(74, 55, 34, 0.34);
+      --shadow: rgba(41, 28, 16, 0.32);
+      --focus: #8b2f34;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: #bca889;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      font-family: "Inter", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 18% 14%, rgba(255, 255, 255, 0.48) 0 1px, transparent 2px),
+        radial-gradient(circle at 73% 81%, rgba(89, 62, 34, 0.15) 0 1px, transparent 2px),
+        linear-gradient(118deg, rgba(255, 255, 255, 0.23), transparent 42%),
+        var(--limestone);
+      background-size: 37px 37px, 53px 53px, auto, auto;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .page {
+      position: relative;
+      isolation: isolate;
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+      overflow: hidden;
+      border: 8px solid rgba(96, 72, 43, 0.18);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.66),
+        inset 0 0 0 3px rgba(87, 62, 36, 0.26),
+        inset 0 0 48px rgba(79, 52, 27, 0.18);
+    }
+
+    .page::before,
+    .page::after {
+      position: absolute;
+      z-index: -2;
+      width: min(92vw, 920px);
+      aspect-ratio: 1;
+      border: 1px solid rgba(88, 63, 35, 0.2);
+      border-radius: 50%;
+      content: "";
+      pointer-events: none;
+    }
+
+    .page::before {
+      top: 48%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow:
+        0 0 0 10px rgba(255, 255, 255, 0.18),
+        0 0 0 12px rgba(88, 63, 35, 0.16),
+        0 0 0 36px rgba(255, 255, 255, 0.1),
+        0 0 0 38px rgba(88, 63, 35, 0.1),
+        inset 0 0 0 22px rgba(88, 63, 35, 0.055);
+    }
+
+    .page::after {
+      top: 48%;
+      left: 50%;
+      border-style: dashed;
+      opacity: 0.66;
+      transform: translate(-50%, -50%) rotate(11deg) scale(0.86);
+    }
+
+    .corner {
+      position: absolute;
+      z-index: -1;
+      width: 42px;
+      height: 42px;
+      border-color: rgba(114, 43, 46, 0.5);
+      pointer-events: none;
+    }
+
+    .corner::after {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border: 1px solid var(--brass);
+      border-radius: 50%;
+      background: rgba(233, 221, 198, 0.8);
+      box-shadow: inset 0 0 0 2px rgba(145, 112, 47, 0.18);
+      content: "";
+    }
+
+    .corner.top-left {
+      top: 20px;
+      left: 20px;
+      border-top: 2px solid;
+      border-left: 2px solid;
+    }
+
+    .corner.top-left::after {
+      top: 8px;
+      left: 8px;
+    }
+
+    .corner.top-right {
+      top: 20px;
+      right: 20px;
+      border-top: 2px solid;
+      border-right: 2px solid;
+    }
+
+    .corner.top-right::after {
+      top: 8px;
+      right: 8px;
+    }
+
+    .corner.bottom-left {
+      bottom: 20px;
+      left: 20px;
+      border-bottom: 2px solid;
+      border-left: 2px solid;
+    }
+
+    .corner.bottom-left::after {
+      bottom: 8px;
+      left: 8px;
+    }
+
+    .corner.bottom-right {
+      right: 20px;
+      bottom: 20px;
+      border-right: 2px solid;
+      border-bottom: 2px solid;
+    }
+
+    .corner.bottom-right::after {
+      right: 8px;
+      bottom: 8px;
+    }
+
+    main {
+      display: grid;
+      width: min(100% - 24px, 900px);
+      flex: 1;
+      place-items: center;
+      margin: 0 auto;
+      padding: 18px 0 12px;
+    }
+
+    .monument {
+      position: relative;
+      width: 100%;
+      padding: 24px 18px 22px;
+      border: 1px solid rgba(79, 55, 31, 0.52);
+      outline: 5px double rgba(110, 82, 48, 0.22);
+      outline-offset: -10px;
+      background:
+        linear-gradient(112deg, rgba(255, 255, 255, 0.34), transparent 42%),
+        rgba(238, 225, 201, 0.82);
+      box-shadow:
+        inset 0 0 0 2px rgba(255, 255, 255, 0.3),
+        inset 0 0 34px rgba(74, 49, 24, 0.1),
+        0 16px 36px rgba(54, 35, 17, 0.18);
+      text-align: center;
+    }
+
+    .monument::before,
+    .monument::after {
+      position: absolute;
+      top: 18px;
+      width: 34px;
+      height: 34px;
+      border-top: 2px solid var(--oxblood);
+      content: "";
+      opacity: 0.72;
+    }
+
+    .monument::before {
+      left: 18px;
+      border-left: 2px solid var(--oxblood);
+    }
+
+    .monument::after {
+      right: 18px;
+      border-right: 2px solid var(--oxblood);
+    }
+
+    .mark {
+      display: inline-grid;
+      width: 58px;
+      height: 40px;
+      place-items: end center;
+      margin-bottom: 9px;
+      color: var(--brass);
+      border-top: 1px solid var(--brass);
+      border-bottom: 3px double var(--brass);
+      font-family: "Cinzel", Georgia, serif;
+      font-size: 0.69rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      box-shadow: 0 -3px 0 -2px var(--brass);
+    }
+
+    .mark::before {
+      content: "Ⅲ";
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Cinzel", Georgia, serif;
+      font-size: clamp(2.8rem, 11vw, 5.4rem);
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      line-height: 0.94;
+      text-indent: 0.14em;
+      text-transform: uppercase;
+      text-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.8),
+        0 2px 1px rgba(27, 19, 12, 0.24),
+        0 -1px 0 rgba(255, 255, 255, 0.36);
+    }
+
+    .subtitle {
+      margin: 10px 0 clamp(16px, 3.5vw, 24px);
+      color: var(--oxblood);
+      font-family: "Cinzel", Georgia, serif;
+      font-size: clamp(0.72rem, 2.7vw, 1rem);
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-indent: 0.3em;
+      text-transform: uppercase;
+    }
+
+    .entry {
+      width: min(100%, 520px);
+      margin: 0 auto;
+    }
+
+    label,
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 12px;
+      color: var(--ink);
+      font-family: "Cinzel", Georgia, serif;
+      font-size: 0.79rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      line-height: 1.35;
+    }
+
+    label::before,
+    label::after,
+    .section-title::before,
+    .section-title::after {
+      height: 1px;
+      flex: 1;
+      background: var(--brass);
+      box-shadow: 0 1px rgba(255, 255, 255, 0.56);
+      content: "";
+    }
+
+    input {
+      width: 100%;
+      min-height: 66px;
+      padding: 9px 18px;
+      border: 1px solid rgba(80, 56, 31, 0.62);
+      border-radius: 3px;
+      outline: 4px double rgba(80, 56, 31, 0.2);
+      outline-offset: 4px;
+      color: var(--ink);
+      background: rgba(247, 239, 224, 0.52);
+      box-shadow:
+        inset 0 2px 5px rgba(64, 43, 22, 0.19),
+        inset 0 0 0 3px rgba(255, 255, 255, 0.17),
+        0 1px 0 rgba(255, 255, 255, 0.64);
+      font-family: "Cinzel", Georgia, serif;
+      font-size: clamp(1.5rem, 5vw, 2.25rem);
+      letter-spacing: 0.08em;
+      text-align: center;
+      transition: background-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    input::placeholder {
+      color: rgba(52, 66, 80, 0.62);
+    }
+
+    input:hover {
+      background: rgba(255, 249, 238, 0.66);
+    }
+
+    input:focus-visible,
+    button:focus-visible {
+      outline: 4px solid var(--focus);
+      outline-offset: 4px;
+    }
+
+    .result-shell {
+      position: relative;
+      margin: clamp(16px, 3.5vw, 26px) 0 18px;
+      padding: clamp(18px, 4vw, 30px) 28px;
+      overflow: hidden;
+      border: 1px solid rgba(69, 47, 25, 0.64);
+      border-radius: 4px;
+      background:
+        linear-gradient(108deg, rgba(255, 255, 255, 0.3), transparent 54%),
+        rgba(226, 208, 176, 0.75);
+      box-shadow:
+        inset 0 0 0 5px rgba(255, 255, 255, 0.22),
+        inset 0 0 0 7px rgba(92, 65, 35, 0.12),
+        inset 0 9px 18px rgba(59, 39, 19, 0.11),
+        0 11px 0 -7px rgba(65, 42, 20, 0.38),
+        0 15px 24px rgba(61, 39, 18, 0.16);
+    }
+
+    .result-shell::before,
+    .result-shell::after {
+      position: absolute;
+      top: 50%;
+      width: 14px;
+      height: 14px;
+      border: 1px solid var(--brass);
+      border-radius: 50%;
+      background: var(--limestone-mid);
+      box-shadow: inset 0 0 0 3px var(--limestone-light);
+      content: "";
+      transform: translateY(-50%);
+    }
+
+    .result-shell::before {
+      left: 12px;
+    }
+
+    .result-shell::after {
+      right: 12px;
+    }
+
+    .result {
+      width: 100%;
+      min-height: 1.2em;
+      color: var(--ink);
+      font-family: "Cinzel", Georgia, serif;
+      font-size: clamp(2.4rem, 9vw, 4.4rem);
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      line-height: 1.15;
+      overflow-wrap: normal;
+      text-indent: 0.16em;
+      white-space: nowrap;
+      text-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.86),
+        0 2px 1px rgba(24, 17, 10, 0.3),
+        0 -1px 0 rgba(255, 255, 255, 0.5);
+    }
+
+    .result.roman-medium {
+      font-size: clamp(2rem, 8.5vw, 4.8rem);
+      letter-spacing: 0.11em;
+      text-indent: 0.11em;
+    }
+
+    .result.roman-long {
+      font-size: clamp(1.6rem, 6.4vw, 3.8rem);
+      letter-spacing: 0.085em;
+      text-indent: 0.085em;
+    }
+
+    .result.roman-extra-long {
+      font-size: clamp(1.3rem, 5.6vw, 3.2rem);
+      letter-spacing: 0.075em;
+      text-indent: 0.075em;
+    }
+
+    .result.message {
+      max-width: 560px;
+      margin: 0 auto;
+      color: var(--oxblood);
+      font-family: "Inter", system-ui, sans-serif;
+      font-size: clamp(1rem, 3.8vw, 1.2rem);
+      font-weight: 600;
+      letter-spacing: 0;
+      line-height: 1.55;
+      text-indent: 0;
+      text-shadow: none;
+      white-space: normal;
+    }
+
+    .work {
+      width: min(100%, 440px);
+      margin: 0 auto;
+    }
+
+    .breakdown {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .part {
+      display: grid;
+      grid-template-columns: minmax(70px, 1fr) auto minmax(70px, 1fr);
+      align-items: baseline;
+      color: var(--ink-soft);
+      font-family: "Cinzel", Georgia, serif;
+      font-size: clamp(1rem, 4.5vw, 1.3rem);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+    }
+
+    .part-symbol {
+      color: var(--oxblood);
+      text-align: right;
+    }
+
+    .part-equals {
+      padding: 0 18px;
+      color: var(--brass);
+    }
+
+    .part-value {
+      text-align: left;
+    }
+
+    .actions {
+      width: min(100%, 400px);
+      margin: 16px auto 0;
+    }
+
+    button {
+      width: 100%;
+      min-height: 58px;
+      padding: 14px 24px;
+      border: 1px solid #0f1d2a;
+      border-radius: 3px;
+      color: #f3e6c8;
+      background: var(--ink);
+      box-shadow:
+        inset 0 0 0 2px var(--brass-light),
+        inset 0 0 0 5px var(--ink),
+        0 4px 0 rgba(72, 49, 24, 0.34);
+      font-family: "Cinzel", Georgia, serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.19em;
+      text-indent: 0.19em;
+      cursor: pointer;
+      transition: transform 150ms ease, background-color 150ms ease;
+    }
+
+    button:hover:not(:disabled) {
+      background: #203a53;
+      transform: translateY(-1px);
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(2px);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.48;
+    }
+
+    .copy-status {
+      min-height: 1.5em;
+      margin: 12px 0 0;
+      color: var(--oxblood);
+      font-size: 0.86rem;
+      font-weight: 600;
+    }
+
+    footer {
+      width: min(100% - 54px, 760px);
+      margin: 0 auto;
+      padding: 12px 0 16px;
+      border-top: 1px solid var(--line);
+      color: var(--ink-soft);
+      font-family: "Cinzel", Georgia, serif;
+      font-size: clamp(0.61rem, 2.3vw, 0.74rem);
+      letter-spacing: 0.06em;
+      line-height: 1.7;
+      text-align: center;
+    }
+
+    footer p {
+      margin: 0;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (min-width: 700px) {
+      .page {
+        border-width: 12px;
+      }
+
+      main {
+        padding: 24px 0 16px;
+      }
+
+      .corner {
+        width: 64px;
+        height: 64px;
+      }
+
+      .corner.top-left,
+      .corner.top-right {
+        top: 28px;
+      }
+
+      .corner.bottom-left,
+      .corner.bottom-right {
+        bottom: 28px;
+      }
+
+      .corner.top-left,
+      .corner.bottom-left {
+        left: 28px;
+      }
+
+      .corner.top-right,
+      .corner.bottom-right {
+        right: 28px;
+      }
+
+      .result-shell {
+        margin-right: -34px;
+        margin-left: -34px;
+      }
+
+      .monument {
+        padding: 30px 60px 26px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .page {
+        border-width: 5px;
+      }
+
+      main {
+        width: min(100% - 14px, 900px);
+        padding: 12px 0 16px;
+      }
+
+      .monument {
+        padding: 30px 14px 26px;
+        outline-width: 3px;
+        outline-offset: -7px;
+      }
+
+      .monument::before,
+      .monument::after {
+        top: 12px;
+        width: 24px;
+        height: 24px;
+      }
+
+      .monument::before {
+        left: 12px;
+      }
+
+      .monument::after {
+        right: 12px;
+      }
+
+      .mark {
+        transform: scale(0.9);
+      }
+
+      h1 {
+        font-size: clamp(2.85rem, 15vw, 4.2rem);
+        letter-spacing: 0.1em;
+        text-indent: 0.1em;
+      }
+
+      .subtitle {
+        letter-spacing: 0.2em;
+        text-indent: 0.2em;
+      }
+
+      label,
+      .section-title {
+        gap: 8px;
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+      }
+
+      .result-shell {
+        margin-top: 32px;
+        padding-right: 22px;
+        padding-left: 22px;
+      }
+
+      .result-shell::before {
+        left: 7px;
+      }
+
+      .result-shell::after {
+        right: 7px;
+      }
+
+      .result.roman-medium {
+        font-size: clamp(1.9rem, 8.2vw, 2.7rem);
+      }
+
+      .result.roman-long {
+        font-size: clamp(1.6rem, 6.4vw, 2.3rem);
+        letter-spacing: 0.07em;
+        text-indent: 0.07em;
+      }
+
+      .result.roman-extra-long {
+        font-size: clamp(1.18rem, 5.4vw, 1.8rem);
+        letter-spacing: 0.055em;
+        text-indent: 0.055em;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <span class="corner top-left" aria-hidden="true"></span>
+    <span class="corner top-right" aria-hidden="true"></span>
+    <span class="corner bottom-left" aria-hidden="true"></span>
+    <span class="corner bottom-right" aria-hidden="true"></span>
+
+    <main>
+      <section class="monument" aria-labelledby="page-title">
+        <div class="mark" aria-hidden="true"></div>
+        <h1 id="page-title">Roman</h1>
+        <p class="subtitle">Number to numeral</p>
+
+        <div class="entry">
+          <label for="number-input">Enter a whole number</label>
+          <input
+            id="number-input"
+            name="number"
+            type="text"
+            inputmode="numeric"
+            autocomplete="off"
+            enterkeyhint="done"
+            placeholder="1 to 3999"
+            aria-describedby="range-note"
+          >
+          <p id="range-note" class="visually-hidden">Enter a whole number from 1 to 3999.</p>
+        </div>
+
+        <div class="result-shell" aria-live="polite" aria-atomic="true">
+          <div id="result" class="result message">Enter a number from 1 to 3999.</div>
+        </div>
+
+        <section id="work" class="work" aria-labelledby="work-title" hidden>
+          <h2 id="work-title" class="section-title">Showing its work</h2>
+          <ul id="breakdown" class="breakdown"></ul>
+        </section>
+
+        <div class="actions">
+          <button id="copy-button" type="button" disabled>Copy</button>
+          <p id="copy-status" class="copy-status" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>No randomness · nothing stored or sent</p>
+      <p>AI assisted. Human approved. Powered by NLP.</p>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var input = document.getElementById("number-input");
+      var result = document.getElementById("result");
+      var work = document.getElementById("work");
+      var breakdown = document.getElementById("breakdown");
+      var copyButton = document.getElementById("copy-button");
+      var copyStatus = document.getElementById("copy-status");
+      var currentNumeral = "";
+
+      var digitGroups = [
+        ["", "M", "MM", "MMM"],
+        ["", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"],
+        ["", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"],
+        ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]
+      ];
+
+      var placeValues = [1000, 100, 10, 1];
+
+      function setMessage(message) {
+        try {
+          currentNumeral = "";
+          result.textContent = message;
+          result.classList.add("message");
+          result.classList.remove("roman-medium", "roman-long", "roman-extra-long");
+          breakdown.textContent = "";
+          work.hidden = true;
+          copyButton.disabled = true;
+          copyStatus.textContent = "";
+        } catch (error) {
+          document.body.textContent = "Roman could not display this number. Please refresh and try again.";
+        }
+      }
+
+      function readNumber(rawValue) {
+        var value = rawValue.trim();
+
+        if (value === "") {
+          return { valid: false, message: "Enter a number from 1 to 3999." };
+        }
+
+        if (!/^[+-]?\d+$/.test(value)) {
+          return { valid: false, message: "Use a whole number from 1 to 3999." };
+        }
+
+        var number = Number(value);
+
+        if (!Number.isSafeInteger(number)) {
+          return { valid: false, message: "Use a whole number from 1 to 3999." };
+        }
+
+        if (number === 0) {
+          return { valid: false, message: "Rome had no symbol for zero. Try 1 to 3999." };
+        }
+
+        if (number < 0) {
+          return { valid: false, message: "Classic Roman numerals begin at 1." };
+        }
+
+        if (number > 3999) {
+          return { valid: false, message: "Standard Roman numerals stop at 3999." };
+        }
+
+        return { valid: true, number: number };
+      }
+
+      function convert(number) {
+        var parts = [];
+        var digits = [
+          Math.floor(number / 1000),
+          Math.floor(number / 100) % 10,
+          Math.floor(number / 10) % 10,
+          number % 10
+        ];
+        var numeral = "";
+        var index;
+
+        for (index = 0; index < digits.length; index += 1) {
+          if (digits[index] > 0) {
+            var symbol = digitGroups[index][digits[index]];
+            var value = digits[index] * placeValues[index];
+            numeral += symbol;
+            parts.push({ symbol: symbol, value: value });
+          }
+        }
+
+        return { numeral: numeral, parts: parts };
+      }
+
+      function appendPart(part) {
+        var item = document.createElement("li");
+        var symbol = document.createElement("span");
+        var equals = document.createElement("span");
+        var value = document.createElement("span");
+
+        item.className = "part";
+        symbol.className = "part-symbol";
+        equals.className = "part-equals";
+        value.className = "part-value";
+
+        symbol.textContent = part.symbol;
+        equals.textContent = "=";
+        value.textContent = String(part.value);
+
+        item.appendChild(symbol);
+        item.appendChild(equals);
+        item.appendChild(value);
+        breakdown.appendChild(item);
+      }
+
+      function render() {
+        try {
+          var parsed = readNumber(input.value);
+
+          if (!parsed.valid) {
+            setMessage(parsed.message);
+            return;
+          }
+
+          var conversion = convert(parsed.number);
+          currentNumeral = conversion.numeral;
+          result.textContent = conversion.numeral;
+          result.classList.remove("message");
+          result.classList.remove("roman-medium", "roman-long", "roman-extra-long");
+
+          if (conversion.numeral.length >= 13) {
+            result.classList.add("roman-extra-long");
+          } else if (conversion.numeral.length >= 10) {
+            result.classList.add("roman-long");
+          } else if (conversion.numeral.length >= 6) {
+            result.classList.add("roman-medium");
+          }
+
+          breakdown.textContent = "";
+          conversion.parts.forEach(appendPart);
+          work.hidden = false;
+          copyButton.disabled = false;
+          copyStatus.textContent = "";
+        } catch (error) {
+          setMessage("That number could not be converted. Please try again.");
+        }
+      }
+
+      async function copyNumeral() {
+        try {
+          if (!currentNumeral) {
+            copyStatus.textContent = "Enter a valid number first.";
+            return;
+          }
+
+          if (!navigator.clipboard || typeof navigator.clipboard.writeText !== "function") {
+            copyStatus.textContent = "Copy is blocked here. Select the numeral instead.";
+            return;
+          }
+
+          await navigator.clipboard.writeText(currentNumeral);
+          copyStatus.textContent = "Copied " + currentNumeral + ".";
+        } catch (error) {
+          copyStatus.textContent = "Copy is blocked here. Select the numeral instead.";
+        }
+      }
+
+      try {
+        input.addEventListener("input", render);
+        copyButton.addEventListener("click", function () {
+          copyNumeral().catch(function () {
+            copyStatus.textContent = "Copy is blocked here. Select the numeral instead.";
+          });
+        });
+        render();
+      } catch (error) {
+        setMessage("Roman could not start. Please refresh and try again.");
+      }
+    }());
+  </script>
+</body>
+</html>

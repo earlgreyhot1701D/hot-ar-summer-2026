@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sortes</title>
+
+  <!-- Google Fonts: Cinzel for title/citation, EB Garamond for body/lines -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+
+  <!-- SOCIAL PREVIEW + THUMBNAIL -->
+  <meta property="og:title" content="Sortes" />
+  <meta property="og:description" content="The old art of opening a book at random for an answer. Ask a question, receive one line." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://astonishing-lamington-66fc97.netlify.app/og-sortes.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Sortes" />
+  <meta name="twitter:description" content="Ask a question. Open the book. Receive the line your question draws." />
+  <meta name="twitter:image" content="https://astonishing-lamington-66fc97.netlify.app/og-sortes.png" />
+
+  <style>
+    :root {
+      --paper: #EFE7D3;
+      --ink: #1E1A14;
+      --blood: #6E1414;
+      --faint: rgba(30, 26, 20, 0.5);
+      --transition-speed: 0.5s;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #12100E;
+      color: var(--ink);
+      font-family: 'EB Garamond', serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Soft Vignette Overlay */
+    body::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, transparent 40%, rgba(0, 0, 0, 0.6) 100%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Opened Book Page container */
+    .page-container {
+      background-color: var(--paper);
+      width: 100%;
+      max-width: 650px;
+      min-height: 500px;
+      padding: 3.5rem 3rem;
+      border-radius: 4px;
+      box-shadow: 
+        0 15px 35px rgba(0,0,0,0.4),
+        0 5px 15px rgba(0,0,0,0.3),
+        inset 0 0 40px rgba(0,0,0,0.06);
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+    }
+
+    /* Subtle subtle center crease to simulate an opened book */
+    .page-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 5%;
+      width: 1px;
+      height: 100%;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.03), rgba(0,0,0,0.08) 50%, rgba(0,0,0,0.03));
+      pointer-events: none;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 2.5rem;
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--blood);
+      margin-bottom: 0.5rem;
+    }
+
+    .byline {
+      font-family: 'Cinzel', serif;
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      text-transform: lowercase;
+      color: var(--faint);
+      line-height: 1.4;
+      max-width: 80%;
+      margin: 0 auto;
+    }
+
+    main {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .view {
+      width: 100%;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .view.active {
+      display: flex;
+    }
+
+    /* INPUT VIEW STYLE */
+    .input-group {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--faint);
+      font-family: 'EB Garamond', serif;
+      font-size: 1.25rem;
+      font-style: italic;
+      color: var(--ink);
+      text-align: center;
+      padding: 0.5rem 0;
+      outline: none;
+      transition: border-bottom-color 0.3s;
+    }
+
+    input[type="text"]:focus {
+      border-bottom-color: var(--blood);
+    }
+
+    input[type="text"]::placeholder {
+      color: var(--faint);
+      font-style: italic;
+      opacity: 0.8;
+    }
+
+    button {
+      background-color: transparent;
+      border: 1px solid var(--ink);
+      color: var(--ink);
+      font-family: 'Cinzel', serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.75rem 2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background-color: var(--ink);
+      color: var(--paper);
+    }
+
+    .validation-note {
+      font-family: 'EB Garamond', serif;
+      font-style: italic;
+      font-size: 0.95rem;
+      color: var(--blood);
+      height: 1.2rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .validation-note.visible {
+      opacity: 1;
+    }
+
+    /* ORACLE RESULT VIEW STYLE */
+    .oracle-line {
+      font-size: 1.85rem;
+      line-height: 1.4;
+      color: var(--ink);
+      margin-bottom: 2rem;
+      max-width: 90%;
+      font-weight: 400;
+      animation: fadeIn var(--transition-speed) ease-out forwards;
+    }
+
+    .citation-container {
+      width: 100%;
+      max-width: 320px;
+      margin-bottom: 2.5rem;
+      animation: fadeIn var(--transition-speed) ease-out forwards;
+      animation-delay: 0.15s;
+      opacity: 0;
+    }
+
+    .hairline {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--faint) 20%, var(--faint) 80%, transparent);
+      border: none;
+      margin-bottom: 0.8rem;
+    }
+
+    .citation {
+      font-family: 'Cinzel', serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      color: var(--faint);
+      text-transform: lowercase;
+    }
+
+    .reset-btn {
+      animation: fadeIn var(--transition-speed) ease-out forwards;
+      animation-delay: 0.3s;
+      opacity: 0;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    footer {
+      text-align: center;
+      font-family: 'EB Garamond', serif;
+      font-size: 0.8rem;
+      color: var(--faint);
+      font-style: italic;
+      line-height: 1.5;
+      border-top: 1px dashed rgba(30, 26, 20, 0.1);
+      padding-top: 1rem;
+    }
+
+    @media (max-width: 480px) {
+      .page-container {
+        padding: 2.5rem 1.5rem;
+        min-height: 450px;
+      }
+      h1 {
+        font-size: 2rem;
+      }
+      .oracle-line {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-container">
+    <header>
+      <h1>Sortes</h1>
+      <div class="byline">the old art of opening a book at random for an answer</div>
+    </header>
+
+    <main>
+      <!-- Ask Question View -->
+      <div id="input-view" class="view active">
+        <div class="input-group">
+          <input type="text" id="question-input" placeholder="ask the book a question." autocomplete="off">
+          <div id="error-note" class="validation-note">the book prefers a question.</div>
+          <button id="open-btn">Open the book</button>
+        </div>
+      </div>
+
+      <!-- Oracle Result View -->
+      <div id="result-view" class="view">
+        <div id="oracle-text" class="oracle-line"></div>
+        <div class="citation-container">
+          <hr class="hairline">
+          <div id="oracle-citation" class="citation"></div>
+        </div>
+        <button id="ask-again-btn" class="reset-btn">Ask again</button>
+      </div>
+    </main>
+
+    <footer>
+      nothing you ask is stored or sent. AI assisted. Human approved. Powered by NLP.
+    </footer>
+  </div>
+
+  <script>
+    // Verbatim LINES array from specification
+    const LINES = [
+      "The road you meant to take is also a road.",
+      "What you are avoiding has already noticed you.",
+      "Wait one more day. The thing is not ready and neither are you.",
+      "You have mistaken the beginning for the middle.",
+      "The door was never locked. You were leaning on the hinge.",
+      "Say less. The silence is doing the work.",
+      "The debt is older than you think, and smaller.",
+      "Go. The omen is that you asked.",
+      "Not yet. But sooner than the last time you asked.",
+      "The answer is the second thing you thought of.",
+      "You already know. This is the part where you admit it.",
+      "Turn around. You passed it a while ago.",
+      "The small door, not the grand one.",
+      "Rest is also a form of progress. Take it.",
+      "What returns to you was never really gone.",
+      "The name you forgot will matter by evening.",
+      "Build the smaller thing first.",
+      "It is a yes, but not from the person you expected.",
+      "Stop feeding it and it will leave.",
+      "The map is wrong here. Trust the river.",
+      "You are early. This is a good problem.",
+      "The cost is real. Pay it and be free of it.",
+      "Two roads, one destination. Take the quiet one.",
+      "Begin before you feel ready. You will not feel ready."
+    ];
+
+    // ROMAN NUMERAL HELPERS (For optional vii. style flavor in citation)
+    function romanize(num) {
+      if (isNaN(num)) return "";
+      const digits = String(+num).split("");
+      const key = ["","c","cc","ccc","cd","d","dc","dcc","dccc","cm",
+                 "","x","xx","xxx","xl","l","lx","lxx","lxxx","xc",
+                 "","i","ii","iii","iv","v","vi","vii","viii","ix"];
+      let roman = "";
+      let i = 3;
+      while (i--) {
+        roman = (key[+digits.pop() + (i * 10)] || "") + roman;
+      }
+      return Array(+digits.join("") + 1).join("M") + roman;
+    }
+
+    // NORMALIZATION
+    function normalize(q) {
+      return q.trim().toLowerCase().replace(/\s+/g, ' ');
+    }
+
+    // FNV-1a 32-bit Hash
+    function hash(str) {
+      let h = 0x811c9dc5;
+      for (let i = 0; i < str.length; i++) {
+        h ^= str.charCodeAt(i);
+        h = Math.imul(h, 0x01000193);
+      }
+      return h >>> 0;
+    }
+
+    // DOM Elements
+    const inputView = document.getElementById('input-view');
+    const resultView = document.getElementById('result-view');
+    const questionInput = document.getElementById('question-input');
+    const errorNote = document.getElementById('error-note');
+    const openBtn = document.getElementById('open-btn');
+    const askAgainBtn = document.getElementById('ask-again-btn');
+    const oracleText = document.getElementById('oracle-text');
+    const oracleCitation = document.getElementById('oracle-citation');
+
+    // Flow Trigger
+    function openBook() {
+      const originalInput = questionInput.value;
+      const normalized = normalize(originalInput);
+
+      if (!normalized) {
+        errorNote.classList.add('visible');
+        return;
+      }
+
+      errorNote.classList.remove('visible');
+
+      // Calculate Deterministic Draw
+      const hashVal = hash(normalized);
+      const lineIndex = hashVal % LINES.length;
+      const selectedLine = LINES[lineIndex];
+
+      const page = (hashVal % 300) + 1;
+      const lineNo = (hashVal % 40) + 1;
+
+      // Render line using textContent only
+      oracleText.textContent = selectedLine;
+      
+      // Plain but immersive flavor page/line citation
+      oracleCitation.textContent = `page ${page}, line ${lineNo}`;
+
+      // Switch view
+      inputView.classList.remove('active');
+      resultView.classList.add('active');
+    }
+
+    function resetBook() {
+      questionInput.value = '';
+      errorNote.classList.remove('visible');
+      resultView.classList.remove('active');
+      inputView.classList.add('active');
+      questionInput.focus();
+    }
+
+    // Listeners
+    openBtn.addEventListener('click', openBook);
+    
+    questionInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        openBook();
+      }
+    });
+
+    questionInput.addEventListener('input', () => {
+      if (questionInput.value.trim()) {
+        errorNote.classList.remove('visible');
+      }
+    });
+
+    askAgainBtn.addEventListener('click', resetBook);
+
+    // Stubs for future enhancement references
+    // shareable URL of a drawn line;
+    // date-keyed "line of the day".
+  </script>
+</body>
+</html>

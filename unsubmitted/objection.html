@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Objection</title>
+
+<!-- Social preview. Replace SITE_URL with the deployed URL (no trailing slash).
+     og-objection.png goes in the site root next to index.html. -->
+<meta property="og:title" content="Objection" />
+<meta property="og:description" content="Paste what they said. The court rules on it, cites the rule, and shows every ground it checked." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="SITE_URL/og-objection.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Objection" />
+<meta name="twitter:description" content="Twelve grounds. Real rules of evidence. No model, no randomness." />
+<meta name="twitter:image" content="SITE_URL/og-objection.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Special+Elite&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --walnut:#241A12; --walnut2:#33251A; --oak:#6B4A2F;
+    --brass:#C9A227; --brass-l:#EBD37F;
+    --cream:#F4EBDA; --paper2:#E8DCC4; --ink:#241C14; --soft:#6C5C48;
+    --oxblood:#93201E; --felt:#1E4535; --glow:#FFE9A8;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{
+    min-height:100svh; display:flex; flex-direction:column;
+    overflow-x:hidden; color:var(--cream);
+    font-family:"Special Elite",monospace;
+    background:
+      radial-gradient(ellipse at 50% 4%, rgba(255,233,168,.16), transparent 55%),
+      repeating-linear-gradient(90deg, transparent 0 118px, rgba(0,0,0,.42) 118px 124px),
+      repeating-linear-gradient(0deg, transparent 0 3px, rgba(255,255,255,.014) 3px 4px),
+      linear-gradient(180deg, var(--walnut2), var(--walnut) 60%, #1A120C);
+  }
+
+  header{text-align:center;padding:clamp(16px,3svh,30px) 16px clamp(8px,1.6svh,14px)}
+  .kicker{font-size:clamp(.56rem,1.9vw,.72rem);letter-spacing:.26em;text-transform:uppercase;color:var(--brass);margin:0}
+  h1{
+    font-family:"Playfair Display",serif; font-weight:900; font-style:italic;
+    font-size:clamp(2.6rem,min(13vw,9svh),5.4rem);
+    margin:.02em 0 .04em; letter-spacing:.01em; color:var(--cream);
+    text-shadow:0 2px 0 var(--brass), 0 4px 22px rgba(0,0,0,.8);
+  }
+  .sub{margin:0;font-size:clamp(.72rem,2.2vw,.92rem);color:#B9A88C}
+
+  main{
+    flex:1; width:100%; max-width:900px; margin:0 auto;
+    padding:0 clamp(12px,3vw,24px) clamp(20px,4svh,40px);
+  }
+
+  /* ---- bench scene ---- */
+  .bench{display:flex;align-items:flex-end;justify-content:center;gap:clamp(14px,4vw,44px);margin-bottom:clamp(10px,2svh,20px)}
+  .bench svg{display:block;height:auto}
+  .gavel-wrap{width:clamp(120px,26vw,190px);filter:drop-shadow(0 10px 18px rgba(0,0,0,.7))}
+  .lamp-wrap{width:clamp(78px,17vw,124px);filter:drop-shadow(0 0 26px rgba(255,233,168,.42))}
+  #gavel{transform-box:fill-box;transform-origin:88% 78%}
+  .strike{animation:strike 520ms cubic-bezier(.3,.8,.4,1)}
+  @keyframes strike{0%{transform:rotate(0)}35%{transform:rotate(-34deg)}62%{transform:rotate(6deg)}100%{transform:rotate(0)}}
+
+  /* ---- case file card ---- */
+  .file{
+    background:var(--cream); color:var(--ink); border-radius:3px;
+    padding:clamp(16px,3vw,28px);
+    box-shadow:0 18px 40px rgba(0,0,0,.62), 0 0 0 1px rgba(0,0,0,.4), inset 0 0 0 2px var(--paper2);
+    position:relative;
+  }
+  .file::after{
+    content:"";position:absolute;inset:9px;border:1px solid rgba(36,28,20,.22);pointer-events:none
+  }
+  label{display:block;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--soft);margin-bottom:8px}
+  textarea{
+    width:100%;min-height:96px;resize:vertical;background:#FBF6EA;color:var(--ink);
+    border:1px solid #C9BCA0;border-bottom:2px solid var(--ink);border-radius:2px;
+    padding:12px 13px;font-family:"Playfair Display",Georgia,serif;font-size:clamp(1rem,2.6vw,1.15rem);
+  }
+  textarea:focus{outline:3px solid var(--brass);outline-offset:1px}
+  .row{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:13px}
+  .btn{
+    font-family:"Special Elite",monospace;font-size:.86rem;letter-spacing:.16em;text-transform:uppercase;
+    padding:12px 26px;border:2px solid var(--ink);border-radius:2px;cursor:pointer;
+    background:var(--oxblood);color:var(--cream);box-shadow:0 4px 0 #5E1210;
+    transition:transform 80ms ease,box-shadow 80ms ease;
+  }
+  .btn:active{transform:translateY(3px);box-shadow:0 1px 0 #5E1210}
+  .btn.ghost{background:transparent;color:var(--ink);box-shadow:0 4px 0 rgba(36,28,20,.35)}
+  .btn:focus-visible{outline:4px solid var(--brass);outline-offset:3px}
+  .count{margin-left:auto;font-size:.66rem;letter-spacing:.1em;color:var(--soft)}
+  .warn{color:var(--oxblood);font-size:.76rem;letter-spacing:.04em;min-height:1.3em;margin:9px 0 0}
+  .chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}
+  .chip{
+    font-family:"Special Elite",monospace;font-size:.64rem;letter-spacing:.02em;
+    padding:6px 10px;border:1px dashed #B6A588;background:transparent;color:var(--soft);
+    border-radius:2px;cursor:pointer;text-align:left;
+  }
+  .chip:hover{background:#EFE5D0;color:var(--ink)}
+
+  /* ---- ruling ---- */
+  #ruling{margin-top:clamp(16px,3svh,26px)}
+  .hidden{display:none!important}
+  .stamp{
+    border:5px double currentColor;padding:14px 10px 12px;text-align:center;
+    margin-bottom:20px;transform:rotate(-2.2deg);
+  }
+  .stamp.sus{color:var(--oxblood)} .stamp.ovr{color:var(--felt)}
+  .stamp b{
+    display:block;font-family:"Playfair Display",serif;font-weight:900;font-style:italic;
+    font-size:clamp(2rem,10vw,3.8rem);line-height:.98;letter-spacing:.02em;
+  }
+  .stamp i{display:block;font-style:normal;font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;margin-top:8px;opacity:.9}
+  .slam{animation:slam 460ms cubic-bezier(.2,1.2,.4,1) both}
+  @keyframes slam{0%{opacity:0;transform:scale(2.3) rotate(-9deg)}60%{opacity:1;transform:scale(.95) rotate(-1deg)}100%{transform:rotate(-2.2deg)}}
+
+  .finding{border-left:5px solid var(--oxblood);padding-left:15px;margin-bottom:20px}
+  .finding h2{font-family:"Playfair Display",serif;font-weight:700;font-size:clamp(1.2rem,4.4vw,1.7rem);margin:0 0 3px;text-transform:uppercase;letter-spacing:.02em}
+  .auth{font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:#8A6B18}
+  .finding p{margin:9px 0 0;font-size:.86rem;line-height:1.6;color:#3B2F22}
+  blockquote{margin:11px 0 0;padding:9px 13px;background:#EFE5D0;border-left:3px solid var(--oxblood);
+    font-family:"Playfair Display",serif;font-style:italic;font-size:1.02rem}
+
+  h3.sec{font-size:.6rem;letter-spacing:.24em;text-transform:uppercase;color:var(--soft);
+    border-bottom:2px solid rgba(36,28,20,.3);padding-bottom:6px;margin:26px 0 0;font-weight:400}
+  table{width:100%;border-collapse:collapse;font-size:.72rem}
+  th,td{text-align:left;padding:8px 5px;border-bottom:1px solid rgba(36,28,20,.16);vertical-align:top}
+  th{font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);font-weight:400}
+  td.g{letter-spacing:.04em;text-transform:uppercase}
+  .fired{color:var(--oxblood)} .clear{color:var(--soft);opacity:.6}
+  td.m{font-family:"Playfair Display",serif;font-style:italic;color:#4A3B2B}
+  tr.hit td{background:rgba(147,32,30,.07)}
+  .tally{font-size:.68rem;letter-spacing:.08em;color:var(--soft);margin:11px 0 0}
+
+  footer{flex:none;margin-top:auto}
+  .sig{text-align:center;font-size:.56rem;letter-spacing:.13em;text-transform:uppercase;
+    color:#8E7A5C;margin:0 0 10px;padding:0 16px;line-height:1.8}
+  .rail{height:7px;background:linear-gradient(180deg,var(--brass-l),var(--brass) 45%,#8A6B18)}
+  .plinth{height:clamp(20px,4svh,34px);background:var(--oak);
+    background-image:repeating-linear-gradient(90deg,transparent 0 76px,rgba(0,0,0,.3) 76px 80px);
+    border-top:2px solid #4A3320;padding-bottom:env(safe-area-inset-bottom)}
+
+  @media(max-width:640px){
+    td.m,th:nth-child(3){display:none}
+    .bench{gap:14px}
+  }
+  @media (prefers-reduced-motion:reduce){.slam,.strike{animation:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <p class="kicker">In the matter of what was said to you</p>
+  <h1>Objection</h1>
+  <p class="sub">Enter the statement complained of. The court will rule.</p>
+</header>
+
+<main>
+  <div class="bench" aria-hidden="true">
+    <div class="gavel-wrap">
+      <svg viewBox="0 0 200 120">
+        <ellipse cx="132" cy="106" rx="52" ry="9" fill="#0F0A06" opacity=".55"/>
+        <rect x="86" y="92" width="94" height="13" rx="6" fill="#7A5533" stroke="#3A2616" stroke-width="3"/>
+        <g id="gavel">
+          <rect x="18" y="52" width="104" height="12" rx="6" fill="#8A6039" stroke="#3A2616" stroke-width="3"/>
+          <rect x="108" y="30" width="52" height="56" rx="9" fill="#8A6039" stroke="#3A2616" stroke-width="3"/>
+          <rect x="108" y="30" width="52" height="10" rx="5" fill="#C9A227" opacity=".85"/>
+          <rect x="108" y="76" width="52" height="10" rx="5" fill="#C9A227" opacity=".85"/>
+        </g>
+      </svg>
+    </div>
+    <div class="lamp-wrap">
+      <svg viewBox="0 0 120 150">
+        <rect x="52" y="60" width="9" height="72" fill="#C9A227"/>
+        <ellipse cx="57" cy="136" rx="34" ry="8" fill="#C9A227"/>
+        <path d="M12 58 Q57 24 102 58 L102 66 Q57 46 12 66 Z" fill="#1F4A34" stroke="#0E2A1E" stroke-width="3"/>
+        <ellipse cx="57" cy="70" rx="45" ry="12" fill="#FFE9A8" opacity=".55"/>
+      </svg>
+    </div>
+  </div>
+
+  <section class="file">
+    <label for="stmt">The statement complained of</label>
+    <textarea id="stmt" maxlength="600" spellcheck="true"
+      placeholder="&ldquo;Well, everyone knows you always do this, and someone told me you probably meant it.&rdquo;"></textarea>
+
+    <div class="row">
+      <button class="btn" id="go" type="button">Object</button>
+      <button class="btn ghost" id="clear" type="button">Clear</button>
+      <span class="count" id="count">0 / 600</span>
+    </div>
+    <p class="warn" id="warn" role="alert" aria-live="polite"></p>
+    <div class="chips" id="examples"></div>
+
+    <section id="ruling" class="hidden" aria-live="polite"></section>
+  </section>
+</main>
+
+<footer>
+  <p class="sig">No model &middot; no API &middot; no randomness &middot; nothing stored or sent<br>
+  AI assisted. Human approved. Powered by NLP.</p>
+  <div class="rail" aria-hidden="true"></div>
+  <div class="plinth" aria-hidden="true"></div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+/* OBJECTION — one screen, one ruling.
+   MUST : pure function of the text. No clock, no network, no randomness.
+   MUST : show all twelve grounds, not just the one that fired.
+   MUST : textContent only. NEVER: innerHTML, eval, storage, a model.
+   STUB : permalink ?s=, share card export. */
+
+function features(raw){
+  var lower=" "+raw.toLowerCase().replace(/[‘’]/g,"'").replace(/\s+/g," ").trim()+" ";
+  var words=lower.trim().split(" ").filter(Boolean);
+  var letters=raw.replace(/[^A-Za-z]/g,""), caps=raw.replace(/[^A-Z]/g,"");
+  return {lower:lower,words:words,
+    q:(raw.match(/\?/g)||[]).length, bang:(raw.match(/!/g)||[]).length,
+    capsRatio:letters.length>=8?caps.length/letters.length:0};
+}
+
+/* the court does not care if you type "you're" or "you are", but the quoted
+   language must stay literal, so every variant is tested against the original */
+var CONTR=[["you are","you're"],["that is","that's"],["it is","it's"],["what is","what's"],
+  ["they are","they're"],["i am","i'm"],["do not","don't"],["does not","doesn't"],
+  ["did not","didn't"],["is not","isn't"],["was not","wasn't"],["are not","aren't"],
+  ["will not","won't"],["can not","can't"],["cannot","can't"],["could not","couldn't"],
+  ["would not","wouldn't"],["should not","shouldn't"],["must have","must've"],["have not","haven't"]];
+
+function variants(p){
+  var out=[p];
+  for(var i=0;i<CONTR.length;i++){
+    var a=CONTR[i][0], b=CONTR[i][1];
+    for(var j=0,n=out.length;j<n;j++){
+      if(out[j].indexOf(a)!==-1) out.push(out[j].split(a).join(b));
+      if(out[j].indexOf(b)!==-1) out.push(out[j].split(b).join(a));
+    }
+  }
+  var seen={},u=[];
+  for(var k=0;k<out.length;k++){ if(!seen[out[k]]){seen[out[k]]=1;u.push(out[k]);} }
+  return u;
+}
+function has(f,p){
+  return f.lower.indexOf(" "+p+" ")!==-1 || f.lower.indexOf(" "+p+",")!==-1 ||
+         f.lower.indexOf(" "+p+".")!==-1 || f.lower.indexOf(" "+p+"?")!==-1 ||
+         f.lower.indexOf(" "+p+"!")!==-1;
+}
+function phrase(f,list){
+  for(var i=0;i<list.length;i++){
+    var v=variants(list[i]);
+    for(var j=0;j<v.length;j++) if(has(f,v[j])) return v[j];
+  }
+  return null;
+}
+function rex(f,list){
+  for(var i=0;i<list.length;i++){ var m=f.lower.match(list[i]); if(m) return m[0].trim(); }
+  return null;
+}
+function repeated(f){
+  var stop={the:1,and:1,but:1,that:1,this:1,with:1,your:1,they:1,just:1,have:1,what:1,about:1,been:1,were:1,from:1,them:1,then:1,when:1,like:1};
+  var c={},order=[];
+  for(var i=0;i<f.words.length;i++){
+    var w=f.words[i].replace(/[^a-z']/g,"");
+    if(w.length<4||stop[w]) continue;
+    if(!c[w]){c[w]=0;order.push(w);} c[w]++;
+  }
+  for(var j=0;j<order.length;j++) if(c[order[j]]>=3) return '"'+order[j]+'" three or more times';
+  return null;
+}
+
+/* twelve grounds, priority order. every authority is a real Federal Rule of Evidence. */
+var GROUNDS=[
+ {code:"Hearsay",auth:"FRE 802",
+  why:"The declarant is not here and cannot be cross-examined. What someone else told you is not evidence of anything except that they told you.",
+  test:function(f){return phrase(f,["someone told me","people are saying","i heard that","i heard","they said","she said","he said","word is","everyone is saying","apparently","supposedly","rumor has it","i was told","they told me","from what i hear"]);}},
+ {code:"Speculation",auth:"FRE 602",
+  why:"The witness lacks personal knowledge. Guessing what was in someone's head is not testimony.",
+  test:function(f){return phrase(f,["you probably","probably","must have","i bet","you are going to","i can tell you","you meant to","deep down you","would have","i assume","i am guessing","you were trying to"]);}},
+ {code:"Improper Character Evidence",auth:"FRE 404(a)",
+  why:"You are offering who they are to prove what they did. Character is not admissible to show conformity on a particular occasion.",
+  test:function(f){return phrase(f,["you are the kind of person","that is just like you","typical of you","so typical","you always were","that is so you","you are just like","this is who you are","you have always been","people like you"]);}},
+ {code:"Assumes Facts Not in Evidence",auth:"FRE 611(a)",
+  why:"The premise was never established. You cannot smuggle a fact in by leaning on it.",
+  test:function(f){return phrase(f,["everyone knows","everybody knows","obviously","clearly you","we all know","as you know","needless to say","let us be honest","face it","admit it","you always","you never","nobody ever","no one ever"]);}},
+ {code:"Argumentative",auth:"FRE 611(a)",
+  why:"That is not a question. That is a closing argument wearing a question mark.",
+  test:function(f){return rex(f,[/why (do|did|can't|can not|would|must) you\b[^.?!]*/,/(don't|do not) you think\b[^.?!]*/,/so (you're|you are) saying\b[^.?!]*/,/(isn't|is not) it true\b[^.?!]*/,/how could you\b[^.?!]*/,/(what is|what's) wrong with you\b/]);}},
+ {code:"Badgering the Witness",auth:"FRE 611(a)(3)",
+  why:"The court will protect the witness from harassment and undue embarrassment. Volume is not an argument.",
+  test:function(f){
+    if(f.q>=3) return f.q+" consecutive questions";
+    if(f.capsRatio>0.55) return "sustained shouting";
+    if(f.bang>=3) return f.bang+" exclamation points";
+    if(f.q>=1&&f.bang>=1) return "an interrogative delivered at volume";
+    return null;}},
+ {code:"Asked and Answered",auth:"FRE 611(a)",
+  why:"This ground has been covered. Repetition does not improve the record, only its length.",
+  test:function(f){return phrase(f,["like i said","as i already said","i already told you","how many times","again and again","i have said this","for the last time","as i mentioned"])||repeated(f);}},
+ {code:"Leading the Witness",auth:"FRE 611(c)",
+  why:"The question contains its own answer. On direct examination that is not permitted.",
+  test:function(f){return rex(f,[/,? right\?/,/,? (isn't|is not) (it|that)\??/,/,? (didn't|did not) you\??/,/,? (wouldn't|would not) you agree\??/,/,? (don't|do not) you\??/,/,? correct\?/]);}},
+ {code:"Calls for a Legal Conclusion",auth:"FRE 701",
+  why:"The witness is not qualified to declare the rule. Lay opinion is limited to what they perceived.",
+  test:function(f){return phrase(f,["that is illegal","you can not do that","that is not allowed","against the rules","that is harassment","that is discrimination","you are not allowed","that is a violation","that is against policy"]);}},
+ {code:"Unfair Prejudice",auth:"FRE 403",
+  why:"Whatever probative value this had is substantially outweighed by the danger of unfair prejudice.",
+  test:function(f){return phrase(f,["ridiculous","pathetic","insane","crazy","stupid","lazy","dramatic","hysterical","childish","embarrassing","exhausting","toxic","unhinged","delusional"]);}},
+ {code:"Non-Responsive",auth:"FRE 611(a)",
+  why:"The answer does not reach the question. The court will strike everything after the deflection.",
+  test:function(f){return rex(f,[/^\s(well|look|honestly|anyway|whatever|okay but|ok but|fine but|i mean),?\b/]);}},
+ {code:"Vague and Ambiguous",auth:"FRE 611(a)",
+  why:"Too imprecise to admit or deny. The witness cannot answer what was never actually said.",
+  test:function(f){
+    var h=["kind of","sort of","kinda","sorta","something like that","or whatever","stuff like that","you know what i mean","things like that","a little bit","i guess","or something"];
+    var n=0,first=null;
+    for(var i=0;i<h.length;i++) if(f.lower.indexOf(" "+h[i])!==-1){ n++; if(!first) first=h[i]; }
+    return n>=2?first:null;}}
+];
+
+function rule(raw){
+  var f=features(raw), rec=[], lead=null;
+  for(var i=0;i<GROUNDS.length;i++){
+    var g=GROUNDS[i], m=null;
+    try{ m=g.test(f); }catch(e){ m=null; }   /* a broken rule never takes the court down */
+    rec.push({code:g.code,auth:g.auth,why:g.why,matched:m});
+    if(m&&!lead) lead=rec[rec.length-1];
+  }
+  return {sustained:!!lead,lead:lead,record:rec};
+}
+
+/* ---------- gavel bang (synthesized, no files) ---------- */
+var AC=null;
+function ctx(){ if(AC) return AC; try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){AC=null;} return AC; }
+function bang(){
+  var ac=ctx(); if(!ac) return;
+  try{
+    var t=ac.currentTime;
+    var o=ac.createOscillator(), g=ac.createGain();
+    o.type="sine"; o.frequency.setValueAtTime(180,t); o.frequency.exponentialRampToValueAtTime(46,t+.16);
+    g.gain.setValueAtTime(.28,t); g.gain.exponentialRampToValueAtTime(.0001,t+.28);
+    o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t+.3);
+    var len=Math.floor(ac.sampleRate*.06), buf=ac.createBuffer(1,len,ac.sampleRate), d=buf.getChannelData(0);
+    for(var i=0;i<len;i++) d[i]=(((i*1103515245+12345)>>>16)%2000/1000-1)*(1-i/len);
+    var s=ac.createBufferSource(), ng=ac.createGain();
+    s.buffer=buf; ng.gain.setValueAtTime(.16,t); ng.gain.exponentialRampToValueAtTime(.0001,t+.07);
+    s.connect(ng); ng.connect(ac.destination); s.start(t);
+  }catch(e){}
+}
+
+/* ---------- render (textContent only) ---------- */
+var $=function(id){return document.getElementById(id);};
+function el(t,c,x){var n=document.createElement(t); if(c)n.className=c; if(x!=null)n.textContent=x; return n;}
+
+function render(res){
+  var out=$("ruling"); out.textContent=""; out.classList.remove("hidden");
+
+  var st=el("div","stamp slam "+(res.sustained?"sus":"ovr"));
+  st.appendChild(el("b",null,res.sustained?"Sustained":"Overruled"));
+  st.appendChild(el("i",null,res.sustained?"as to "+res.lead.code:"the statement is admitted"));
+  out.appendChild(st);
+
+  var f=el("div","finding");
+  if(res.sustained){
+    f.appendChild(el("h2",null,res.lead.code));
+    f.appendChild(el("div","auth",res.lead.auth));
+    f.appendChild(el("p",null,res.lead.why));
+    f.appendChild(el("blockquote",null,"“"+res.lead.matched+"”"));
+    f.appendChild(el("p",null,"That is the language the ruling rests on. The jury will disregard it."));
+  }else{
+    f.appendChild(el("h2",null,"No Grounds Found"));
+    f.appendChild(el("div","auth","FRE 402 — relevant evidence is admissible"));
+    f.appendChild(el("p",null,"Twelve grounds checked, none fired. Whatever was said to you, it was said cleanly. The court notes that admissible is not the same as kind, and offers no opinion on the second question."));
+  }
+  out.appendChild(f);
+
+  out.appendChild(el("h3","sec","The record — every ground checked"));
+  var tb=el("table"), th=el("thead"), hr=el("tr");
+  ["Ground","Ruling","Language relied on","Authority"].forEach(function(h){hr.appendChild(el("th",null,h));});
+  th.appendChild(hr); tb.appendChild(th);
+  var body=el("tbody");
+  res.record.forEach(function(r){
+    var tr=el("tr",r.matched?"hit":null);
+    tr.appendChild(el("td","g",r.code));
+    tr.appendChild(el("td",r.matched?"fired":"clear",r.matched?"Fired":"Not found"));
+    tr.appendChild(el("td","m",r.matched?"“"+r.matched+"”":"—"));
+    tr.appendChild(el("td","clear",r.auth));
+    body.appendChild(tr);
+  });
+  tb.appendChild(body); out.appendChild(tb);
+
+  var n=0; res.record.forEach(function(r){ if(r.matched) n++; });
+  out.appendChild(el("p","tally",n+" of 12 grounds fired. The court rules on the first in priority order."));
+
+  var g=$("gavel");
+  if(!window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+    g.classList.remove("strike"); void g.getBoundingClientRect(); g.classList.add("strike");
+  }
+  bang();
+}
+
+function handle(){
+  var w=$("warn"); w.textContent="";
+  var raw=String($("stmt").value||"");
+  if(!raw.trim()){ w.textContent="The court cannot rule on silence. Enter the statement."; $("ruling").classList.add("hidden"); return; }
+  if(raw.trim().length<4){ w.textContent="Too short to form a record. Give the court a sentence."; $("ruling").classList.add("hidden"); return; }
+  if(raw.length>600){ raw=raw.slice(0,600); w.textContent="Truncated at 600 characters. Brevity is a virtue in this courtroom."; }
+  try{ render(rule(raw)); }
+  catch(e){ w.textContent="The court encountered an error and has recessed."; $("ruling").classList.add("hidden"); }
+}
+
+function count(){ $("count").textContent=$("stmt").value.length+" / 600"; }
+
+$("go").addEventListener("click",handle);
+$("clear").addEventListener("click",function(){
+  $("stmt").value=""; $("warn").textContent=""; $("ruling").classList.add("hidden"); count(); $("stmt").focus();
+});
+$("stmt").addEventListener("input",count);
+$("stmt").addEventListener("keydown",function(e){ if((e.metaKey||e.ctrlKey)&&e.key==="Enter") handle(); });
+
+["Well, honestly, everyone knows you always do this.",
+ "Someone told me you probably meant it that way.",
+ "Why do you always have to make it weird? Why? WHY?",
+ "You're the kind of person who says they'll call.",
+ "I appreciated what you did on Tuesday.",
+ "Like I said, I said it already, I have said it three times."
+].forEach(function(t){
+  var b=el("button","chip","“"+t+"”"); b.type="button";
+  b.addEventListener("click",function(){
+    $("stmt").value=t; count(); handle();
+    $("ruling").scrollIntoView({behavior:"smooth",block:"start"});
+  });
+  $("examples").appendChild(b);
+});
+
+count();
+window.__rule=rule;   /* pure engine, exposed for verification */
+})();
+</script>
+</body>
+</html>

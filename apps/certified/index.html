@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Certified</title>
+
+<!-- Social preview. Replace SITE_URL with the deployed URL (no trailing slash).
+     og-certified.png goes in the site root next to index.html. -->
+<meta property="og:title" content="Certified" />
+<meta property="og:description" content="Type the small thing you did. The office issues a certificate with a serial anyone can verify. No records kept, because none are needed." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="SITE_URL/og-certified.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Certified" />
+<meta name="twitter:description" content="Office of Small Things Actually Done. Window 3 is open." />
+<meta name="twitter:image" content="SITE_URL/og-certified.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Courier+Prime:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --wall:#2C4A3C; --wall2:#20372C; --oak:#8B5E34; --oak2:#6B4526;
+    --cream:#F7F2E6; --paper2:#EDE4D0; --ink:#211C14; --soft:#6B6152;
+    --gold:#8A6D2F; --gold-l:#D9B65C; --red:#8E2119; --green:#2F5D3A;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{
+    min-height:100svh; display:flex; flex-direction:column;
+    overflow-x:hidden; color:var(--cream);
+    font-family:"Courier Prime",monospace;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.10), transparent 55%),
+      repeating-linear-gradient(90deg, transparent 0 6px, rgba(0,0,0,.05) 6px 7px),
+      linear-gradient(180deg, var(--wall) 0 62%, var(--wall2));
+  }
+
+  /* ---- window signage header ---- */
+  header{padding:clamp(14px,3svh,26px) 16px clamp(6px,1.4svh,12px);display:flex;justify-content:center}
+  .sign{
+    background:var(--cream); color:var(--ink);
+    border:3px solid var(--ink); border-radius:2px;
+    padding:clamp(10px,2svh,16px) clamp(18px,5vw,42px); text-align:center;
+    box-shadow:0 0 0 5px var(--gold-l), 0 12px 26px rgba(0,0,0,.5);
+    transform:rotate(-.5deg);
+  }
+  .kicker{margin:0;font-size:clamp(.54rem,1.8vw,.68rem);letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
+  h1{
+    margin:.06em 0 .02em; font-family:"Cormorant Garamond",serif; font-weight:700;
+    font-size:clamp(2.3rem,min(11vw,8svh),4.2rem); letter-spacing:.1em; text-transform:uppercase; line-height:1;
+  }
+  .sub{margin:0;font-size:clamp(.62rem,2vw,.78rem);letter-spacing:.06em;color:var(--soft)}
+
+  main{flex:1;width:100%;max-width:1000px;margin:0 auto;padding:clamp(10px,2svh,20px) clamp(12px,3vw,22px) clamp(20px,4svh,36px)}
+
+  /* ---- filing tabs ---- */
+  .tabs{display:flex;gap:6px;margin-bottom:-3px;padding-left:8px}
+  .tab{
+    font-family:"Courier Prime",monospace;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;
+    background:#C9B893;color:#4A4133;border:3px solid var(--ink);border-bottom:none;
+    border-radius:7px 7px 0 0;padding:9px 18px 7px;cursor:pointer;
+  }
+  .tab[aria-selected="true"]{background:var(--cream);color:var(--ink);transform:translateY(-2px)}
+  .tab:focus-visible{outline:4px solid var(--gold-l);outline-offset:2px}
+
+  .counter{
+    background:var(--cream);color:var(--ink);border:3px solid var(--ink);border-radius:2px;
+    padding:clamp(14px,3vw,26px);box-shadow:0 16px 36px rgba(0,0,0,.5);position:relative;
+  }
+
+  label{display:block;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--soft);margin:14px 0 6px}
+  input,textarea{
+    width:100%;background:#FDFAF2;color:var(--ink);border:1px solid #C7BAA0;
+    border-bottom:2px solid var(--ink);border-radius:2px;padding:11px 12px;
+    font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(1.05rem,2.8vw,1.25rem);
+  }
+  input.mono{font-family:"JetBrains Mono",monospace;font-size:1rem;letter-spacing:.16em;text-transform:uppercase}
+  textarea{min-height:66px;resize:vertical}
+  input:focus,textarea:focus{outline:3px solid var(--gold-l);outline-offset:1px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+
+  .row{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:18px}
+  .btn{
+    font-family:"Courier Prime",monospace;font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;
+    padding:12px 24px;border:2px solid var(--ink);border-radius:2px;cursor:pointer;
+    background:var(--red);color:var(--cream);box-shadow:0 4px 0 #5A130E;
+    transition:transform 80ms ease,box-shadow 80ms ease;
+  }
+  .btn:active{transform:translateY(3px);box-shadow:0 1px 0 #5A130E}
+  .btn.ghost{background:transparent;color:var(--ink);box-shadow:0 4px 0 rgba(33,28,20,.32)}
+  .btn:focus-visible{outline:4px solid var(--gold-l);outline-offset:3px}
+  .warn{color:var(--red);font-size:.74rem;min-height:1.3em;margin:10px 0 0}
+  .hidden{display:none!important}
+
+  /* ---- certificate + the stamp that lands on it ---- */
+  .certbox{margin-top:20px;position:relative}
+  #cert{width:100%;height:auto;display:block;box-shadow:0 3px 0 rgba(0,0,0,.12),0 16px 34px rgba(0,0,0,.3)}
+  .stamper{
+    position:absolute;top:8%;right:6%;width:22%;max-width:150px;pointer-events:none;opacity:0;
+  }
+  .thump{animation:thump 620ms cubic-bezier(.2,.9,.3,1) both}
+  @keyframes thump{
+    0%{opacity:0;transform:translateY(-140%) scale(1.5)}
+    38%{opacity:1;transform:translateY(0) scale(1)}
+    58%{opacity:1;transform:translateY(4%) scale(.97)}
+    100%{opacity:0;transform:translateY(-120%) scale(1.2)}
+  }
+
+  .work{font-size:.7rem;line-height:1.65;color:var(--soft);margin-top:6px}
+  .work p{margin:7px 0}
+  .work code{font-family:"JetBrains Mono",monospace;font-size:.68rem;color:var(--ink);
+    background:var(--paper2);border:1px solid #C7BAA0;padding:1px 5px;border-radius:2px;word-break:break-all}
+  h3.sec{font-size:.58rem;letter-spacing:.24em;text-transform:uppercase;color:var(--soft);
+    border-bottom:2px solid rgba(33,28,20,.28);padding-bottom:6px;margin:26px 0 0;font-weight:400}
+
+  .verdict{border:5px double currentColor;padding:14px 10px 12px;text-align:center;margin-top:20px}
+  .verdict.ok{color:var(--green)} .verdict.no{color:var(--red)}
+  .verdict b{display:block;font-family:"Cormorant Garamond",serif;font-weight:700;
+    font-size:clamp(1.8rem,8vw,3rem);letter-spacing:.14em;text-transform:uppercase;line-height:1}
+  .verdict span{display:block;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;margin-top:8px;opacity:.9}
+  .slam{animation:slam 440ms cubic-bezier(.2,1.2,.4,1) both}
+  @keyframes slam{0%{opacity:0;transform:scale(2.1) rotate(-7deg)}60%{opacity:1;transform:scale(.96) rotate(-1deg)}100%{transform:rotate(-1.4deg)}}
+
+  footer{flex:none;margin-top:auto}
+  .sig{text-align:center;font-size:.55rem;letter-spacing:.13em;text-transform:uppercase;
+    color:#93A79A;margin:14px 0 10px;padding:0 16px;line-height:1.8}
+  .brass{height:6px;background:linear-gradient(180deg,var(--gold-l),var(--gold) 45%,#5E4A1C)}
+  .oakbar{height:clamp(22px,4.5svh,38px);background:var(--oak);
+    background-image:repeating-linear-gradient(90deg,transparent 0 92px,rgba(0,0,0,.28) 92px 96px);
+    border-top:3px solid var(--oak2);padding-bottom:env(safe-area-inset-bottom)}
+
+  @media (prefers-reduced-motion:reduce){.thump,.slam{animation:none;opacity:0}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="sign">
+    <p class="kicker">Office of Small Things Actually Done</p>
+    <h1>Certified</h1>
+    <p class="sub">Window 3 &middot; no appointment &middot; no record kept</p>
+  </div>
+</header>
+
+<main>
+  <div class="tabs" role="tablist">
+    <button class="tab" id="tab-issue" role="tab" aria-selected="true" aria-controls="panel-issue" type="button">Issue</button>
+    <button class="tab" id="tab-verify" role="tab" aria-selected="false" aria-controls="panel-verify" type="button">Verify</button>
+  </div>
+
+  <div class="counter">
+    <!-- ============ ISSUE ============ -->
+    <section id="panel-issue" role="tabpanel" aria-labelledby="tab-issue">
+      <div class="grid">
+        <div><label for="who">Issued to</label>
+          <input id="who" type="text" maxlength="42" placeholder="Your name, or leave it blank"></div>
+        <div><label for="when">Date of the act</label>
+          <input id="when" type="date"></div>
+      </div>
+      <label for="act">The act</label>
+      <textarea id="act" maxlength="140" placeholder="drank a full glass of water before coffee"></textarea>
+
+      <div class="row">
+        <button class="btn" id="issue" type="button">Issue certificate</button>
+        <button class="btn ghost hidden" id="png" type="button">Download PNG</button>
+        <button class="btn ghost hidden" id="copy" type="button">Copy serial</button>
+      </div>
+      <p class="warn" id="warnIssue" role="alert" aria-live="polite"></p>
+
+      <div class="certbox hidden" id="certbox">
+        <svg class="stamper" id="stamper" viewBox="0 0 100 120" aria-hidden="true">
+          <rect x="30" y="4" width="40" height="30" rx="7" fill="#2B2622"/>
+          <rect x="42" y="30" width="16" height="26" fill="#4A423A"/>
+          <rect x="14" y="54" width="72" height="22" rx="4" fill="#2B2622"/>
+          <rect x="10" y="76" width="80" height="16" rx="3" fill="#8E2119"/>
+        </svg>
+      </div>
+
+      <div class="hidden" id="workbox">
+        <h3 class="sec">Show the work</h3>
+        <div class="work" id="work"></div>
+      </div>
+    </section>
+
+    <!-- ============ VERIFY ============ -->
+    <section id="panel-verify" class="hidden" role="tabpanel" aria-labelledby="tab-verify">
+      <p class="work" style="margin-top:10px">Type the three things printed on the certificate, plus the serial.
+      The serial is recomputed from scratch and compared. Nothing is looked up, because nothing is stored.</p>
+      <div class="grid">
+        <div><label for="vwho">Issued to</label>
+          <input id="vwho" type="text" maxlength="42" placeholder="Exactly as printed"></div>
+        <div><label for="vwhen">Date issued</label>
+          <input id="vwhen" type="date"></div>
+      </div>
+      <label for="vact">The act</label>
+      <textarea id="vact" maxlength="140" placeholder="Exactly as printed"></textarea>
+      <label for="vser">Serial</label>
+      <input id="vser" class="mono" type="text" maxlength="16" placeholder="XXXX-XXXX-XXXX">
+      <div class="row">
+        <button class="btn" id="check" type="button">Verify</button>
+        <button class="btn ghost" id="vclear" type="button">Clear</button>
+      </div>
+      <p class="warn" id="warnVerify" role="alert" aria-live="polite"></p>
+      <div id="vresult"></div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <p class="sig">No model &middot; no API &middot; no database &middot; no randomness &middot; nothing stored or sent<br>
+  AI assisted. Human approved. Powered by NLP.</p>
+  <div class="brass" aria-hidden="true"></div>
+  <div class="oakbar" aria-hidden="true"></div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+/* CERTIFIED — the serial is a pure function of the certificate's own contents.
+   MUST : serial = f(name, act, date). Same input, same serial, forever.
+   MUST : verification recomputes, never looks up.
+   MUST : textContent / setAttribute only. NEVER: innerHTML, eval, storage, fetch, Math.random.
+   NOTE : the certificate SVG uses SYSTEM fonts on purpose. Webfonts do not
+          rasterise when the SVG is drawn into a canvas for the PNG export.
+   STUB : permalink ?to=&act=&on=, print stylesheet. */
+
+var ALPHA="0123456789ABCDEFGHJKMNPQRSTVWXYZ"; /* Crockford: no I L O U */
+function fnv(s,seed){var h=seed>>>0;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h>>>0;}
+function norm(s){return String(s==null?"":s).toLowerCase().replace(/[‘’]/g,"'").replace(/[^a-z0-9 ]+/g," ").replace(/\s+/g," ").trim();}
+function payload(w,a,d){return norm(w||"the bearer")+"|"+norm(a)+"|"+String(d).trim();}
+function serialOf(w,a,d){
+  var p=payload(w,a,d), x=fnv(p,2166136261), y=fnv(p+"certified",40389), o="";
+  for(var i=0;i<6;i++) o+=ALPHA[(x>>>(i*5))&31];
+  for(var j=0;j<6;j++) o+=ALPHA[(y>>>(j*5))&31];
+  return o.slice(0,4)+"-"+o.slice(4,8)+"-"+o.slice(8,12);
+}
+
+var CLASSES=[
+ {n:"Bodily Upkeep",k:["water","ate","eat","meal","slept","sleep","nap","shower","teeth","brush","hydrat","breakfast","lunch","dinner","pill","meds","doctor","dentist"]},
+ {n:"Administrative Persistence",k:["email","call","phone","reply","form","appointment","paperwork","tax","bill","paid","scheduled","filed","renew","cancel","insurance","dmv","inbox"]},
+ {n:"Domestic Maintenance",k:["dish","laundry","clean","trash","vacuum","bed","tidy","dust","mop","fold","sink","kitchen","groceries","litter","plants"]},
+ {n:"Defensive Action",k:["said no","boundary","declined","left early","blocked","quit","deleted","unfollow","logged off","stopped","muted","walked away"]},
+ {n:"Emotional Labor",k:["asked for help","therapy","talked to","told them","apolog","reached out","checked on","listened","sat with","hugged","texted back"]},
+ {n:"Physical Exertion",k:["walk","ran","run","gym","stretch","outside","sun","exercise","lift","yoga","stairs","swim","bike"]},
+ {n:"Creative Output",k:["wrote","built","shipped","code","finished","made","drew","practiced","studied","read","painted","recorded","designed","published"]},
+ {n:"Sustained Endurance",k:["waited","didn't","did not","resisted","held","stayed","kept","again","showed up","sat through","made it through","survived","one more"]},
+ {n:"Initiation Under Load",k:["got up","out of bed","woke","started","began","opened","first step","finally"]}
+];
+var FALLBACK=["Ordinary Valor","Unwitnessed Effort","Quiet Compliance","A Small Good Done",
+              "Minor Heroism","General Perseverance","Undocumented Diligence","Plain Decency"];
+function classOf(a,w,d){
+  var s=" "+norm(a)+" ";
+  for(var i=0;i<CLASSES.length;i++) for(var k=0;k<CLASSES[i].k.length;k++)
+    if(s.indexOf(CLASSES[i].k[k])!==-1) return CLASSES[i].n;
+  return FALLBACK[fnv(payload(w,a,d),5381)%FALLBACK.length];
+}
+
+/* ---------- the certificate: one SVG, one source of truth ---------- */
+var NS="http://www.w3.org/2000/svg", W=1000, H=700;
+var SERIF="Georgia, 'Times New Roman', serif", MONO="Menlo, Consolas, 'Courier New', monospace";
+function sv(t,a,x){var n=document.createElementNS(NS,t);if(a)for(var k in a)if(a.hasOwnProperty(k))n.setAttribute(k,String(a[k]));if(x!=null)n.textContent=String(x);return n;}
+function wrap(t,max){
+  var w=String(t).split(/\s+/).filter(Boolean),l=[],c="";
+  for(var i=0;i<w.length;i++){var nx=c?c+" "+w[i]:w[i]; if(nx.length>max&&c){l.push(c);c=w[i];}else c=nx;}
+  if(c)l.push(c); return l.slice(0,4);
+}
+function seal(cx,cy,r,plain){
+  var g=sv("g");
+  g.appendChild(sv("circle",{cx:cx,cy:cy,r:r,fill:"none",stroke:"#8a6d2f","stroke-width":3}));
+  g.appendChild(sv("circle",{cx:cx,cy:cy,r:r-9,fill:"none",stroke:"#8a6d2f","stroke-width":1}));
+  g.appendChild(sv("circle",{cx:cx,cy:cy,r:r-34,fill:"none",stroke:"#8a6d2f","stroke-width":1}));
+  /* tick lengths come from the serial: the seal is derived from the same data as everything else */
+  for(var i=0;i<36;i++){
+    var a=(i/36)*Math.PI*2-Math.PI/2, bit=ALPHA.indexOf(plain[i%plain.length]);
+    var len=5+((bit>>(i%5))&1)*5, r1=r-12, r2=r-12-len;
+    g.appendChild(sv("line",{x1:(cx+Math.cos(a)*r1).toFixed(2),y1:(cy+Math.sin(a)*r1).toFixed(2),
+      x2:(cx+Math.cos(a)*r2).toFixed(2),y2:(cy+Math.sin(a)*r2).toFixed(2),stroke:"#8a6d2f","stroke-width":2}));
+  }
+  g.appendChild(sv("text",{x:cx,y:cy-6,"text-anchor":"middle","font-family":SERIF,"font-size":21,"letter-spacing":3,fill:"#8a6d2f"},"TRUE"));
+  g.appendChild(sv("text",{x:cx,y:cy+18,"text-anchor":"middle","font-family":SERIF,"font-size":21,"letter-spacing":3,fill:"#8a6d2f"},"COPY"));
+  return g;
+}
+function buildCert(d){
+  var s=sv("svg",{id:"cert",xmlns:NS,width:W,height:H,viewBox:"0 0 "+W+" "+H,role:"img",
+    "aria-label":"Certificate for "+d.who+", serial "+d.serial});
+  s.appendChild(sv("rect",{x:0,y:0,width:W,height:H,fill:"#f7f2e6"}));
+  s.appendChild(sv("rect",{x:20,y:20,width:W-40,height:H-40,fill:"none",stroke:"#8a6d2f","stroke-width":3}));
+  s.appendChild(sv("rect",{x:32,y:32,width:W-64,height:H-64,fill:"none",stroke:"#8a6d2f","stroke-width":1}));
+  s.appendChild(sv("text",{x:W/2,y:92,"text-anchor":"middle","font-family":MONO,"font-size":13,"letter-spacing":7,fill:"#8a6d2f"},"CERTIFICATE OF"));
+  var cls=d.cls.toUpperCase();
+  s.appendChild(sv("text",{x:W/2,y:152,"text-anchor":"middle","font-family":SERIF,"font-size":cls.length>26?36:44,"letter-spacing":3,fill:"#1c1a17"},cls));
+  s.appendChild(sv("line",{x1:370,y1:180,x2:630,y2:180,stroke:"#c9bfa8","stroke-width":1}));
+  s.appendChild(sv("text",{x:W/2,y:230,"text-anchor":"middle","font-family":SERIF,"font-size":21,"font-style":"italic",fill:"#5a544a"},"This certifies that"));
+  s.appendChild(sv("text",{x:W/2,y:294,"text-anchor":"middle","font-family":SERIF,"font-size":d.who.length>24?34:44,fill:"#1c1a17"},d.who));
+  s.appendChild(sv("line",{x1:230,y1:312,x2:770,y2:312,stroke:"#c9bfa8","stroke-width":1}));
+  s.appendChild(sv("text",{x:W/2,y:352,"text-anchor":"middle","font-family":SERIF,"font-size":19,"font-style":"italic",fill:"#5a544a"},
+    "did, on the date recorded below, the following, and that it counted:"));
+  var L=wrap(d.act,d.act.length>92?58:46), size=L.length>2?22:27, step=L.length>2?31:36;
+  for(var i=0;i<L.length;i++)
+    s.appendChild(sv("text",{x:W/2,y:402+i*step,"text-anchor":"middle","font-family":SERIF,"font-size":size,"font-style":"italic",fill:"#1c1a17"},
+      (i===0?"“":"")+L[i]+(i===L.length-1?"”":"")));
+  s.appendChild(seal(160,560,76,d.serial.replace(/-/g,"")));
+  s.appendChild(sv("text",{x:940,y:512,"text-anchor":"end","font-family":MONO,"font-size":11,"letter-spacing":4.5,fill:"#8a6d2f"},"SERIAL"));
+  s.appendChild(sv("text",{x:940,y:548,"text-anchor":"end","font-family":MONO,"font-size":30,"letter-spacing":2.5,fill:"#1c1a17"},d.serial));
+  s.appendChild(sv("text",{x:940,y:588,"text-anchor":"end","font-family":MONO,"font-size":11,"letter-spacing":4.5,fill:"#8a6d2f"},"ISSUED"));
+  s.appendChild(sv("text",{x:940,y:616,"text-anchor":"end","font-family":MONO,"font-size":19,"letter-spacing":2,fill:"#1c1a17"},d.when));
+  s.appendChild(sv("text",{x:940,y:648,"text-anchor":"end","font-family":SERIF,"font-size":14,"font-style":"italic",fill:"#5a544a"},"Recompute from these three fields to verify."));
+  s.appendChild(sv("text",{x:160,y:662,"text-anchor":"middle","font-family":MONO,"font-size":9,"letter-spacing":2.6,fill:"#8a6d2f"},"DETERMINISTIC · NO RANDOMNESS"));
+  return s;
+}
+
+/* ---------- stamp thunk (synthesized, no files) ---------- */
+var AC=null;
+function ctx(){if(AC)return AC;try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){AC=null;}return AC;}
+function thunk(){
+  var ac=ctx(); if(!ac) return;
+  try{
+    var t=ac.currentTime, o=ac.createOscillator(), g=ac.createGain();
+    o.type="triangle"; o.frequency.setValueAtTime(150,t); o.frequency.exponentialRampToValueAtTime(52,t+.13);
+    g.gain.setValueAtTime(.22,t); g.gain.exponentialRampToValueAtTime(.0001,t+.22);
+    o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t+.24);
+  }catch(e){}
+}
+
+/* ---------- DOM ---------- */
+var $=function(i){return document.getElementById(i);};
+function el(t,c,x){var n=document.createElement(t);if(c)n.className=c;if(x!=null)n.textContent=x;return n;}
+function today(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function validDate(s){return /^\d{4}-\d{2}-\d{2}$/.test(String(s||""));}
+var current=null;
+
+function issue(){
+  var warn=$("warnIssue"); warn.textContent="";
+  var who=String($("who").value||"").trim().slice(0,42)||"The Bearer";
+  var act=String($("act").value||"").trim().slice(0,140);
+  var when=String($("when").value||"").trim();
+
+  if(act.length<3){ warn.textContent="The office requires an act. Three characters minimum, and it can be very small.";
+    $("certbox").classList.add("hidden"); $("workbox").classList.add("hidden"); return; }
+  if(!validDate(when)){ when=today(); $("when").value=when; }
+
+  current={who:who,act:act,when:when,serial:serialOf(who,act,when),cls:classOf(act,who,when)};
+
+  try{
+    var box=$("certbox"), st=$("stamper");
+    box.textContent=""; box.appendChild(buildCert(current)); box.appendChild(st);
+    box.classList.remove("hidden");
+    if(!window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+      st.classList.remove("thump"); void st.getBoundingClientRect(); st.classList.add("thump");
+    }
+    thunk();
+  }catch(e){ warn.textContent="The certificate could not be drawn. Try a shorter act."; return; }
+
+  var w=$("work"); w.textContent="";
+  var p1=el("p"); p1.appendChild(document.createTextNode("Normalised input: ")); p1.appendChild(el("code",null,payload(who,act,when)));
+  var p2=el("p"); p2.appendChild(document.createTextNode("Two FNV-1a passes, 60 bits taken five at a time, mapped to Crockford base32: ")); p2.appendChild(el("code",null,current.serial));
+  w.appendChild(p1); w.appendChild(p2);
+  w.appendChild(el("p",null,"Class assigned by keyword match against nine fixed categories, with a hashed fallback of eight. Nothing was rolled and no model was consulted."));
+  w.appendChild(el("p",null,"Case, punctuation and extra spaces are stripped before hashing, so verification is forgiving about typing and exact about content."));
+  $("workbox").classList.remove("hidden");
+  $("png").classList.remove("hidden"); $("copy").classList.remove("hidden");
+}
+
+/* PNG export: rasterise the same SVG that is on screen */
+function download(){
+  var warn=$("warnIssue"), node=$("cert");
+  if(!node||!current){ warn.textContent="Issue a certificate first."; return; }
+  try{
+    var img=new Image();
+    img.onload=function(){
+      try{
+        var c=document.createElement("canvas"); c.width=W*2; c.height=H*2;
+        var g=c.getContext("2d"); g.fillStyle="#f7f2e6"; g.fillRect(0,0,c.width,c.height);
+        g.drawImage(img,0,0,c.width,c.height);
+        c.toBlob(function(b){
+          if(!b){ warn.textContent="The browser refused to render the file. Screenshot works too."; return; }
+          var a=document.createElement("a"); a.href=URL.createObjectURL(b);
+          a.download="certified-"+current.serial+".png";
+          document.body.appendChild(a); a.click(); document.body.removeChild(a);
+          setTimeout(function(){URL.revokeObjectURL(a.href);},4000);
+        },"image/png");
+      }catch(e){ warn.textContent="The browser refused to render the file. Screenshot works too."; }
+    };
+    img.onerror=function(){ warn.textContent="Could not rasterise here. Screenshot works too."; };
+    img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(new XMLSerializer().serializeToString(node));
+  }catch(e){ warn.textContent="Export failed. Screenshot works too."; }
+}
+
+function copySerial(){
+  var warn=$("warnIssue");
+  if(!current){ warn.textContent="Issue a certificate first."; return; }
+  try{
+    navigator.clipboard.writeText(current.serial).then(
+      function(){ warn.textContent="Serial copied. "+current.serial; },
+      function(){ warn.textContent="Copy blocked by the browser. The serial is "+current.serial; });
+  }catch(e){ warn.textContent="Copy unavailable. The serial is "+current.serial; }
+}
+
+function verify(){
+  var warn=$("warnVerify"), box=$("vresult"); warn.textContent=""; box.textContent="";
+  var who=String($("vwho").value||"").trim().slice(0,42)||"The Bearer";
+  var act=String($("vact").value||"").trim().slice(0,140);
+  var when=String($("vwhen").value||"").trim();
+  var claimed=String($("vser").value||"").toUpperCase().replace(/[^0-9A-Z]/g,"");
+
+  if(act.length<3){ warn.textContent="Enter the act exactly as printed on the certificate."; return; }
+  if(!validDate(when)){ warn.textContent="Enter the issue date printed on the certificate."; return; }
+  if(claimed.length!==12){ warn.textContent="A serial is twelve characters. Dashes optional."; return; }
+
+  var expected=serialOf(who,act,when), ok=expected.replace(/-/g,"")===claimed;
+  var v=el("div","verdict slam "+(ok?"ok":"no"));
+  v.appendChild(el("b",null,ok?"Verified":"No Match"));
+  v.appendChild(el("span",null,ok?"the serial matches its own contents":"these contents do not produce that serial"));
+  box.appendChild(v);
+  thunk();
+
+  var w=el("div","work");
+  var a=el("p"); a.appendChild(document.createTextNode("Recomputed from what you typed: ")); a.appendChild(el("code",null,expected));
+  var b=el("p"); b.appendChild(document.createTextNode("Serial you entered: "));
+  b.appendChild(el("code",null,claimed.slice(0,4)+"-"+claimed.slice(4,8)+"-"+claimed.slice(8,12)));
+  w.appendChild(a); w.appendChild(b);
+  w.appendChild(el("p",null, ok
+    ? "Same answer, and no lookup happened. This page holds no record of any certificate ever issued. It just did the arithmetic again."
+    : "One of the four fields differs from the certificate, or the serial was altered. The recomputed value is shown openly on purpose: there is no secret key here, only a function, and a function you cannot inspect is not a receipt."));
+  box.appendChild(el("h3","sec","Show the work"));
+  box.appendChild(w);
+}
+
+function showTab(which){
+  var i=which==="issue";
+  $("tab-issue").setAttribute("aria-selected",String(i));
+  $("tab-verify").setAttribute("aria-selected",String(!i));
+  $("panel-issue").classList.toggle("hidden",!i);
+  $("panel-verify").classList.toggle("hidden",i);
+}
+$("tab-issue").addEventListener("click",function(){showTab("issue");});
+$("tab-verify").addEventListener("click",function(){
+  showTab("verify");
+  if(current){  /* prefill so the round trip is one click to try */
+    if(!$("vwho").value)  $("vwho").value  = current.who==="The Bearer"?"":current.who;
+    if(!$("vact").value)  $("vact").value  = current.act;
+    if(!$("vwhen").value) $("vwhen").value = current.when;
+  }
+});
+$("issue").addEventListener("click",issue);
+$("png").addEventListener("click",download);
+$("copy").addEventListener("click",copySerial);
+$("check").addEventListener("click",verify);
+$("vclear").addEventListener("click",function(){
+  ["vwho","vact","vser"].forEach(function(i){$(i).value="";});
+  $("warnVerify").textContent=""; $("vresult").textContent="";
+});
+$("act").addEventListener("keydown",function(e){ if((e.metaKey||e.ctrlKey)&&e.key==="Enter") issue(); });
+
+$("when").value=today(); $("vwhen").value=today();
+window.__serialOf=serialOf;   /* pure engine, exposed for verification */
+})();
+</script>
+</body>
+</html>

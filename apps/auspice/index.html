@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auspice</title>
+
+<!-- Social preview. Replace SITE_URL with the deployed URL (no trailing slash).
+     og-auspice.png goes in the site root next to index.html. -->
+<meta property="og:title" content="Auspice" />
+<meta property="og:description" content="From auspicium: the reading of birds. Tell it which bird you saw today; receive the attested omen." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://chic-profiterole-b7e7b9.netlify.app/og-auspice.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Auspice" />
+<meta name="twitter:description" content="Auguries are attested folklore, not forecasts." />
+<meta name="twitter:image" content="https://chic-profiterole-b7e7b9.netlify.app/og-auspice.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --cream:#F2E9D5; --ink:#1E1B16; --dawn:#E2D6BA; --dawn-deep:#D1C09E;
+    --bird:#2D3440; --belly:#F2E9D5; --ochre:#BF8A2A; --soft:#6E6350;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;min-height:100%;}
+  body{
+    min-height:100svh; display:flex; justify-content:center;
+    background:var(--cream); color:var(--ink);
+    font-family:"EB Garamond",Georgia,serif;
+    padding:clamp(10px,2.5vw,28px);
+  }
+  .frame{
+    width:min(100%,820px);
+    border:5px solid var(--ink); padding:10px;
+  }
+  .frame-inner{
+    border:2px solid var(--ink);
+    padding:clamp(18px,4vw,36px) clamp(14px,4vw,34px);
+    min-height:calc(100svh - 2*clamp(10px,2.5vw,28px) - 34px);
+    display:flex; flex-direction:column;
+  }
+  h1{
+    font-family:"IM Fell English",Georgia,serif;
+    font-weight:400; text-align:center;
+    font-size:clamp(2.5rem,8vw,4.2rem); letter-spacing:0.14em;
+    margin:0 0 10px; text-transform:uppercase;
+  }
+  .rule{ width:min(420px,70%); height:2px; background:var(--ink); margin:0 auto 12px; }
+  .byline{
+    text-align:center; font-style:italic;
+    font-size:clamp(1rem,2.6vw,1.25rem); margin:0 0 26px;
+  }
+
+  /* dawn sky panel */
+  .sky{
+    position:relative;
+    border:4px solid var(--ink);
+    background:
+      radial-gradient(circle at 82% 24%, rgba(191,138,42,0.28), transparent 42%),
+      linear-gradient(180deg, #E9DEC4 0%, var(--dawn) 55%, #D8C69E 100%);
+    min-height:clamp(200px,40vw,270px);
+    display:flex; align-items:flex-end; justify-content:center;
+    padding:18px 16px 26px;
+    overflow:hidden;
+  }
+  .sun{
+    position:absolute; top:22px; right:34px;
+    width:clamp(40px,8vw,64px); height:clamp(40px,8vw,64px);
+    border-radius:50%; background:var(--ochre);
+    border:3px solid var(--ink);
+  }
+  .flock{ display:flex; align-items:flex-end; gap:clamp(6px,2vw,18px); flex-wrap:wrap; justify-content:center; }
+  .flock svg{ width:clamp(64px,13vw,104px); height:auto; }
+  /* more birds, smaller birds — a large flock still fits in one calm row */
+  .flock[data-count="4"] svg{ width:clamp(48px,10.5vw,88px); }
+  .flock[data-count="5"] svg{ width:clamp(40px,9vw,80px); }
+  .flock[data-count="6"] svg{ width:clamp(34px,8vw,72px); }
+  .flock[data-count="7"] svg{ width:clamp(29px,7.2vw,64px); }
+  .flock[data-count="6"], .flock[data-count="7"]{ gap:clamp(3px,1vw,9px); }
+  .omen{
+    position:absolute; top:clamp(14px,3.5vw,30px); left:0; right:0;
+    text-align:center;
+    font-family:"IM Fell English",Georgia,serif; font-style:italic;
+    font-size:clamp(1.5rem,4.8vw,2.5rem);
+    color:var(--ochre);
+    text-shadow:0 1px 0 rgba(30,27,22,0.25);
+    padding:0 90px 0 20px;
+  }
+
+  /* picker */
+  .prompt{
+    font-family:"JetBrains Mono",monospace; font-weight:700;
+    letter-spacing:0.18em; font-size:clamp(0.8rem,2.2vw,0.95rem);
+    text-align:center; text-transform:uppercase; margin:26px 0 16px;
+  }
+  .grid{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(118px,1fr));
+    gap:10px;
+  }
+  .grid button, .counts button, .again{
+    font-family:"EB Garamond",Georgia,serif; font-size:1.05rem;
+    background:transparent; color:var(--ink);
+    border:2px solid var(--ink); padding:10px 8px; cursor:pointer;
+  }
+  .grid button:hover, .counts button:hover, .again:hover{ background:var(--dawn); }
+  .grid button:focus-visible, .counts button:focus-visible, .again:focus-visible{
+    outline:3px solid var(--ochre); outline-offset:2px;
+  }
+  .grid button[aria-pressed="true"]{ background:var(--ink); color:var(--cream); }
+  .counts{ display:flex; gap:10px; justify-content:center; margin-top:14px; flex-wrap:wrap; }
+  .counts button{ min-width:52px; }
+
+  /* result text */
+  .reading{ margin-top:26px; text-align:center; }
+  .tradition{
+    font-size:clamp(1.05rem,2.8vw,1.3rem); line-height:1.6;
+    max-width:56ch; margin:0 auto 12px;
+  }
+  .source{
+    font-size:clamp(0.95rem,2.4vw,1.05rem); font-style:italic;
+    color:var(--soft); max-width:58ch; margin:0 auto 10px;
+  }
+  .cardnote{
+    font-family:"JetBrains Mono",monospace; font-size:0.72rem;
+    letter-spacing:0.04em; color:var(--soft);
+    max-width:60ch; margin:0 auto; line-height:1.7;
+  }
+  .again{ margin-top:20px; }
+
+  footer{
+    margin-top:auto; padding-top:26px; text-align:center;
+  }
+  .honest{
+    font-family:"JetBrains Mono",monospace; font-size:0.72rem;
+    letter-spacing:0.12em; text-transform:uppercase; color:var(--soft);
+    margin:0 0 10px;
+  }
+  .sig{
+    font-family:"JetBrains Mono",monospace; font-size:0.66rem;
+    letter-spacing:0.1em; text-transform:uppercase; color:#9A8C70; margin:0;
+  }
+  [hidden]{ display:none !important; }
+  .settle{ animation:settle 500ms ease both; }
+  @keyframes settle{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+  @media (prefers-reduced-motion:reduce){ .settle{ animation:none; } }
+  @media (max-width:344px){
+    .omen{ font-size:clamp(1.1rem,6vw,1.4rem); padding:0 70px 0 14px; }
+    .flock[data-count="6"] svg{ width:26px; }
+    .flock[data-count="7"] svg{ width:23px; }
+  }
+</style>
+</head>
+<body>
+<div class="frame"><div class="frame-inner">
+
+  <h1>Auspice</h1>
+  <div class="rule" aria-hidden="true"></div>
+  <p class="byline">from <em>auspicium</em>: the reading of birds</p>
+
+  <div class="sky" aria-hidden="false">
+    <div class="sun" aria-hidden="true"></div>
+    <p class="omen" id="omen"></p>
+    <div class="flock" id="flock" aria-hidden="true"></div>
+  </div>
+
+  <div id="picker">
+    <p class="prompt" id="prompt">Which bird did you see today?</p>
+    <div class="grid" id="birdgrid" role="group" aria-label="Choose the bird you saw"></div>
+    <div class="counts" id="counts" hidden role="group" aria-label="How many magpies"></div>
+  </div>
+
+  <div class="reading" id="reading" hidden tabindex="-1">
+    <p class="tradition" id="tradition"></p>
+    <p class="source" id="source"></p>
+    <p class="cardnote" id="cardnote"></p>
+    <button class="again" id="again" type="button">Consult again</button>
+  </div>
+
+  <footer>
+    <p class="honest">Auguries are attested folklore, not forecasts.</p>
+    <p class="sig">Nothing is stored or sent &middot; AI assisted &middot; Human approved &middot; Powered by NLP</p>
+  </footer>
+
+</div></div>
+
+<div id="bird-proto-wrap" hidden aria-hidden="true">
+  <!-- Friendly rounded bird, Harper register. Swap-slot: replace this svg's contents
+       with traced Gemini art if desired; keep the viewBox. Cloned directly (no
+       symbol/use reference) so it renders in every browser. -->
+  <svg id="bird-proto" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="62" cy="58" rx="40" ry="26" fill="#2D3440"/>
+    <ellipse cx="58" cy="70" rx="30" ry="15" fill="#F2E9D5"/>
+    <path d="M96 52 Q118 56 116 66 Q100 70 92 62 Z" fill="#2D3440"/>
+    <circle cx="30" cy="36" r="19" fill="#2D3440"/>
+    <circle cx="25" cy="32" r="7.5" fill="#F2E9D5"/>
+    <circle cx="24" cy="33" r="3" fill="#1E1B16"/>
+    <path d="M13 38 L1 44 L14 47 Z" fill="#BF8A2A"/>
+    <line x1="52" y1="83" x2="52" y2="96" stroke="#1E1B16" stroke-width="3"/>
+    <line x1="68" y1="83" x2="68" y2="96" stroke="#1E1B16" stroke-width="3"/>
+  </svg>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* All omens below are attested traditions, attributed as traditions.
+   Where scholarship or versions conflict, the card says so. */
+var MAGPIE_RHYME = [
+  null,
+  { omen:"One for sorrow.",  extra:"Tradition prescribes the remedy: salute the lone magpie, and the sorrow is waived." },
+  { omen:"Two for joy.",     extra:"" },
+  { omen:"Three for a girl.",extra:"" },
+  { omen:"Four for a boy.",  extra:"" },
+  { omen:"Five for silver.", extra:"" },
+  { omen:"Six for gold.",    extra:"" },
+  { omen:"Seven for a secret, never to be told.", extra:"" }
+];
+var MAGPIE_SOURCE = "English magpie counting rhyme, first printed 1780 in a supplement to Johnson and Steevens' edition of Shakespeare's plays.";
+var MAGPIE_NOTE = "Honesty note: the 1780 original was darker — \u201COne for sorrow, two for mirth, three for a wedding, four for death.\u201D The joyful version came later. Even the omens have versions.";
+
+var BIRDS = [
+  { id:"magpie", name:"Magpie", count:true },
+  { id:"crow", name:"Crow / Raven",
+    omen:"Read with care.",
+    tradition:"Corvids have been read as omens since Rome. The augurs divided the sky and cared which side the bird appeared on; the left was generally unlucky in Roman practice.",
+    source:"Roman augury; corvid folklore across Europe.",
+    note:"Traditions disagree — in some cultures the crow is wisdom, not warning." },
+  { id:"robin", name:"Robin",
+    omen:"A blessed bird.",
+    tradition:"\u201CThe robin and the wren are God Almighty's cock and hen.\u201D To harm either was held to bring misfortune; to be visited by one, a small blessing.",
+    source:"Traditional English couplet, attested in folklore collections.",
+    note:"" },
+  { id:"wren", name:"Wren",
+    omen:"The king of birds.",
+    tradition:"In the old fable, the birds held a contest: whoever flew highest would be king. The wren hid on the eagle's back, and when the eagle tired, flew higher still. Cleverness counted.",
+    source:"European folk fable, told across many traditions.",
+    note:"" },
+  { id:"swallow", name:"Swallow",
+    omen:"Luck upon the house.",
+    tradition:"A swallow nesting on your house was held to protect it. And one swallow does not make a summer — that caution is older than most houses.",
+    source:"European farm tradition; the proverb is from Aristotle, Nicomachean Ethics.",
+    note:"" },
+  { id:"owl", name:"Owl",
+    omen:"The night's own bird.",
+    tradition:"Roman tradition held the owl funereal — its call an ill sign, its daytime appearance worse. Other traditions saw the same bird as wisdom itself, seated by Athena.",
+    source:"Roman tradition (Pliny the Elder counted the owl among ill omens); Greek tradition disagreed.",
+    note:"Two great traditions, one bird, opposite readings. Auguries are like that." },
+  { id:"dove", name:"Dove",
+    omen:"Peace, or news of it.",
+    tradition:"The dove returned to the ark with an olive leaf, and the waters were receding. It has meant the same thing ever since: the trouble is ending.",
+    source:"Genesis 8:11.",
+    note:"" },
+  { id:"gull", name:"Gull",
+    omen:"A sailor's soul.",
+    tradition:"Maritime folklore held gulls to carry the souls of drowned sailors — which is why you were never to harm one. They are loud because they have things to say.",
+    source:"British and maritime folklore.",
+    note:"" },
+  { id:"sparrow", name:"Sparrow",
+    omen:"You are seen.",
+    tradition:"\u201CNot one sparrow falls to the ground without your Father's notice.\u201D The smallest bird carries the kindest augury: attention is being paid.",
+    source:"Matthew 10:29.",
+    note:"" },
+  { id:"none", name:"No birds today",
+    omen:"The sky withheld comment.",
+    tradition:"No birds is also an answer. The augurs took days like this to mean: nothing needs deciding yet. Come back tomorrow; the sky keeps long hours.",
+    source:"",
+    note:"Honesty note: this reading is ours, not an attested augural doctrine. The silence, however, is real." }
+];
+
+var $ = function(id){ return document.getElementById(id); };
+var flock=$("flock"), omenEl=$("omen"), grid=$("birdgrid"), counts=$("counts");
+
+function birdSVG(){
+  var proto=document.getElementById("bird-proto");
+  var clone=proto.cloneNode(true);
+  clone.removeAttribute("id");
+  return clone;
+}
+
+function showFlock(n){
+  while(flock.firstChild) flock.removeChild(flock.firstChild);
+  flock.setAttribute("data-count", n);
+  for(var i=0;i<n;i++) flock.appendChild(birdSVG());
+}
+
+function reveal(omen, tradition, source, note){
+  omenEl.textContent = omen;
+  $("tradition").textContent = tradition;
+  $("source").textContent = source;
+  $("cardnote").textContent = note;
+  $("source").hidden = !source;
+  $("cardnote").hidden = !note;
+  $("picker").hidden = true;
+  var r=$("reading");
+  r.hidden = false;
+  r.classList.remove("settle"); void r.offsetWidth; r.classList.add("settle");
+  r.focus();
+}
+
+BIRDS.forEach(function(b){
+  var btn=document.createElement("button");
+  btn.type="button"; btn.textContent=b.name;
+  btn.setAttribute("aria-pressed","false");
+  btn.addEventListener("click", function(){
+    Array.prototype.forEach.call(grid.children,function(c){c.setAttribute("aria-pressed","false");});
+    btn.setAttribute("aria-pressed","true");
+    if(b.count){
+      $("prompt").textContent="How many magpies?";
+      counts.hidden=false;
+      showFlock(1);
+      omenEl.textContent="";
+    } else {
+      counts.hidden=true;
+      showFlock(b.id==="none" ? 0 : 1);
+      reveal(b.omen, b.tradition, b.source, b.note);
+    }
+  });
+  grid.appendChild(btn);
+});
+
+for(var n=1;n<=7;n++){
+  (function(n){
+    var btn=document.createElement("button");
+    btn.type="button"; btn.textContent=String(n);
+    btn.addEventListener("click", function(){
+      var r=MAGPIE_RHYME[n];
+      showFlock(n);
+      var trad = r.extra ? r.extra : "You said you saw "+n+" magpie"+(n>1?"s":"")+". The rhyme says: "+r.omen.toLowerCase().replace(/\.$/,"")+".";
+      reveal(r.omen, trad, MAGPIE_SOURCE, MAGPIE_NOTE);
+    });
+    counts.appendChild(btn);
+  })(n);
+}
+
+$("again").addEventListener("click", function(){
+  $("reading").hidden=true;
+  $("picker").hidden=false;
+  counts.hidden=true;
+  $("prompt").textContent="Which bird did you see today?";
+  omenEl.textContent="";
+  showFlock(2); /* same as arrival — the sky is never empty */
+  Array.prototype.forEach.call(grid.children,function(c){c.setAttribute("aria-pressed","false");});
+  grid.querySelector("button").focus();
+});
+
+showFlock(2); /* two on arrival — joy by default; the sky is never empty */
+})();
+</script>
+</body>
+</html>

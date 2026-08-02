@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scrivener</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Lexend:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* THEME/TOKENS */
+    :root {
+      --bg: #0A0F0A;
+      --term: #33FF66;
+      --dim: #1F7A3D;
+      --error: #FF5555;
+      --font-mono: "JetBrains Mono", monospace;
+      --panel: rgba(10, 15, 10, 0.92);
+      --active: var(--term);
+      --body-font: var(--font-mono);
+      --cell: 1ch;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--bg);
+    }
+
+    body {
+      min-height: 100svh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: clamp(10px, 2.4vw, 28px);
+      background:
+        radial-gradient(circle at center, transparent 0 42%, rgba(0, 0, 0, 0.28) 100%),
+        var(--bg);
+      color: var(--term);
+      font-family: var(--body-font);
+      font-size: clamp(15px, 1.8vw, 18px);
+      line-height: 1.6;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(51, 255, 102, 0.06) 0,
+        rgba(51, 255, 102, 0.06) 1px,
+        transparent 1px,
+        transparent 4px
+      );
+      mix-blend-mode: screen;
+    }
+
+    body.high-contrast {
+      --bg: #000000;
+      --term: #FFFFFF;
+      --dim: #BDBDBD;
+      --error: #FF5555;
+      --panel: #000000;
+      --active: #FFD400;
+      background: #000000;
+      color: #FFFFFF;
+    }
+
+    body.high-contrast::before {
+      display: none;
+    }
+
+    body.high-contrast .char.active {
+      background: rgba(255, 212, 0, 0.22);
+    }
+
+    body.dyslexia-font {
+      --body-font: "Lexend", sans-serif;
+      --cell: 0.72em;
+      letter-spacing: 0;
+    }
+
+    .terminal {
+      width: min(920px, 100%);
+      max-height: calc(100svh - clamp(20px, 4.8vw, 56px));
+      display: flex;
+      flex-direction: column;
+      gap: clamp(10px, 1.8vh, 18px);
+      padding: clamp(14px, 2.8vw, 28px);
+      border: 1px solid var(--dim);
+      background: var(--panel);
+      box-shadow: 0 0 0 1px rgba(51, 255, 102, 0.08), 0 28px 80px rgba(0, 0, 0, 0.5);
+    }
+
+    /* PASSAGES */
+    .titlebar {
+      color: var(--dim);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0;
+      border-bottom: 1px solid var(--dim);
+      padding-bottom: 0.55rem;
+      overflow-wrap: anywhere;
+    }
+
+    .passage {
+      margin: 0;
+      min-height: 4.2em;
+      font-size: clamp(1.35rem, 3.8vw, 2.75rem);
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .char {
+      position: relative;
+      display: inline-block;
+      width: var(--cell);
+      color: var(--dim);
+      white-space: pre;
+    }
+
+    .char.correct {
+      color: var(--term);
+    }
+
+    .char.wrong {
+      color: var(--error);
+    }
+
+    .char.active {
+      color: var(--term);
+      outline: 0.08em solid var(--active);
+      outline-offset: 0.02em;
+      background: rgba(51, 255, 102, 0.14);
+    }
+
+    .char.active::before {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 0.08em;
+      background: var(--active);
+      animation: blink 1s steps(2, start) infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    /* TYPING */
+    .typing-input {
+      position: fixed;
+      width: 1px;
+      height: 1px;
+      opacity: 0.01;
+      pointer-events: none;
+      left: 0;
+      top: 0;
+    }
+
+    .focus-hint {
+      margin: -0.35rem 0 0;
+      color: var(--dim);
+      font-size: 0.84rem;
+    }
+
+    /* METRICS */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1px;
+      border: 1px solid var(--dim);
+    }
+
+    .stat {
+      padding: 0.65rem 0.75rem;
+      border-right: 1px solid var(--dim);
+      min-width: 0;
+    }
+
+    .stat:last-child {
+      border-right: 0;
+    }
+
+    .stat-label {
+      display: block;
+      color: var(--dim);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      display: block;
+      margin-top: 0.15rem;
+      color: var(--term);
+      font-size: clamp(1.25rem, 3vw, 2rem);
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    /* COMPLETE */
+    .summary {
+      display: none;
+      border: 1px solid var(--term);
+      padding: 0.7rem;
+      color: var(--term);
+      background: rgba(31, 122, 61, 0.1);
+    }
+
+    .summary.visible {
+      display: block;
+    }
+
+    .summary h2 {
+      margin: 0 0 0.35rem;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    .summary p {
+      margin: 0.16rem 0;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      align-items: center;
+    }
+
+    button,
+    .toggle {
+      min-height: 44px;
+      border: 1px solid var(--term);
+      border-radius: 0;
+      background: transparent;
+      color: var(--term);
+      font: 700 0.9rem/1 var(--body-font);
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    button {
+      padding: 0 1rem;
+      cursor: pointer;
+    }
+
+    button:hover,
+    button:focus-visible,
+    .toggle:focus-within {
+      outline: 2px solid var(--active);
+      outline-offset: 3px;
+      background: var(--term);
+      color: var(--bg);
+    }
+
+    button[hidden] {
+      display: none;
+    }
+
+    /* ACCESSIBILITY */
+    .toggles {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      border-top: 1px solid var(--dim);
+      padding-top: 0.7rem;
+    }
+
+    .toggle {
+      display: inline-flex;
+      gap: 0.55rem;
+      align-items: center;
+      padding: 0 0.85rem;
+      cursor: pointer;
+    }
+
+    .toggle input {
+      width: 1.05rem;
+      height: 1.05rem;
+      accent-color: var(--active);
+    }
+
+    /* FOOTER */
+    footer {
+      color: var(--dim);
+      font-size: 0.8rem;
+      line-height: 1.35;
+    }
+
+    @media (max-width: 620px) {
+      body {
+        place-items: stretch;
+      }
+
+      .terminal {
+        max-height: calc(100svh - 20px);
+      }
+
+      .passage {
+        min-height: 3.25em;
+        font-size: clamp(1.22rem, 6.2vw, 1.8rem);
+      }
+
+      .stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .stat,
+      .stat:last-child {
+        padding: 0.45rem 0.5rem;
+        border-right: 1px solid var(--dim);
+        border-bottom: 0;
+      }
+
+      .stat:last-child {
+        border-right: 0;
+      }
+
+      button {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .toggle {
+        flex: 1 1 calc(50% - 0.55rem);
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="terminal" aria-labelledby="app-title">
+    <header class="titlebar" id="app-title">SCRIVENER&nbsp;&nbsp;C:\&gt;&nbsp;&nbsp;typing tool</header>
+
+    <p class="passage" id="passage" aria-label="Typing passage"></p>
+    <input class="typing-input" id="typing-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Type the displayed passage">
+    <p class="focus-hint" id="focus-hint">Type the line above. Restart is always available.</p>
+
+    <section class="stats" aria-label="Live typing statistics">
+      <div class="stat">
+        <span class="stat-label">Net WPM</span>
+        <span class="stat-value" id="wpm">0</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Accuracy</span>
+        <span class="stat-value" id="accuracy">0%</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Time</span>
+        <span class="stat-value" id="time">0.0s</span>
+      </div>
+    </section>
+
+    <section class="summary" id="summary" aria-live="polite" aria-label="Completed run summary">
+      <h2>Run complete</h2>
+      <p id="summary-wpm">net WPM: 0</p>
+      <p id="summary-accuracy">accuracy: 0%</p>
+      <p id="summary-time">time: 0.0s</p>
+      <p id="summary-keys">no problem keys, clean run</p>
+    </section>
+
+    <nav class="controls" aria-label="Typing controls">
+      <button type="button" id="restart">Restart</button>
+      <button type="button" id="run-again" hidden>Run again</button>
+      <button type="button" id="next-passage" hidden>Next passage</button>
+    </nav>
+
+    <section class="toggles" aria-label="Accessibility settings">
+      <label class="toggle">
+        <input type="checkbox" id="high-contrast">
+        High contrast
+      </label>
+      <label class="toggle">
+        <input type="checkbox" id="dyslexia-font">
+        Dyslexia font
+      </label>
+    </section>
+
+    <footer>Nothing is stored, keystrokes stay on your device. AI assisted. Human approved. Powered by NLP.</footer>
+  </main>
+
+  <script>
+    // PASSAGES
+    const passages = [
+      "The clerk filed the motion before the noon deadline.",
+      "Please review the attached exhibit and confirm receipt.",
+      "The hearing is continued to the first available date.",
+      "All parties shall appear in department twelve at nine.",
+      "Enter the case number exactly as printed on the notice.",
+      "The record reflects that the witness was duly sworn."
+    ];
+
+    const passageEl = document.querySelector("#passage");
+    const inputEl = document.querySelector("#typing-input");
+    const wpmEl = document.querySelector("#wpm");
+    const accuracyEl = document.querySelector("#accuracy");
+    const timeEl = document.querySelector("#time");
+    const summaryEl = document.querySelector("#summary");
+    const summaryWpmEl = document.querySelector("#summary-wpm");
+    const summaryAccuracyEl = document.querySelector("#summary-accuracy");
+    const summaryTimeEl = document.querySelector("#summary-time");
+    const summaryKeysEl = document.querySelector("#summary-keys");
+    const restartButton = document.querySelector("#restart");
+    const runAgainButton = document.querySelector("#run-again");
+    const nextPassageButton = document.querySelector("#next-passage");
+    const highContrastToggle = document.querySelector("#high-contrast");
+    const dyslexiaToggle = document.querySelector("#dyslexia-font");
+
+    let passageIndex = 0;
+    let typed = "";
+    let startedAt = 0;
+    let finishedAt = 0;
+    let timerId = 0;
+    let isComplete = false;
+    let errorCounts = new Map();
+
+    // STUB: adaptive next-passage weighted toward weak keys.
+    // STUB: sound (keyclick / bell on error).
+    // STUB: passage selection / difficulty levels.
+
+    // TYPING
+    function renderPassage() {
+      const target = passages[passageIndex];
+      passageEl.textContent = "";
+
+      for (let index = 0; index < target.length; index += 1) {
+        const span = document.createElement("span");
+        span.className = "char";
+        span.textContent = target[index];
+
+        if (index < typed.length) {
+          span.classList.add(typed[index] === target[index] ? "correct" : "wrong");
+        } else if (index === typed.length && !isComplete) {
+          span.classList.add("active");
+        }
+
+        passageEl.appendChild(span);
+      }
+    }
+
+    function focusInput() {
+      inputEl.focus({ preventScroll: true });
+    }
+
+    function correctCharacterCount() {
+      const target = passages[passageIndex];
+      let correct = 0;
+
+      for (let index = 0; index < typed.length; index += 1) {
+        if (typed[index] === target[index]) {
+          correct += 1;
+        }
+      }
+
+      return correct;
+    }
+
+    // METRICS
+    function elapsedSeconds() {
+      if (!startedAt) {
+        return 0;
+      }
+
+      const end = finishedAt || Date.now();
+      return Math.max(0, (end - startedAt) / 1000);
+    }
+
+    function currentMetrics() {
+      const typedChars = typed.length;
+      const correctChars = correctCharacterCount();
+      const seconds = elapsedSeconds();
+      const minutes = seconds / 60;
+      const netWpm = minutes > 0 ? (correctChars / 5) / minutes : 0;
+      const accuracy = typedChars > 0 ? (correctChars / typedChars) * 100 : 0;
+
+      return {
+        netWpm: Number.isFinite(netWpm) ? netWpm : 0,
+        accuracy: Number.isFinite(accuracy) ? accuracy : 0,
+        seconds: Number.isFinite(seconds) ? seconds : 0
+      };
+    }
+
+    function updateMetrics() {
+      const metrics = currentMetrics();
+      wpmEl.textContent = String(Math.round(metrics.netWpm));
+      accuracyEl.textContent = `${Math.round(metrics.accuracy)}%`;
+      timeEl.textContent = `${metrics.seconds.toFixed(1)}s`;
+    }
+
+    function startTimer() {
+      if (startedAt || isComplete) {
+        return;
+      }
+
+      startedAt = Date.now();
+      timerId = window.setInterval(updateMetrics, 100);
+    }
+
+    function stopTimer() {
+      if (timerId) {
+        window.clearInterval(timerId);
+        timerId = 0;
+      }
+    }
+
+    function recordErrors(previousTyped, nextTyped) {
+      const target = passages[passageIndex];
+
+      for (let index = previousTyped.length; index < nextTyped.length; index += 1) {
+        if (nextTyped[index] !== target[index]) {
+          const key = target[index];
+          errorCounts.set(key, (errorCounts.get(key) || 0) + 1);
+        }
+      }
+    }
+
+    function keysToWatch() {
+      if (errorCounts.size === 0) {
+        return "no problem keys, clean run";
+      }
+
+      const keys = Array.from(errorCounts.entries())
+        .sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]))
+        .slice(0, 5)
+        .map(([key]) => key === " " ? "space" : key);
+
+      return `keys to watch: ${keys.join(", ")}`;
+    }
+
+    // COMPLETE
+    function completeRun() {
+      isComplete = true;
+      finishedAt = Date.now();
+      stopTimer();
+      updateMetrics();
+
+      const metrics = currentMetrics();
+      summaryWpmEl.textContent = `net WPM: ${Math.round(metrics.netWpm)}`;
+      summaryAccuracyEl.textContent = `accuracy: ${Math.round(metrics.accuracy)}%`;
+      summaryTimeEl.textContent = `time: ${metrics.seconds.toFixed(1)}s`;
+      summaryKeysEl.textContent = keysToWatch();
+      summaryEl.classList.add("visible");
+      runAgainButton.hidden = false;
+      nextPassageButton.hidden = false;
+    }
+
+    function resetRun(options = {}) {
+      if (options.next) {
+        passageIndex = (passageIndex + 1) % passages.length;
+      }
+
+      typed = "";
+      inputEl.value = "";
+      startedAt = 0;
+      finishedAt = 0;
+      isComplete = false;
+      errorCounts = new Map();
+      stopTimer();
+      summaryEl.classList.remove("visible");
+      runAgainButton.hidden = true;
+      nextPassageButton.hidden = true;
+      updateMetrics();
+      renderPassage();
+      focusInput();
+    }
+
+    inputEl.addEventListener("input", () => {
+      if (isComplete) {
+        inputEl.value = typed;
+        return;
+      }
+
+      const target = passages[passageIndex];
+      const previousTyped = typed;
+      const nextTyped = inputEl.value.slice(0, target.length);
+
+      if (nextTyped.length > 0) {
+        startTimer();
+      }
+
+      recordErrors(previousTyped, nextTyped);
+      typed = nextTyped;
+      inputEl.value = typed;
+
+      if (typed.length >= target.length) {
+        completeRun();
+      }
+
+      renderPassage();
+      updateMetrics();
+    });
+
+    document.addEventListener("click", (event) => {
+      const target = event.target;
+      if (target instanceof HTMLElement && !target.closest("button, input, label")) {
+        focusInput();
+      }
+    });
+
+    restartButton.addEventListener("click", () => resetRun());
+    runAgainButton.addEventListener("click", () => resetRun());
+    nextPassageButton.addEventListener("click", () => resetRun({ next: true }));
+
+    // ACCESSIBILITY
+    highContrastToggle.addEventListener("change", () => {
+      document.body.classList.toggle("high-contrast", highContrastToggle.checked);
+      focusInput();
+    });
+
+    dyslexiaToggle.addEventListener("change", () => {
+      document.body.classList.toggle("dyslexia-font", dyslexiaToggle.checked);
+      focusInput();
+    });
+
+    // FOOTER
+    updateMetrics();
+    renderPassage();
+    focusInput();
+  </script>
+</body>
+</html>

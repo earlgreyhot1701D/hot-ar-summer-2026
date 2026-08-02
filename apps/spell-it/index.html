@@ -1,0 +1,990 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Build words from real chemical element symbols and see exactly which letters fit.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Spell It | Words from the Elements">
+  <meta property="og:description" content="Type a word. See whether the periodic table can spell it.">
+  <meta property="og:image" content="SITE_URL/og-spellit.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Spell It | Words from the Elements">
+  <meta name="twitter:description" content="Type a word. See whether the periodic table can spell it.">
+  <meta name="twitter:image" content="SITE_URL/og-spellit.png">
+  <title>Spell It | Words from the Elements</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Oswald:wght@500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --black: #090b0b;
+      --panel: #111514;
+      --panel-light: #181d1b;
+      --ink: #f0e6d2;
+      --muted: #a99d89;
+      --brass: #b48345;
+      --brass-bright: #d2a668;
+      --copper: #7b4a2e;
+      --line: rgba(192, 145, 86, 0.38);
+      --green: #9bc879;
+      --amber: #e0ad58;
+      --focus: #f0c77d;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: #060707;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      font-family: "Space Grotesk", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 18% 24%, rgba(167, 106, 49, 0.11) 0 1px, transparent 2px),
+        radial-gradient(circle at 78% 72%, rgba(255, 226, 178, 0.045) 0 1px, transparent 2px),
+        linear-gradient(118deg, rgba(125, 73, 36, 0.08), transparent 38%),
+        #080a09;
+      background-size: 43px 43px, 61px 61px, auto, auto;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .apparatus {
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+      border: 7px solid #171a18;
+      box-shadow:
+        inset 0 0 0 1px #6a452b,
+        inset 0 0 0 5px #0b0d0c,
+        inset 0 0 0 7px rgba(180, 131, 69, 0.36),
+        inset 0 0 64px rgba(0, 0, 0, 0.82);
+    }
+
+    .apparatus::before {
+      position: absolute;
+      inset: 18px;
+      z-index: 0;
+      border: 1px solid rgba(180, 131, 69, 0.33);
+      box-shadow:
+        inset 0 0 0 4px rgba(0, 0, 0, 0.44),
+        0 0 0 1px rgba(232, 190, 124, 0.08);
+      content: "";
+      pointer-events: none;
+    }
+
+    .apparatus::after {
+      position: absolute;
+      inset: 34px;
+      z-index: 0;
+      opacity: 0.24;
+      background:
+        linear-gradient(90deg, var(--brass) 1px, transparent 1px) 0 0 / 32px 8px no-repeat,
+        linear-gradient(var(--brass) 1px, transparent 1px) 0 0 / 8px 32px no-repeat,
+        linear-gradient(270deg, var(--brass) 1px, transparent 1px) 100% 0 / 32px 8px no-repeat,
+        linear-gradient(var(--brass) 1px, transparent 1px) 100% 0 / 8px 32px no-repeat,
+        linear-gradient(90deg, var(--brass) 1px, transparent 1px) 0 100% / 32px 8px no-repeat,
+        linear-gradient(180deg, var(--brass) 1px, transparent 1px) 0 100% / 8px 32px no-repeat,
+        linear-gradient(270deg, var(--brass) 1px, transparent 1px) 100% 100% / 32px 8px no-repeat,
+        linear-gradient(180deg, var(--brass) 1px, transparent 1px) 100% 100% / 8px 32px no-repeat;
+      content: "";
+      pointer-events: none;
+    }
+
+    .screw {
+      position: absolute;
+      z-index: 2;
+      width: 16px;
+      height: 16px;
+      border: 1px solid #17100a;
+      border-radius: 50%;
+      background:
+        linear-gradient(45deg, transparent 44%, #4f321f 45% 55%, transparent 56%),
+        radial-gradient(circle at 35% 30%, #d0a46b, #76502f 46%, #2b1d13 72%);
+      box-shadow: 0 1px 4px #000;
+    }
+
+    .screw.one {
+      top: 20px;
+      left: 20px;
+    }
+
+    .screw.two {
+      top: 20px;
+      right: 20px;
+    }
+
+    .screw.three {
+      right: 20px;
+      bottom: 20px;
+    }
+
+    .screw.four {
+      bottom: 20px;
+      left: 20px;
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      width: min(100% - 34px, 1040px);
+      margin: 0 auto;
+      padding: 26px 0 16px;
+    }
+
+    header {
+      text-align: center;
+    }
+
+    .plate-number {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 14px;
+      color: var(--brass);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.64rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .plate-number::before,
+    .plate-number::after {
+      width: 36px;
+      height: 1px;
+      background: var(--line);
+      content: "";
+    }
+
+    h1 {
+      margin: 0;
+      color: #c79a61;
+      font-family: "Oswald", sans-serif;
+      font-size: clamp(3rem, 10vw, 5rem);
+      font-weight: 600;
+      letter-spacing: 0.11em;
+      line-height: 0.92;
+      text-indent: 0.11em;
+      text-transform: uppercase;
+      text-shadow:
+        0 1px 0 #e2bb7c,
+        0 3px 0 #54341f,
+        0 7px 14px #000;
+    }
+
+    .subtitle {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      width: min(100%, 610px);
+      margin: 12px auto 0;
+      color: var(--brass-bright);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: clamp(0.67rem, 2.4vw, 0.83rem);
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      line-height: 1.5;
+      text-transform: uppercase;
+    }
+
+    .subtitle::before,
+    .subtitle::after {
+      height: 1px;
+      flex: 1;
+      background: linear-gradient(90deg, transparent, var(--brass));
+      content: "";
+    }
+
+    .subtitle::after {
+      background: linear-gradient(90deg, var(--brass), transparent);
+    }
+
+    .control-panel {
+      position: relative;
+      width: min(100%, 760px);
+      margin: 20px auto 0;
+      padding: 18px 18px 16px;
+      border: 1px solid #70492d;
+      border-radius: 5px;
+      background:
+        linear-gradient(115deg, rgba(174, 113, 55, 0.09), transparent 42%),
+        #0e1110;
+      box-shadow:
+        inset 0 0 0 3px #060807,
+        inset 0 0 0 5px rgba(180, 131, 69, 0.26),
+        0 13px 28px rgba(0, 0, 0, 0.55);
+    }
+
+    .control-panel::before,
+    .control-panel::after {
+      position: absolute;
+      top: 9px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--brass);
+      box-shadow: inset 0 0 0 2px #3b281a;
+      content: "";
+    }
+
+    .control-panel::before {
+      left: 9px;
+    }
+
+    .control-panel::after {
+      right: 9px;
+    }
+
+    label,
+    .examples-label {
+      display: block;
+      margin: 0 0 10px;
+      color: var(--brass-bright);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.69rem;
+      font-weight: 600;
+      letter-spacing: 0.19em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    input {
+      width: 100%;
+      min-height: 68px;
+      padding: 12px 20px;
+      border: 1px solid rgba(209, 166, 104, 0.56);
+      border-radius: 3px;
+      color: var(--ink);
+      background:
+        linear-gradient(110deg, rgba(255, 255, 255, 0.025), transparent 45%),
+        #090c0b;
+      box-shadow:
+        inset 0 3px 12px rgba(0, 0, 0, 0.9),
+        inset 0 0 0 3px rgba(86, 57, 33, 0.23);
+      font-size: clamp(1.45rem, 5vw, 2.25rem);
+      letter-spacing: 0.025em;
+      outline: none;
+      text-align: center;
+      text-overflow: ellipsis;
+      transition: font-size 140ms ease;
+    }
+
+    input::placeholder {
+      color: #736c60;
+      font-size: clamp(0.88rem, 3.5vw, 1.2rem);
+      text-align: center;
+    }
+
+    input.word-medium {
+      font-size: clamp(1.08rem, 4vw, 1.65rem);
+      letter-spacing: 0.01em;
+    }
+
+    input.word-long {
+      font-size: clamp(0.88rem, 3.1vw, 1.22rem);
+      letter-spacing: 0;
+    }
+
+    input:hover {
+      border-color: var(--brass);
+    }
+
+    input:focus-visible,
+    button:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 4px;
+    }
+
+    .examples {
+      margin-top: 14px;
+    }
+
+    .example-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 9px;
+    }
+
+    .example {
+      min-height: 42px;
+      padding: 9px 14px;
+      border: 1px solid rgba(180, 131, 69, 0.48);
+      border-radius: 3px;
+      color: #c7b89f;
+      background: #121615;
+      box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.36);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      transition: color 150ms ease, border-color 150ms ease, transform 150ms ease;
+    }
+
+    .example:hover,
+    .example[aria-pressed="true"] {
+      border-color: var(--brass-bright);
+      color: var(--brass-bright);
+      transform: translateY(-1px);
+    }
+
+    .readout {
+      margin-top: 18px;
+      text-align: center;
+    }
+
+    .verdict-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: min(100%, 460px);
+      margin: 0 auto 10px;
+      color: var(--brass);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .verdict-label::before,
+    .verdict-label::after {
+      height: 1px;
+      flex: 1;
+      background: var(--line);
+      content: "";
+    }
+
+    .verdict {
+      width: min(100%, 560px);
+      margin: 0 auto;
+      padding: 12px 18px;
+      border: 1px solid rgba(180, 131, 69, 0.4);
+      border-radius: 4px;
+      background: rgba(11, 14, 13, 0.78);
+      box-shadow:
+        inset 0 0 0 3px rgba(0, 0, 0, 0.38),
+        0 4px 12px rgba(0, 0, 0, 0.3);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: clamp(0.96rem, 4vw, 1.35rem);
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      line-height: 1.45;
+      text-transform: uppercase;
+    }
+
+    .verdict.full {
+      color: var(--green);
+      border-color: rgba(155, 200, 121, 0.54);
+    }
+
+    .verdict.partial {
+      color: var(--amber);
+      border-color: rgba(224, 173, 88, 0.58);
+    }
+
+    .verdict.empty {
+      color: var(--muted);
+      text-transform: none;
+    }
+
+    .sequence {
+      min-height: 1.5em;
+      margin: 16px auto 0;
+      color: #d6c7ad;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: clamp(0.76rem, 3vw, 0.92rem);
+      letter-spacing: 0.07em;
+      overflow-wrap: anywhere;
+    }
+
+    .tiles {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: clamp(10px, 2vw, 16px);
+      margin-top: 14px;
+    }
+
+    .tile {
+      --tile-hue: 32;
+      position: relative;
+      display: grid;
+      width: clamp(94px, 24vw, 134px);
+      min-height: clamp(116px, 29vw, 158px);
+      grid-template-rows: auto 1fr auto;
+      padding: 12px 10px 10px;
+      overflow: hidden;
+      border: 1px solid hsl(var(--tile-hue) 58% 54% / 0.76);
+      border-radius: 5px;
+      color: #f2e9d8;
+      background:
+        linear-gradient(135deg, hsl(var(--tile-hue) 42% 22% / 0.52), transparent 58%),
+        #111615;
+      box-shadow:
+        inset 0 0 0 3px rgba(0, 0, 0, 0.45),
+        inset 0 0 20px hsl(var(--tile-hue) 45% 20% / 0.28),
+        0 8px 15px rgba(0, 0, 0, 0.42);
+    }
+
+    .tile::after {
+      position: absolute;
+      inset: 6px;
+      border: 1px solid hsl(var(--tile-hue) 48% 66% / 0.16);
+      content: "";
+      pointer-events: none;
+    }
+
+    .atomic-number {
+      position: relative;
+      z-index: 1;
+      justify-self: start;
+      color: hsl(var(--tile-hue) 65% 76%);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.76rem;
+      font-weight: 600;
+    }
+
+    .symbol {
+      position: relative;
+      z-index: 1;
+      align-self: center;
+      font-size: clamp(2.35rem, 10vw, 4.2rem);
+      font-weight: 600;
+      letter-spacing: -0.055em;
+      line-height: 1;
+      text-shadow: 0 3px 8px #000;
+    }
+
+    .element-name {
+      position: relative;
+      z-index: 1;
+      min-width: 0;
+      overflow: hidden;
+      color: #d5c5aa;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: clamp(0.57rem, 2.2vw, 0.71rem);
+      line-height: 1.2;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .tile.missing {
+      border-style: dashed;
+      border-color: #786f61;
+      color: #968e81;
+      background:
+        repeating-linear-gradient(135deg, transparent 0 8px, rgba(255, 255, 255, 0.018) 8px 9px),
+        #101312;
+      box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.4);
+    }
+
+    .tile.missing::after {
+      border-style: dashed;
+      border-color: rgba(169, 157, 137, 0.18);
+    }
+
+    .tile.missing .atomic-number {
+      color: #7d7569;
+    }
+
+    .tile.missing .symbol {
+      color: #aaa194;
+    }
+
+    .tile.missing .element-name {
+      color: #8e867a;
+    }
+
+    footer {
+      position: relative;
+      z-index: 1;
+      width: min(100% - 52px, 900px);
+      margin: 0 auto;
+      padding: 12px 0 16px;
+      border-top: 1px solid rgba(180, 131, 69, 0.3);
+      color: #928774;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: clamp(0.56rem, 2.3vw, 0.7rem);
+      letter-spacing: 0.035em;
+      line-height: 1.75;
+      text-align: center;
+    }
+
+    footer p {
+      margin: 0;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (min-width: 720px) {
+      .apparatus {
+        border-width: 11px;
+      }
+
+      main {
+        padding-top: 30px;
+      }
+
+      .control-panel {
+        padding: 18px 28px 18px;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .apparatus {
+        border-width: 4px;
+      }
+
+      .apparatus::before {
+        inset: 10px;
+      }
+
+      .apparatus::after {
+        inset: 20px;
+      }
+
+      .screw {
+        display: none;
+      }
+
+      main {
+        width: min(100% - 20px, 1040px);
+        padding-top: 36px;
+      }
+
+      h1 {
+        font-size: clamp(3.2rem, 19vw, 5rem);
+        letter-spacing: 0.06em;
+        text-indent: 0.06em;
+      }
+
+      .subtitle {
+        gap: 7px;
+        letter-spacing: 0.1em;
+      }
+
+      .control-panel {
+        margin-top: 30px;
+        padding: 20px 13px 16px;
+      }
+
+      .example-list {
+        gap: 7px;
+      }
+
+      .example {
+        min-height: 40px;
+        padding: 8px 11px;
+      }
+
+      .readout {
+        margin-top: 30px;
+      }
+
+      .tile {
+        width: clamp(88px, 28vw, 104px);
+        min-height: clamp(108px, 34vw, 126px);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="apparatus">
+    <span class="screw one" aria-hidden="true"></span>
+    <span class="screw two" aria-hidden="true"></span>
+    <span class="screw three" aria-hidden="true"></span>
+    <span class="screw four" aria-hidden="true"></span>
+
+    <main>
+      <header>
+        <p class="plate-number">Specimen instrument 118</p>
+        <h1>Spell It</h1>
+        <p class="subtitle">Build words from the elements</p>
+      </header>
+
+      <section class="control-panel" aria-labelledby="input-label">
+        <label id="input-label" for="word-input">Type a word</label>
+        <input
+          id="word-input"
+          name="word"
+          type="text"
+          autocomplete="off"
+          autocapitalize="none"
+          spellcheck="false"
+          enterkeyhint="done"
+          maxlength="80"
+          placeholder="Try a name, place, or idea"
+        >
+
+        <div class="examples">
+          <p class="examples-label">Examples</p>
+          <div class="example-list" aria-label="Example words">
+            <button class="example" type="button" data-word="banana">banana</button>
+            <button class="example" type="button" data-word="brain">brain</button>
+            <button class="example" type="button" data-word="nacho">nacho</button>
+            <button class="example" type="button" data-word="irony">irony</button>
+            <button class="example" type="button" data-word="bacon">bacon</button>
+            <button class="example" type="button" data-word="periodic">periodic</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="readout" class="readout" aria-live="polite" aria-atomic="true">
+        <p class="verdict-label">Verdict</p>
+        <p id="verdict" class="verdict empty">Type a word to test the table.</p>
+        <p id="sequence" class="sequence"></p>
+        <div id="tiles" class="tiles"></div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Real element symbols · deterministic · no randomness · nothing stored or sent</p>
+      <p>AI assisted. Human approved. Powered by NLP.</p>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var elements = [
+        [1, "H", "Hydrogen"], [2, "He", "Helium"], [3, "Li", "Lithium"],
+        [4, "Be", "Beryllium"], [5, "B", "Boron"], [6, "C", "Carbon"],
+        [7, "N", "Nitrogen"], [8, "O", "Oxygen"], [9, "F", "Fluorine"],
+        [10, "Ne", "Neon"], [11, "Na", "Sodium"], [12, "Mg", "Magnesium"],
+        [13, "Al", "Aluminum"], [14, "Si", "Silicon"], [15, "P", "Phosphorus"],
+        [16, "S", "Sulfur"], [17, "Cl", "Chlorine"], [18, "Ar", "Argon"],
+        [19, "K", "Potassium"], [20, "Ca", "Calcium"], [21, "Sc", "Scandium"],
+        [22, "Ti", "Titanium"], [23, "V", "Vanadium"], [24, "Cr", "Chromium"],
+        [25, "Mn", "Manganese"], [26, "Fe", "Iron"], [27, "Co", "Cobalt"],
+        [28, "Ni", "Nickel"], [29, "Cu", "Copper"], [30, "Zn", "Zinc"],
+        [31, "Ga", "Gallium"], [32, "Ge", "Germanium"], [33, "As", "Arsenic"],
+        [34, "Se", "Selenium"], [35, "Br", "Bromine"], [36, "Kr", "Krypton"],
+        [37, "Rb", "Rubidium"], [38, "Sr", "Strontium"], [39, "Y", "Yttrium"],
+        [40, "Zr", "Zirconium"], [41, "Nb", "Niobium"], [42, "Mo", "Molybdenum"],
+        [43, "Tc", "Technetium"], [44, "Ru", "Ruthenium"], [45, "Rh", "Rhodium"],
+        [46, "Pd", "Palladium"], [47, "Ag", "Silver"], [48, "Cd", "Cadmium"],
+        [49, "In", "Indium"], [50, "Sn", "Tin"], [51, "Sb", "Antimony"],
+        [52, "Te", "Tellurium"], [53, "I", "Iodine"], [54, "Xe", "Xenon"],
+        [55, "Cs", "Cesium"], [56, "Ba", "Barium"], [57, "La", "Lanthanum"],
+        [58, "Ce", "Cerium"], [59, "Pr", "Praseodymium"], [60, "Nd", "Neodymium"],
+        [61, "Pm", "Promethium"], [62, "Sm", "Samarium"], [63, "Eu", "Europium"],
+        [64, "Gd", "Gadolinium"], [65, "Tb", "Terbium"], [66, "Dy", "Dysprosium"],
+        [67, "Ho", "Holmium"], [68, "Er", "Erbium"], [69, "Tm", "Thulium"],
+        [70, "Yb", "Ytterbium"], [71, "Lu", "Lutetium"], [72, "Hf", "Hafnium"],
+        [73, "Ta", "Tantalum"], [74, "W", "Tungsten"], [75, "Re", "Rhenium"],
+        [76, "Os", "Osmium"], [77, "Ir", "Iridium"], [78, "Pt", "Platinum"],
+        [79, "Au", "Gold"], [80, "Hg", "Mercury"], [81, "Tl", "Thallium"],
+        [82, "Pb", "Lead"], [83, "Bi", "Bismuth"], [84, "Po", "Polonium"],
+        [85, "At", "Astatine"], [86, "Rn", "Radon"], [87, "Fr", "Francium"],
+        [88, "Ra", "Radium"], [89, "Ac", "Actinium"], [90, "Th", "Thorium"],
+        [91, "Pa", "Protactinium"], [92, "U", "Uranium"], [93, "Np", "Neptunium"],
+        [94, "Pu", "Plutonium"], [95, "Am", "Americium"], [96, "Cm", "Curium"],
+        [97, "Bk", "Berkelium"], [98, "Cf", "Californium"], [99, "Es", "Einsteinium"],
+        [100, "Fm", "Fermium"], [101, "Md", "Mendelevium"], [102, "No", "Nobelium"],
+        [103, "Lr", "Lawrencium"], [104, "Rf", "Rutherfordium"], [105, "Db", "Dubnium"],
+        [106, "Sg", "Seaborgium"], [107, "Bh", "Bohrium"], [108, "Hs", "Hassium"],
+        [109, "Mt", "Meitnerium"], [110, "Ds", "Darmstadtium"], [111, "Rg", "Roentgenium"],
+        [112, "Cn", "Copernicium"], [113, "Nh", "Nihonium"], [114, "Fl", "Flerovium"],
+        [115, "Mc", "Moscovium"], [116, "Lv", "Livermorium"], [117, "Ts", "Tennessine"],
+        [118, "Og", "Oganesson"]
+      ];
+
+      var input = document.getElementById("word-input");
+      var verdict = document.getElementById("verdict");
+      var sequence = document.getElementById("sequence");
+      var tiles = document.getElementById("tiles");
+      var exampleButtons = Array.prototype.slice.call(document.querySelectorAll(".example"));
+      var elementMap = Object.create(null);
+
+      function makeElementMap() {
+        elements.forEach(function (item) {
+          elementMap[item[1].toLowerCase()] = {
+            number: item[0],
+            symbol: item[1],
+            name: item[2]
+          };
+        });
+      }
+
+      function cleanWord(value) {
+        return value.toLowerCase().replace(/[^a-z]/g, "");
+      }
+
+      function findFullSpelling(word) {
+        var memo = Object.create(null);
+
+        function search(index) {
+          if (index === word.length) {
+            return [];
+          }
+
+          if (Object.prototype.hasOwnProperty.call(memo, index)) {
+            return memo[index];
+          }
+
+          var lengths = [2, 1];
+          var lengthIndex;
+
+          for (lengthIndex = 0; lengthIndex < lengths.length; lengthIndex += 1) {
+            var length = lengths[lengthIndex];
+            var key = word.slice(index, index + length);
+
+            if (key.length === length && elementMap[key]) {
+              var rest = search(index + length);
+
+              if (rest !== null) {
+                memo[index] = [{
+                  type: "element",
+                  element: elementMap[key],
+                  source: key
+                }].concat(rest);
+                return memo[index];
+              }
+            }
+          }
+
+          memo[index] = null;
+          return null;
+        }
+
+        return search(0);
+      }
+
+      function isBetter(candidate, current) {
+        if (current === null) {
+          return true;
+        }
+
+        if (candidate.covered !== current.covered) {
+          return candidate.covered > current.covered;
+        }
+
+        if (candidate.missing !== current.missing) {
+          return candidate.missing < current.missing;
+        }
+
+        if (candidate.twoLetterCount !== current.twoLetterCount) {
+          return candidate.twoLetterCount > current.twoLetterCount;
+        }
+
+        return candidate.pieces.length < current.pieces.length;
+      }
+
+      function findBestPartial(word) {
+        var memo = Object.create(null);
+
+        function search(index) {
+          if (index === word.length) {
+            return {
+              pieces: [],
+              covered: 0,
+              missing: 0,
+              twoLetterCount: 0
+            };
+          }
+
+          if (memo[index]) {
+            return memo[index];
+          }
+
+          var best = null;
+          var lengths = [2, 1];
+          var lengthIndex;
+
+          for (lengthIndex = 0; lengthIndex < lengths.length; lengthIndex += 1) {
+            var length = lengths[lengthIndex];
+            var key = word.slice(index, index + length);
+
+            if (key.length === length && elementMap[key]) {
+              var elementRest = search(index + length);
+              var elementCandidate = {
+                pieces: [{
+                  type: "element",
+                  element: elementMap[key],
+                  source: key
+                }].concat(elementRest.pieces),
+                covered: elementRest.covered + length,
+                missing: elementRest.missing,
+                twoLetterCount: elementRest.twoLetterCount + (length === 2 ? 1 : 0)
+              };
+
+              if (isBetter(elementCandidate, best)) {
+                best = elementCandidate;
+              }
+            }
+          }
+
+          var missingRest = search(index + 1);
+          var missingCandidate = {
+            pieces: [{
+              type: "missing",
+              source: word.charAt(index)
+            }].concat(missingRest.pieces),
+            covered: missingRest.covered,
+            missing: missingRest.missing + 1,
+            twoLetterCount: missingRest.twoLetterCount
+          };
+
+          if (isBetter(missingCandidate, best)) {
+            best = missingCandidate;
+          }
+
+          memo[index] = best;
+          return best;
+        }
+
+        return search(0);
+      }
+
+      function createTile(piece) {
+        var tile = document.createElement("article");
+        var number = document.createElement("span");
+        var symbol = document.createElement("span");
+        var name = document.createElement("span");
+
+        tile.className = "tile";
+        number.className = "atomic-number";
+        symbol.className = "symbol";
+        name.className = "element-name";
+
+        if (piece.type === "element") {
+          tile.style.setProperty("--tile-hue", String((piece.element.number * 17) % 360));
+          number.textContent = String(piece.element.number);
+          symbol.textContent = piece.element.symbol;
+          name.textContent = piece.element.name;
+          tile.setAttribute("aria-label", piece.element.symbol + ", " + piece.element.name + ", atomic number " + piece.element.number);
+        } else {
+          tile.classList.add("missing");
+          number.textContent = "×";
+          symbol.textContent = piece.source.toUpperCase();
+          name.textContent = "No element";
+          tile.setAttribute("aria-label", piece.source.toUpperCase() + ", no element symbol");
+        }
+
+        tile.appendChild(number);
+        tile.appendChild(symbol);
+        tile.appendChild(name);
+        return tile;
+      }
+
+      function updatePressedExample(cleaned) {
+        exampleButtons.forEach(function (button) {
+          button.setAttribute(
+            "aria-pressed",
+            button.getAttribute("data-word") === cleaned ? "true" : "false"
+          );
+        });
+      }
+
+      function render() {
+        try {
+          var cleaned = cleanWord(input.value);
+          var fullSpelling;
+          var result;
+          var symbolLabels;
+
+          tiles.textContent = "";
+          sequence.textContent = "";
+          verdict.classList.remove("full", "partial", "empty");
+          input.classList.remove("word-medium", "word-long");
+
+          if (cleaned.length > 22) {
+            input.classList.add("word-long");
+          } else if (cleaned.length > 12) {
+            input.classList.add("word-medium");
+          }
+
+          updatePressedExample(cleaned);
+
+          if (cleaned.length === 0) {
+            verdict.textContent = "Type a word to test the table.";
+            verdict.classList.add("empty");
+            return;
+          }
+
+          fullSpelling = findFullSpelling(cleaned);
+
+          if (fullSpelling !== null) {
+            result = {
+              pieces: fullSpelling,
+              missing: 0
+            };
+            verdict.textContent = "Fully spellable";
+            verdict.classList.add("full");
+          } else {
+            result = findBestPartial(cleaned);
+            verdict.textContent = result.missing + (result.missing === 1 ? " letter could not be placed" : " letters could not be placed");
+            verdict.classList.add("partial");
+          }
+
+          symbolLabels = result.pieces.map(function (piece) {
+            return piece.type === "element"
+              ? piece.element.symbol
+              : piece.source.toUpperCase() + "?";
+          });
+
+          sequence.textContent = symbolLabels.join(" · ");
+          result.pieces.forEach(function (piece) {
+            tiles.appendChild(createTile(piece));
+          });
+        } catch (error) {
+          tiles.textContent = "";
+          sequence.textContent = "";
+          verdict.textContent = "This word could not be tested. Try another.";
+          verdict.classList.remove("full", "empty");
+          verdict.classList.add("partial");
+        }
+      }
+
+      function chooseExample(event) {
+        try {
+          var word = event.currentTarget.getAttribute("data-word");
+          input.value = word;
+          render();
+          input.focus();
+        } catch (error) {
+          verdict.textContent = "That example could not be loaded. Type a word instead.";
+          verdict.classList.remove("full", "empty");
+          verdict.classList.add("partial");
+        }
+      }
+
+      try {
+        makeElementMap();
+        input.addEventListener("input", render);
+        exampleButtons.forEach(function (button) {
+          button.addEventListener("click", chooseExample);
+        });
+        render();
+      } catch (error) {
+        document.body.textContent = "Spell It could not start. Please refresh and try again.";
+      }
+    }());
+  </script>
+</body>
+</html>

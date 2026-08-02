@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Same Sky</title>
+
+<!-- Social preview. Replace SITE_URL with the deployed URL (no trailing slash).
+     og-samesky.png goes in the site root next to index.html. -->
+<meta property="og:title" content="Same Sky" />
+<meta property="og:description" content="Where is the sun right now, from wherever you are. Its height, its direction, sunrise and sunset, worked out from your clock and your latitude." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="SITE_URL/og-samesky.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Same Sky" />
+<meta name="twitter:description" content="The same sun, told by the numbers. No API, no randomness." />
+<meta name="twitter:image" content="SITE_URL/og-samesky.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ink:#161421; --cream:#F6EFE2; --soft:#B9AE9A; --line:#3A3550;
+    --sun:#FFCB5B; --sun-d:#E0972B; --gold:#E8B657;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{
+    min-height:100svh; display:flex; flex-direction:column; overflow-x:hidden;
+    color:var(--cream); font-family:"JetBrains Mono",monospace;
+    background:#12101B; transition:background 900ms ease;
+  }
+  header{text-align:center;padding:clamp(12px,2.6svh,22px) 16px clamp(4px,1svh,10px)}
+  .kicker{margin:0;font-size:clamp(.54rem,1.8vw,.68rem);letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
+  h1{margin:.04em 0 .04em;font-family:"Fraunces",serif;font-weight:600;font-style:italic;
+    font-size:clamp(2.6rem,min(13vw,9svh),5rem);letter-spacing:.01em;color:var(--cream);
+    text-shadow:0 3px 26px rgba(0,0,0,.6)}
+  .sub{margin:0;font-family:"Fraunces",serif;font-style:italic;font-size:clamp(.9rem,2.6vw,1.1rem);color:var(--soft)}
+
+  main{flex:1;width:100%;max-width:760px;margin:0 auto;padding:0 clamp(10px,3vw,20px) clamp(16px,3svh,30px)}
+
+  .places{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin:clamp(8px,1.8svh,16px) 0}
+  .place{font-family:"JetBrains Mono",monospace;font-size:.66rem;letter-spacing:.03em;
+    padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.03);
+    color:var(--soft);cursor:pointer}
+  .place[aria-pressed="true"]{border-color:var(--gold);color:var(--ink);background:var(--gold)}
+  .place.loc{border-style:dashed;color:var(--cream)}
+  .place:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+  .scene{border:2px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.5)}
+  .scene svg{display:block;width:100%;height:auto}
+
+  .now{margin:10px 2px 0;text-align:center;font-size:.72rem;letter-spacing:.06em;color:var(--soft)}
+  .now b{color:var(--cream)}
+
+  .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin-top:12px;
+    border:1px solid var(--line);border-radius:6px;overflow:hidden}
+  .grid div{padding:10px 6px;text-align:center;border-right:1px solid var(--line)}
+  .grid div:last-child{border-right:0}
+  .grid b{display:block;font-size:.5rem;letter-spacing:.13em;color:var(--gold);margin-bottom:4px;text-transform:uppercase}
+  .grid span{font-size:clamp(.82rem,3vw,1.05rem);font-weight:700}
+  @media(max-width:560px){
+    .grid{grid-template-columns:repeat(3,1fr)}
+    .grid div:nth-child(4),.grid div:nth-child(5){border-top:1px solid var(--line)}
+    .grid div:nth-child(3){border-right:0}
+  }
+
+  .note{margin:12px 0 0;font-family:"Fraunces",serif;font-style:italic;font-size:.92rem;color:var(--soft);text-align:center;min-height:1.4em}
+  .fine{margin:8px auto 0;max-width:520px;font-size:.6rem;letter-spacing:.03em;line-height:1.6;color:#7C7590;text-align:center}
+
+  footer{flex:none;margin-top:auto}
+  .sig{text-align:center;font-size:.55rem;letter-spacing:.13em;text-transform:uppercase;
+    color:#6E6786;margin:16px 0 10px;padding:0 16px;line-height:1.8}
+  .rail{height:6px;background:linear-gradient(90deg,var(--sun-d),var(--sun) 50%,var(--sun-d))}
+</style>
+</head>
+<body>
+
+<header>
+  <p class="kicker">The same sun, from wherever you are</p>
+  <h1>Same Sky</h1>
+  <p class="sub">Where the sun is right now, worked out from your clock and your latitude.</p>
+</header>
+
+<main>
+  <div class="places" id="places" role="group" aria-label="Choose a place"></div>
+
+  <div class="scene">
+    <svg id="sky" viewBox="0 0 720 300" role="img" aria-label="The sun's path across the sky today">
+      <defs>
+        <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop id="skyTop" offset="0" stop-color="#1b3a63"/>
+          <stop id="skyMid" offset="0.62" stop-color="#3f6ea0"/>
+          <stop id="skyBot" offset="1" stop-color="#9db9d6"/>
+        </linearGradient>
+        <radialGradient id="sunGlow" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="#FFE9A8" stop-opacity="0.9"/>
+          <stop offset="1" stop-color="#FFCB5B" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <rect x="0" y="0" width="720" height="252" fill="url(#skyGrad)"/>
+      <g id="stars"></g>
+      <line x1="0" y1="252" x2="720" y2="252" stroke="#20160C" stroke-width="2" opacity="0.5"/>
+      <path id="arcFaint" fill="none" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="1.5" stroke-dasharray="3 5"/>
+      <path id="arcDay" fill="none" stroke="#FFE9A8" stroke-width="3"/>
+      <rect x="0" y="252" width="720" height="48" fill="#231A12"/>
+      <g id="ticks"></g>
+      <g id="body"></g>
+    </svg>
+  </div>
+
+  <p class="now" id="now">—</p>
+
+  <div class="grid" aria-live="polite">
+    <div><b>Sun height</b><span id="rAlt">—</span></div>
+    <div><b>Direction</b><span id="rDir">—</span></div>
+    <div><b>Sunrise</b><span id="rRise">—</span></div>
+    <div><b>Sunset</b><span id="rSet">—</span></div>
+    <div><b>Day length</b><span id="rLen">—</span></div>
+  </div>
+
+  <p class="note" id="note"></p>
+  <p class="fine">Positions and times are computed from your clock and latitude, accurate to within a few minutes. Local clocks follow each place's real time zone, daylight saving included.</p>
+</main>
+
+<footer>
+  <p class="sig">Real solar geometry &middot; no API &middot; no randomness &middot; nothing stored or sent<br>
+  AI assisted. Human approved. Powered by NLP.</p>
+  <div class="rail" aria-hidden="true"></div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+/* SAME SKY — where the sun is, from your clock and a latitude.
+   MUST : pure NOAA solar geometry. No API, no randomness, no storage.
+   MUST : validated against almanac (SB, London, Sydney, Reykjavik, polar).
+   NEVER: Math.random, fetch, localStorage, innerHTML, eval.
+   NOTE : sunrise/sunset are accurate to a few minutes; it says so.
+   STUB : manual latitude slider, twilight bands, moon phase. */
+
+var rad=Math.PI/180, deg=180/Math.PI;
+
+/* ---- the engine: altitude + azimuth for a place and instant ---- */
+function dayOfYear(d){ return (d - Date.UTC(d.getUTCFullYear(),0,0))/86400000; }
+function altAz(lat,lon,utcMs){
+  var d=new Date(utcMs), N=dayOfYear(d);
+  var H=d.getUTCHours()+d.getUTCMinutes()/60+d.getUTCSeconds()/3600;
+  var g=2*Math.PI/365*(N-1+(H-12)/24);
+  var eqt=229.18*(0.000075+0.001868*Math.cos(g)-0.032077*Math.sin(g)-0.014615*Math.cos(2*g)-0.040849*Math.sin(2*g));
+  var decl=0.006918-0.399912*Math.cos(g)+0.070257*Math.sin(g)-0.006758*Math.cos(2*g)+0.000907*Math.sin(2*g)-0.002697*Math.cos(3*g)+0.00148*Math.sin(3*g);
+  var tst=H*60+eqt+4*lon;
+  var ha=(tst/4)-180;
+  var la=lat*rad;
+  var cosZ=Math.max(-1,Math.min(1, Math.sin(la)*Math.sin(decl)+Math.cos(la)*Math.cos(decl)*Math.cos(ha*rad)));
+  var zen=Math.acos(cosZ), alt=90-zen*deg;
+  var cosA=Math.max(-1,Math.min(1,(Math.sin(decl)-Math.sin(la)*Math.cos(zen))/(Math.cos(la)*Math.sin(zen))));
+  var az=Math.acos(cosA)*deg; if(ha>0) az=360-az;
+  return {alt:alt, az:az};
+}
+function hm(min){ var h=Math.floor(min/60), m=Math.round(min%60); if(m===60){h++;m=0;} return (h<10?'0':'')+h+':'+(m<10?'0':'')+m; }
+
+/* full solar summary for a place at a given instant */
+function solar(lat,lon,tz,when){
+  var cur=altAz(lat,lon,when.getTime());
+  var localMs=when.getTime()+tz*3600000, ld=new Date(localMs);
+  var localMidnightUTC=Date.UTC(ld.getUTCFullYear(),ld.getUTCMonth(),ld.getUTCDate())-tz*3600000;
+  var TH=-0.833, prev=null, rise=null, set=null, anyUp=false, anyDown=false;
+  var samples=[];
+  for(var m=0;m<=1440;m+=2){
+    var a=altAz(lat,lon,localMidnightUTC+m*60000).alt;
+    samples.push({m:m,a:a});
+    if(a>TH)anyUp=true; else anyDown=true;
+    if(prev!==null){
+      if(prev.a<=TH && a>TH && rise===null) rise=m;
+      if(prev.a>TH && a<=TH) set=m;
+    }
+    prev={a:a};
+  }
+  var polar=(rise===null&&set===null)?(anyUp&&!anyDown?'day':'night'):null;
+  var dayLen=(rise!==null&&set!==null)?set-rise:(polar==='day'?1440:0);
+  var nowLocalMin=(localMs - localMidnightUTC)/60000;
+  return {alt:cur.alt, az:cur.az, sunrise:rise, sunset:set, dayLenMin:dayLen, polar:polar,
+          samples:samples, nowMin:nowLocalMin, localMs:localMs};
+}
+
+/* real local offset for an IANA zone at a given instant. Handles DST year-round,
+   evergreen (no hardcoded summer offsets), no network. */
+function tzOffsetHours(zone,date){
+  try{
+    var dtf=new Intl.DateTimeFormat("en-US",{timeZone:zone,hourCycle:"h23",
+      year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"});
+    var p={}; dtf.formatToParts(date).forEach(function(x){ p[x.type]=x.value; });
+    var asUTC=Date.UTC(+p.year,+p.month-1,+p.day,+p.hour,+p.minute,+p.second);
+    return Math.round((asUTC-date.getTime())/60000)/60;
+  }catch(e){ return -date.getTimezoneOffset()/60; }   /* fallback: device zone */
+}
+
+/* ---- places (lat, lon E+, IANA zone so the clock is right in any season) ---- */
+var PLACES=[
+  {n:"Santa Barbara", lat:34.42, lon:-119.70, zone:"America/Los_Angeles"},
+  {n:"New York",      lat:40.71, lon:-74.01,  zone:"America/New_York"},
+  {n:"London",        lat:51.51, lon:-0.13,   zone:"Europe/London"},
+  {n:"Reykjavík",     lat:64.15, lon:-21.94,  zone:"Atlantic/Reykjavik"},
+  {n:"Nairobi",       lat:-1.29, lon:36.82,   zone:"Africa/Nairobi"},
+  {n:"Sydney",        lat:-33.87,lon:151.21,  zone:"Australia/Sydney"},
+  {n:"Tokyo",         lat:35.68, lon:139.65,  zone:"Asia/Tokyo"},
+  {n:"Svalbard",      lat:78.22, lon:15.65,   zone:"Arctic/Longyearbyen"}
+];
+var current=PLACES[0], usingLoc=false;
+
+/* ---- draw ---- */
+var SVGNS="http://www.w3.org/2000/svg";
+var HORIZON=252, TOP=18, W=720;
+var $=function(i){return document.getElementById(i);};
+function el(t,a){var n=document.createElementNS(SVGNS,t);if(a)for(var k in a)if(a.hasOwnProperty(k))n.setAttribute(k,a[k]);return n;}
+
+function compass(az){
+  var dirs=["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+  return dirs[Math.round(az/22.5)%16];
+}
+function skyFor(alt){
+  if(alt>10)   return {t:"#1E4E86",m:"#4F86BE",b:"#AFCBE6",night:false,bg:"#12233B"};
+  if(alt>0)    return {t:"#2C4B7A",m:"#C98A4E",b:"#F1C877",night:false,bg:"#1B2740"};
+  if(alt>-6)   return {t:"#28304F",m:"#7A5A8A",b:"#E0894A",night:false,bg:"#151830"};
+  if(alt>-14)  return {t:"#1A2038",m:"#2A2F52",b:"#3E3A63",night:true,bg:"#0F1226"};
+  return {t:"#0A0D1C",m:"#121734",b:"#1B2145",night:true,bg:"#080A16"};
+}
+
+function yFor(alt){ return HORIZON - Math.max(0,Math.min(90,alt))/90*(HORIZON-TOP); }
+function xFor(min){ return min/1440*W; }
+
+function render(){
+  var nowD=new Date();
+  var tz=tzOffsetHours(current.zone, nowD);   /* correct offset for today, not a fixed guess */
+  var s=solar(current.lat,current.lon,tz,nowD);
+
+  /* sky palette + page bg */
+  var sk=skyFor(s.alt);
+  $("skyTop").setAttribute("stop-color",sk.t);
+  $("skyMid").setAttribute("stop-color",sk.m);
+  $("skyBot").setAttribute("stop-color",sk.b);
+  document.body.style.background=sk.bg;
+
+  /* stars at night */
+  var stars=$("stars"); while(stars.firstChild) stars.removeChild(stars.firstChild);
+  if(sk.night){
+    /* fixed positions (deterministic), derived from a simple lattice */
+    for(var i=0;i<46;i++){
+      var sx=(i*151%W), sy=(i*97%210)+8, r=(i%3===0)?1.6:1;
+      var st=el("circle",{cx:sx,cy:sy,r:r,fill:"#EDE9FF","fill-opacity":(i%5===0?0.9:0.5)});
+      stars.appendChild(st);
+    }
+  }
+
+  /* arcs: altitude across the local day */
+  var faint="", day="", started=false;
+  for(var j=0;j<s.samples.length;j++){
+    var p=s.samples[j], x=xFor(p.m), yf=HORIZON - Math.max(-12,Math.min(90,p.a))/90*(HORIZON-TOP);
+    faint += (j===0?"M":"L")+x.toFixed(1)+" "+yf.toFixed(1)+" ";
+    if(p.a>=0){ day += (started?"L":"M")+x.toFixed(1)+" "+yFor(p.a).toFixed(1)+" "; started=true; }
+    else started=false;
+  }
+  $("arcFaint").setAttribute("d",faint);
+  $("arcDay").setAttribute("d",day);
+
+  /* hour ticks */
+  var ticks=$("ticks"); while(ticks.firstChild) ticks.removeChild(ticks.firstChild);
+  [0,6,12,18,24].forEach(function(h){
+    var x=xFor(h*60);
+    ticks.appendChild(el("line",{x1:x,y1:HORIZON,x2:x,y2:HORIZON+7,stroke:"#7A6A52","stroke-width":1}));
+    var tx=el("text",{x:Math.max(10,Math.min(W-10,x)),y:HORIZON+22,"text-anchor":"middle",
+      "font-family":"JetBrains Mono, monospace","font-size":10,fill:"#8A7A60"});
+    tx.textContent=(h===24?"24":(h<10?"0":"")+h)+":00";
+    ticks.appendChild(tx);
+  });
+
+  /* the body: sun if up, moon if down */
+  var body=$("body"); while(body.firstChild) body.removeChild(body.firstChild);
+  var cx=xFor(s.nowMin);
+  if(s.alt>=0){
+    var cy=yFor(s.alt);
+    body.appendChild(el("circle",{cx:cx,cy:cy,r:46,fill:"url(#sunGlow)"}));
+    body.appendChild(el("circle",{cx:cx,cy:cy,r:15,fill:"#FFCB5B",stroke:"#E0972B","stroke-width":2}));
+  }else{
+    /* moon resting in the night sky above the current time column */
+    var my=70;
+    var mg=el("g",{});
+    mg.appendChild(el("circle",{cx:cx,cy:my,r:30,fill:"url(#sunGlow)","fill-opacity":0.4}));
+    mg.appendChild(el("circle",{cx:cx,cy:my,r:12,fill:"#D9DBF0",stroke:"#9A9CC0","stroke-width":1.5}));
+    mg.appendChild(el("circle",{cx:cx+5,cy:my-3,r:11,fill:sk.bg}));
+    body.appendChild(mg);
+  }
+
+  /* readouts */
+  $("rAlt").textContent = (s.alt>=0?"+":"")+s.alt.toFixed(1)+"°";
+  $("rDir").textContent = compass(s.az)+" "+Math.round(s.az)+"°";
+  if(s.polar==='day'){
+    $("rRise").textContent="none today";
+    $("rSet").textContent="none today";
+    $("rLen").textContent="24h — all day";
+  }else if(s.polar==='night'){
+    $("rRise").textContent="none today";
+    $("rSet").textContent="none today";
+    $("rLen").textContent="0h — polar night";
+  }else{
+    $("rRise").textContent=hm(s.sunrise);
+    $("rSet").textContent=hm(s.sunset);
+    $("rLen").textContent=Math.floor(s.dayLenMin/60)+"h "+String(s.dayLenMin%60).padStart(2,"0");
+  }
+
+  /* local clock + label */
+  var lm=new Date(s.localMs);
+  var clock=(lm.getUTCHours()<10?"0":"")+lm.getUTCHours()+":"+(lm.getUTCMinutes()<10?"0":"")+lm.getUTCMinutes();
+  var placeName=usingLoc?"your location":current.n;
+  $("now").textContent="";
+  var strong=document.createElement("b"); strong.textContent=placeName;
+  $("now").appendChild(document.createTextNode("In "));
+  $("now").appendChild(strong);
+  $("now").appendChild(document.createTextNode(" it is "+clock+", local time."));
+
+  /* the note */
+  var note="";
+  if(s.polar==='day') note="The sun does not set here today. It just circles the sky.";
+  else if(s.polar==='night') note="The sun does not rise here today.";
+  else if(s.alt>=0) note="The sun is up, "+compass(s.az)+" of you, "+s.alt.toFixed(0)+"° above the horizon.";
+  else note="The sun is down. It rises again at "+hm(s.sunrise)+".";
+  $("note").textContent=note;
+}
+
+/* ---- places UI ---- */
+PLACES.forEach(function(p){
+  var b=document.createElement("button");
+  b.className="place"; b.type="button"; b.textContent=p.n;
+  b.setAttribute("aria-pressed",String(p===current));
+  b.addEventListener("click",function(){
+    current=p; usingLoc=false;
+    setPressed(b); render();
+  });
+  $("places").appendChild(b);
+});
+/* use-my-location */
+var locBtn=document.createElement("button");
+locBtn.className="place loc"; locBtn.type="button"; locBtn.textContent="◉ Use my location";
+locBtn.addEventListener("click",function(){
+  if(!navigator.geolocation){ locBtn.textContent="Location unavailable"; return; }
+  locBtn.textContent="Locating…";
+  navigator.geolocation.getCurrentPosition(function(pos){
+    var zone;
+    try{ zone=Intl.DateTimeFormat().resolvedOptions().timeZone; }catch(e){ zone=null; }
+    current={n:"your location",lat:pos.coords.latitude,lon:pos.coords.longitude,zone:zone};
+    usingLoc=true; setPressed(locBtn); locBtn.textContent="◉ Use my location";
+    render();
+  }, function(){ locBtn.textContent="Location blocked"; setTimeout(function(){locBtn.textContent="◉ Use my location";},2000); },
+  {timeout:8000});
+});
+$("places").appendChild(locBtn);
+
+function setPressed(active){
+  Array.prototype.forEach.call($("places").children,function(c){ c.setAttribute("aria-pressed",String(c===active)); });
+}
+
+render();
+setInterval(render, 30000);   /* keep the sky current */
+
+/* pure engine, exposed for verification (date-injectable) */
+window.__solar=function(lat,lon,tz,dateMs){ return solar(lat,lon,tz,new Date(dateMs)); };
+window.__hm=hm;
+})();
+</script>
+</body>
+</html>

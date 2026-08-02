@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Eight questions sort you into one of ten dead languages.">
+  <title>Vivant Linguae Mortuae</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Coptic&family=Noto+Sans+Cuneiform&family=Noto+Sans+Egyptian+Hieroglyphs&family=Noto+Sans+Gothic&family=Noto+Serif+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #f5bd3b;
+      --gold-light: #ffe37d;
+      --blue: #76a8c9;
+      --blue-deep: #4f86ac;
+      --ink: #080b0d;
+      --paper: #fff7dd;
+      --muted: #4b4a43;
+      --line: 4px;
+      --display: "Cinzel Decorative", Georgia, serif;
+      --body: "EB Garamond", Georgia, serif;
+      --mono: "JetBrains Mono", monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { min-height: 100%; background: var(--gold); }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 9px 9px, var(--ink) 0 5px, transparent 5.7px) 0 0 / 27px 27px,
+        var(--gold);
+      font-family: var(--body);
+      font-size: 18px;
+      line-height: 1.45;
+    }
+
+    button { font: inherit; }
+
+    button:focus-visible,
+    summary:focus-visible {
+      outline: 4px solid var(--paper);
+      outline-offset: 4px;
+      box-shadow: 0 0 0 7px var(--ink);
+    }
+
+    .page-frame {
+      width: min(100% - 42px, 980px);
+      min-height: calc(100vh - 42px);
+      margin: 21px auto;
+      padding: 10px;
+      background: var(--gold);
+      border: 7px solid var(--ink);
+      box-shadow: 0 0 0 7px var(--gold), 0 0 0 10px var(--ink);
+      position: relative;
+    }
+
+    .shell {
+      min-height: calc(100vh - 82px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: var(--line) solid var(--ink);
+      background: var(--paper);
+      position: relative;
+    }
+
+    .fan-field {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      opacity: .78;
+      background-color: var(--blue);
+      background-image:
+        repeating-conic-gradient(from 270deg at 50% 100%, transparent 0deg 7deg, rgba(8,11,13,.78) 7.4deg 8.4deg, transparent 8.8deg 15deg),
+        radial-gradient(ellipse 55px 46px at 50% 100%, var(--ink) 0 5%, transparent 7%),
+        radial-gradient(ellipse 108px 87px at 50% 100%, transparent 0 95%, var(--ink) 96% 100%);
+      background-size: 150px 92px;
+      background-position: 0 0, 0 0, 0 0;
+    }
+
+    .fan-field::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(rgba(255,255,255,.07), rgba(8,11,13,.08));
+    }
+
+    .corner {
+      position: absolute;
+      z-index: 1;
+      width: 90px;
+      height: 90px;
+      border: 7px solid var(--ink);
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: inset 0 0 0 10px var(--gold), inset 0 0 0 16px var(--ink), inset 0 0 0 31px var(--blue);
+      pointer-events: none;
+    }
+
+    .corner.tl { top: -49px; left: -49px; }
+    .corner.tr { top: -49px; right: -49px; }
+    .corner.bl { bottom: -49px; left: -49px; }
+    .corner.br { bottom: -49px; right: -49px; }
+
+    .content {
+      position: relative;
+      z-index: 2;
+      width: min(100% - 36px, 760px);
+      margin: auto;
+      padding: 50px 0;
+    }
+
+    .panel {
+      border: var(--line) solid var(--ink);
+      background: var(--paper);
+      box-shadow: 12px 12px 0 rgba(8,11,13,.22);
+    }
+
+    .masthead {
+      padding: 27px 28px 24px;
+      color: var(--gold-light);
+      text-align: center;
+      background: var(--ink);
+      border-bottom: 8px double var(--gold);
+    }
+
+    .eyebrow {
+      margin: 0 0 9px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--blue);
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      max-width: 650px;
+      margin: 0 auto;
+      font-family: var(--display);
+      font-size: clamp(2rem, 7vw, 4.25rem);
+      line-height: .98;
+      letter-spacing: .015em;
+      text-wrap: balance;
+    }
+
+    .byline {
+      margin: 12px 0 0;
+      color: var(--paper);
+      font-size: clamp(1.05rem, 2.5vw, 1.35rem);
+      font-style: italic;
+    }
+
+    .intro-body {
+      padding: clamp(30px, 7vw, 64px);
+      text-align: center;
+      background:
+        linear-gradient(rgba(255,247,221,.93), rgba(255,247,221,.93)),
+        repeating-linear-gradient(90deg, transparent 0 24px, rgba(8,11,13,.12) 24px 25px);
+    }
+
+    .intro-copy {
+      max-width: 590px;
+      margin: 0 auto 30px;
+      font-size: clamp(1.2rem, 3vw, 1.55rem);
+      line-height: 1.42;
+    }
+
+    .primary,
+    .secondary,
+    .answer {
+      border: 3px solid var(--ink);
+      cursor: pointer;
+      transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
+    }
+
+    .primary {
+      min-width: 190px;
+      padding: 14px 28px;
+      color: var(--gold-light);
+      background: var(--ink);
+      font-family: var(--display);
+      font-size: 1rem;
+      letter-spacing: .08em;
+      box-shadow: 6px 6px 0 var(--gold);
+    }
+
+    .primary:hover { transform: translate(-2px,-2px); box-shadow: 9px 9px 0 var(--gold); }
+
+    .quiz-panel { background: var(--paper); }
+
+    .progress-wrap {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      padding: 16px 20px;
+      color: var(--paper);
+      background: var(--ink);
+      border-bottom: 7px solid var(--gold);
+    }
+
+    .progress-track { height: 7px; background: rgba(255,255,255,.2); overflow: hidden; }
+    .progress-fill { height: 100%; width: 12.5%; background: var(--gold); transition: width 240ms ease; }
+    .progress-text { margin: 0; font-family: var(--mono); font-size: 12px; letter-spacing: .12em; }
+
+    .question-body { padding: clamp(24px, 6vw, 52px); }
+
+    .question-number {
+      margin: 0 0 8px;
+      font-family: var(--mono);
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .question-title {
+      margin-bottom: 28px;
+      font-family: var(--display);
+      font-size: clamp(1.65rem, 5vw, 2.7rem);
+      line-height: 1.12;
+      text-wrap: balance;
+    }
+
+    .answers { display: grid; gap: 12px; }
+
+    .answer {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      align-items: center;
+      gap: 12px;
+      padding: 15px 17px;
+      text-align: left;
+      background: #fffaf0;
+      font-size: 1.08rem;
+      line-height: 1.25;
+      box-shadow: 4px 4px 0 var(--blue);
+    }
+
+    .answer:hover { background: var(--gold-light); transform: translate(-2px,-2px); box-shadow: 7px 7px 0 var(--blue-deep); }
+
+    .answer-letter {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 500;
+      background: var(--gold);
+    }
+
+    .quiz-nav { display: flex; justify-content: flex-start; padding-top: 22px; }
+
+    .secondary {
+      padding: 8px 15px;
+      color: var(--ink);
+      background: transparent;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: .08em;
+    }
+
+    .secondary:hover:not(:disabled) { background: var(--blue); }
+    .secondary:disabled { cursor: not-allowed; opacity: .38; }
+
+    .result-panel { background: var(--paper); }
+
+    .result-head {
+      padding: clamp(28px, 6vw, 52px) 26px;
+      text-align: center;
+      color: var(--gold-light);
+      background: var(--ink);
+      border-bottom: 8px double var(--gold);
+    }
+
+    .result-kicker { margin: 0 0 9px; color: var(--blue); font-family: var(--mono); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; }
+
+    .language-name {
+      margin: 0;
+      font-family: var(--display);
+      font-size: clamp(2.2rem, 9vw, 5.2rem);
+      line-height: 1;
+      overflow-wrap: anywhere;
+      text-wrap: balance;
+    }
+
+    .archetype { margin: 10px 0 0; color: var(--paper); font-size: 1.25rem; font-style: italic; }
+
+    .result-body { padding: clamp(25px, 6vw, 52px); }
+
+    .phrase-block {
+      margin-bottom: 32px;
+      padding: 25px;
+      text-align: center;
+      border: 3px solid var(--ink);
+      background: var(--blue);
+      box-shadow: inset 0 0 0 6px var(--paper), inset 0 0 0 9px var(--ink);
+    }
+
+    .script {
+      margin: 5px 0 13px;
+      font-size: clamp(1.7rem, 6vw, 3.2rem);
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    .script.cuneiform { font-family: "Noto Sans Cuneiform", sans-serif; }
+    .script.egyptian { font-family: "Noto Sans Egyptian Hieroglyphs", sans-serif; }
+    .script.gothic { font-family: "Noto Sans Gothic", sans-serif; }
+    .script.sanskrit { font-family: "Noto Serif Devanagari", serif; }
+    .script.coptic { font-family: "Noto Sans Coptic", sans-serif; }
+    .script.default { font-family: var(--body); }
+
+    .transliteration { margin: 0 0 6px; font-size: 1.16rem; font-style: italic; }
+    .pronunciation { margin: 0 0 13px; font-family: var(--mono); font-size: .79rem; line-height: 1.5; }
+    .translation { margin: 0; font-size: clamp(1.35rem, 4vw, 1.85rem); font-weight: 600; }
+    .source { margin: 13px 0 0; font-size: .94rem; line-height: 1.35; }
+
+    .result-section { padding: 23px 0; border-top: 2px solid var(--ink); }
+    .section-label { margin: 0 0 8px; font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
+    .result-section p:last-child { margin-bottom: 0; }
+    .why { font-size: 1.25rem; line-height: 1.45; }
+
+    .uncertainty {
+      margin-top: 25px;
+      padding: 18px 20px;
+      border-left: 7px solid var(--gold);
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    .uncertainty .section-label { color: var(--gold-light); }
+
+    .persistent-note { margin: 20px 0 0; font-size: .98rem; font-style: italic; text-align: center; }
+
+    .about { margin-top: 15px; border: 2px solid var(--ink); background: #fffaf0; }
+    .about summary { padding: 12px 15px; cursor: pointer; font-family: var(--mono); font-size: 12px; }
+    .about p { padding: 0 15px 15px; margin: 0; }
+
+    .receipt {
+      margin: 25px 0;
+      padding: 14px 16px;
+      border-top: 2px dashed var(--ink);
+      border-bottom: 2px dashed var(--ink);
+      font-family: var(--mono);
+      font-size: 11px;
+      line-height: 1.6;
+      text-align: center;
+      text-transform: lowercase;
+    }
+
+    .result-actions { text-align: center; }
+
+    footer {
+      position: relative;
+      z-index: 2;
+      margin-top: auto;
+      padding: 14px 20px;
+      text-align: center;
+      color: var(--paper);
+      background: var(--ink);
+      border-top: 7px solid var(--gold);
+      font-family: var(--mono);
+      font-size: 10px;
+      line-height: 1.55;
+      letter-spacing: .03em;
+    }
+
+    [hidden] { display: none !important; }
+
+    .view-enter { animation: reveal 320ms ease both; }
+    @keyframes reveal { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 600px) {
+      body { background-size: 21px 21px; }
+      .page-frame { width: calc(100% - 24px); min-height: calc(100vh - 24px); margin: 12px auto; padding: 6px; border-width: 5px; box-shadow: 0 0 0 4px var(--gold), 0 0 0 7px var(--ink); }
+      .shell { min-height: calc(100vh - 50px); border-width: 3px; }
+      .content { width: calc(100% - 22px); padding: 32px 0; }
+      .panel { box-shadow: 7px 7px 0 rgba(8,11,13,.22); }
+      .masthead { padding: 24px 16px 20px; }
+      .intro-body { padding: 30px 22px 36px; }
+      .question-body { padding: 26px 19px 30px; }
+      .answer { grid-template-columns: 34px 1fr; padding: 13px 12px; font-size: 1rem; }
+      .result-body { padding: 24px 18px 32px; }
+      .phrase-block { padding: 25px 14px; }
+      .corner { width: 68px; height: 68px; }
+      .corner.tl { top: -39px; left: -39px; }
+      .corner.tr { top: -39px; right: -39px; }
+      .corner.bl { bottom: -39px; left: -39px; }
+      .corner.br { bottom: -39px; right: -39px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page-frame">
+    <div class="shell">
+      <div class="fan-field" aria-hidden="true"></div>
+      <span class="corner tl" aria-hidden="true"></span>
+      <span class="corner tr" aria-hidden="true"></span>
+      <span class="corner bl" aria-hidden="true"></span>
+      <span class="corner br" aria-hidden="true"></span>
+
+      <div class="content">
+        <section id="introView" class="panel view-enter" aria-labelledby="appTitle">
+          <header class="masthead">
+            <p class="eyebrow">A quiet sorting</p>
+            <h1 id="appTitle">Vivant Linguae Mortuae</h1>
+            <p class="byline">long live the dead languages</p>
+          </header>
+          <div class="intro-body">
+            <p class="intro-copy">Nobody has spoken these languages in a very long time, though each was somebody's entire world once. Answer eight questions and we'll tell you which one you'd have thought in.</p>
+            <button id="beginButton" class="primary" type="button">Begin</button>
+          </div>
+        </section>
+
+        <section id="quizView" class="panel quiz-panel" aria-labelledby="questionTitle" hidden>
+          <div class="progress-wrap" aria-label="Quiz progress">
+            <div class="progress-track" aria-hidden="true"><div id="progressFill" class="progress-fill"></div></div>
+            <p id="progressText" class="progress-text">1 / 8</p>
+          </div>
+          <div class="question-body">
+            <p id="questionNumber" class="question-number">Question one</p>
+            <h2 id="questionTitle" class="question-title"></h2>
+            <div id="answers" class="answers"></div>
+            <nav class="quiz-nav" aria-label="Question navigation">
+              <button id="backButton" class="secondary" type="button">Back</button>
+            </nav>
+          </div>
+        </section>
+
+        <section id="resultView" class="panel result-panel" aria-labelledby="languageName" hidden>
+          <header class="result-head">
+            <p class="result-kicker">You are</p>
+            <h2 id="languageName" class="language-name"></h2>
+            <p id="archetype" class="archetype"></p>
+          </header>
+          <div class="result-body">
+            <div class="phrase-block">
+              <p id="script" class="script"></p>
+              <p id="transliteration" class="transliteration"></p>
+              <p id="pronunciation" class="pronunciation"></p>
+              <p id="translation" class="translation"></p>
+              <p id="source" class="source"></p>
+            </div>
+
+            <section class="result-section" aria-labelledby="whyLabel">
+              <h3 id="whyLabel" class="section-label">Why you</h3>
+              <p id="why" class="why"></p>
+            </section>
+
+            <section class="result-section" aria-labelledby="factLabel">
+              <h3 id="factLabel" class="section-label">One true fact</h3>
+              <p id="fact"></p>
+            </section>
+
+            <aside class="uncertainty">
+              <h3 class="section-label">What we do not know</h3>
+              <p id="uncertainty"></p>
+            </aside>
+
+            <p class="persistent-note">Pronunciations are reconstructions. Nobody alive has heard these spoken.</p>
+
+            <details class="about">
+              <summary>About the phrases and pronunciations</summary>
+              <p>Every phrase here is attested: real text from real sources. But reading a dead language is an act of reconstruction. Pronunciations are scholarly best guesses, not recordings. Some translations are still argued over. Where we're unsure, we say so.</p>
+            </details>
+
+            <p id="receipt" class="receipt"></p>
+            <div class="result-actions"><button id="againButton" class="primary" type="button">Begin again</button></div>
+          </div>
+        </section>
+      </div>
+
+      <footer>Nothing you answer is stored or sent. AI assisted. Human approved. Powered by NLP.</footer>
+    </div>
+  </main>
+
+  <script>
+    "use strict";
+
+    const archetypeOrder = ["SUMERIAN", "AKKADIAN", "EGYPTIAN", "GREEK", "LATIN", "SANSKRIT", "NORSE", "OLDENGLISH", "GOTHIC", "COPTIC"];
+
+    const questions = [
+      {
+        text: "What would you carve into stone?",
+        answers: [
+          { text: "A record of what was owed.", points: { AKKADIAN: 2, SUMERIAN: 1 } },
+          { text: "A prayer for the dead.", points: { EGYPTIAN: 2, COPTIC: 1 } },
+          { text: "A question no one had thought to ask.", points: { GREEK: 2 } },
+          { text: "A name, so it would not be forgotten.", points: { NORSE: 2, OLDENGLISH: 1 } }
+        ]
+      },
+      {
+        text: "Precise, or beautiful?",
+        answers: [
+          { text: "Precise. Say exactly what you mean.", points: { LATIN: 2, AKKADIAN: 1 } },
+          { text: "Beautiful. Say it so it's remembered.", points: { SANSKRIT: 2, NORSE: 1 } },
+          { text: "Both, if you're patient enough.", points: { GREEK: 1, EGYPTIAN: 1 } },
+          { text: "Neither. Say it plainly and go.", points: { OLDENGLISH: 2, GOTHIC: 1 } }
+        ]
+      },
+      {
+        text: "How would you like to be remembered?",
+        answers: [
+          { text: "Not at all. The work was enough.", points: { SUMERIAN: 2 } },
+          { text: "By name, in a story.", points: { NORSE: 2 } },
+          { text: "By what I built.", points: { EGYPTIAN: 2, LATIN: 1 } },
+          { text: "By the people I taught.", points: { COPTIC: 2, SANSKRIT: 1 } }
+        ]
+      },
+      {
+        text: "What survives you?",
+        answers: [
+          { text: "Nothing. Everything is on loan.", points: { OLDENGLISH: 2, SUMERIAN: 1 } },
+          { text: "My words, if someone keeps them.", points: { GOTHIC: 2, COPTIC: 1 } },
+          { text: "My line. The ones who come after.", points: { SANSKRIT: 1, EGYPTIAN: 1 } },
+          { text: "My reputation. That's the only thing.", points: { NORSE: 2, LATIN: 1 } }
+        ]
+      },
+      {
+        text: "Choose a place to work.",
+        answers: [
+          { text: "A hall of records.", points: { AKKADIAN: 2 } },
+          { text: "A temple.", points: { SANSKRIT: 2, EGYPTIAN: 1 } },
+          { text: "A courtyard, mid-argument.", points: { GREEK: 2 } },
+          { text: "A hall, late, telling stories.", points: { NORSE: 2, OLDENGLISH: 1 } }
+        ]
+      },
+      {
+        text: "A rule you disagree with. You:",
+        answers: [
+          { text: "Follow it. Order matters more than I do.", points: { LATIN: 2, AKKADIAN: 1 } },
+          { text: "Argue it into a better shape.", points: { GREEK: 2 } },
+          { text: "Quietly ignore it.", points: { GOTHIC: 2, SUMERIAN: 1 } },
+          { text: "Keep it exactly. It was given for a reason.", points: { SANSKRIT: 2, COPTIC: 1 } }
+        ]
+      },
+      {
+        text: "Something you love is ending. You:",
+        answers: [
+          { text: "Write it all down before it goes.", points: { SUMERIAN: 2, AKKADIAN: 1 } },
+          { text: "Sing it, so it's carried.", points: { COPTIC: 2, SANSKRIT: 1 } },
+          { text: "Accept it. That is the way of things.", points: { OLDENGLISH: 2, NORSE: 1 } },
+          { text: "Save one piece. Whatever you can.", points: { GOTHIC: 2, EGYPTIAN: 1 } }
+        ]
+      },
+      {
+        text: "The past is:",
+        answers: [
+          { text: "Gone. It cannot be recovered.", points: { SUMERIAN: 2, GOTHIC: 1 } },
+          { text: "Alive, as long as someone still speaks it.", points: { COPTIC: 2 } },
+          { text: "Us. We are what it became.", points: { LATIN: 2 } },
+          { text: "A text, to be read very carefully.", points: { OLDENGLISH: 2, GREEK: 1 } }
+        ]
+      }
+    ];
+
+    const results = {
+      SUMERIAN: {
+        name: "Sumerian", archetype: "the isolate", script: "Original script: unavailable in this source set.", scriptClass: "cuneiform",
+        transliteration: "Transliteration: unavailable.", pronunciation: "Pronunciation: unknown. We don't know how this sounded.",
+        translation: "“Upon escaping from the wild ox, the wild cow confronted me.”",
+        source: "Source: Sumerian Proverb Collections (ETCSL; Alster, Proverbs of Ancient Sumer)",
+        why: "You keep the record because someone should, not because anyone will thank you. You are first at things and rarely credited for them. You do not expect to be understood, and you write it down anyway.",
+        fact: "Sumerian is a language isolate. It has no known relatives, living or dead. It must have had a family once, but every one of them died out without ever being written down. It stopped being spoken around 2000 BC and went on being written for two thousand years after that, by people for whom it was already ancient.",
+        uncertainty: "Sumerian pronunciation is uncertain, and translations of these proverbs are still being revised."
+      },
+      AKKADIAN: {
+        name: "Akkadian", archetype: "the administrator", script: "Original cuneiform: unavailable in this source set.", scriptClass: "cuneiform",
+        transliteration: "Transliteration: ša naqba īmuru", pronunciation: "Pronunciation: shah NAK-bah EE-moo-roo",
+        translation: "“He who saw the Deep.”", source: "Source: opening line of the Standard Babylonian Epic of Gilgamesh",
+        why: "You believe the paperwork is not beneath the poetry — it is what let the poetry survive. You are the one who keeps the ledger, and the ledger is what outlasts everyone.",
+        fact: "Hundreds of thousands of cuneiform tablets survive, and most have never been translated. There simply aren't enough people alive who can read them. We have more Akkadian than we can read. It ran the ancient world for roughly 2,500 years. And most of it isn't epic poetry. It's receipts.",
+        uncertainty: "Reconstructed pronunciation."
+      },
+      EGYPTIAN: {
+        name: "Egyptian", archetype: "the monumental", script: "𓋹𓍑𓋴", scriptClass: "egyptian", scriptFont: "Noto Sans Egyptian Hieroglyphs",
+        transliteration: "Transliteration: ꜥnḫ wḏꜣ snb", pronunciation: "Pronunciation: ankh WED-ja SEN-eb (conventional Egyptological)",
+        translation: "“life, prosperity, health”", source: "Source: honorific formula written after pharaohs' names — and at the ends of letters",
+        why: "You build for a reader who hasn't been born yet. You want the thing to last, and you're willing to make it heavy so it will.",
+        fact: "This is how you signed off a letter three thousand years ago.",
+        uncertainty: "We don't agree on its grammar. Traditionally read as three nouns — life, prosperity, health. Gardiner argued they're verbs: 'may he be alive, sound, healthy.' And hieroglyphs never recorded vowels, so this pronunciation is a convention scholars invented so the words could be said aloud at all."
+      },
+      GREEK: {
+        name: "Greek", archetype: "the arguer", script: "γνῶθι σεαυτόν", scriptClass: "default",
+        transliteration: "Transliteration: gnōthi seauton", pronunciation: "Pronunciation: NOH-thee seh-ow-TON",
+        translation: "“Know thyself.”", source: "Source: one of the Delphic maxims, inscribed at the Temple of Apollo at Delphi",
+        why: "You'd rather be corrected than comfortable. You think the question is the interesting part and you're suspicious of anyone who arrives too quickly at an answer.",
+        fact: "It was carved at the entrance to the oracle. Before you were permitted to ask about your future, you were told to understand yourself first.",
+        uncertainty: "Reconstructed classical pronunciation."
+      },
+      LATIN: {
+        name: "Latin", archetype: "the spine", script: "Dum spiro, spero.", scriptClass: "default",
+        transliteration: "Transliteration: not needed; the phrase uses the Latin alphabet.", pronunciation: "Pronunciation: doom SPEE-roh, SPEH-roh",
+        translation: "“While I breathe, I hope.”", source: "Source: unavailable in this source set.",
+        why: "You believe structure is a kindness. You say what you mean in as few words as it takes, and you expect the thing you build to still be standing when you're not.",
+        fact: "Latin never really died. It fractured. It went on living as French, Spanish, Italian, Portuguese, Romanian. Its speakers never stopped speaking. They just slowly stopped understanding each other.",
+        uncertainty: "Reconstructed classical pronunciation."
+      },
+      SANSKRIT: {
+        name: "Sanskrit", archetype: "the sacred", script: "सत्यमेव जयते", scriptClass: "sanskrit", scriptFont: "Noto Serif Devanagari",
+        transliteration: "Transliteration: satyameva jayate", pronunciation: "Pronunciation: SUT-yuh-MEH-vuh JUH-yuh-teh",
+        translation: "“Truth alone triumphs.”", source: "Source: Mundaka Upanishad",
+        why: "You keep things exactly as they were given to you, because you understand that precision is a form of devotion. You'd memorize it rather than lose it.",
+        fact: "Sanskrit was preserved by oral transmission with extraordinary precision — memorized sound by sound, for centuries, before anyone wrote it down. The grammarian Pāṇini described its rules around the 4th century BC so rigorously that linguists still study his work.",
+        uncertainty: "Preserved by oral tradition — the most reliable pronunciation in this set."
+      },
+      NORSE: {
+        name: "Old Norse", archetype: "the oath-keeper", script: "Deyr fé, deyja frændr.", scriptClass: "default",
+        transliteration: "Transliteration: not needed; the phrase uses the Latin alphabet.", pronunciation: "Pronunciation: DAYR fyeh, DAY-yah FRAIND-r",
+        translation: "“Cattle die, kinsmen die.”", source: "Source: Hávamál, Poetic Edda",
+        why: "You say the hard thing plainly and you keep your promises past the point where it's convenient. You know exactly what you'd want said about you, and you're trying to earn it.",
+        fact: "The verse goes on: the one thing that never dies is the reputation of the dead. It's a poem about being remembered, written by people whose names we do not know.",
+        uncertainty: "Reconstructed pronunciation."
+      },
+      OLDENGLISH: {
+        name: "Old English", archetype: "the homely", script: "Wyrd bið ful aræd.", scriptClass: "default",
+        transliteration: "Transliteration: not needed; the phrase uses the Latin alphabet.", pronunciation: "Pronunciation: WEERD bith fool ah-RAAD",
+        translation: "“Fate remains wholly inexorable.”", source: "Source: The Wanderer, line 5b, Exeter Book",
+        why: "You are clear-eyed about how much is out of your hands, and it hasn't made you bitter. You take the weather as it comes and you find that easier than most people do.",
+        fact: "“Wyrd” is the ancestor of the modern word “weird,” which used to mean fate.",
+        uncertainty: "Scholars still argue about what 'aræd' means. It's the most famous line in the poem and we are not entirely sure how to translate it. Also rendered 'set fast,' or 'what has happened is completely determined.'"
+      },
+      GOTHIC: {
+        name: "Gothic", archetype: "the fragment", script: "Original Gothic script: unavailable in this source set.", scriptClass: "gothic",
+        transliteration: "Transliteration: Iþ sa us himina qumana... akei ufaro allaim ist.", pronunciation: "Pronunciation: not reconstructible from the surviving corpus.",
+        translation: "“But he who came from heaven... yet he is above all.”", source: "Source: Skeireins IV, a commentary on the Gospel of John — a rare example of Gothic composed originally, rather than translated. (Ellipsis marks omitted text; the passage is quoted as attested.)",
+        why: "You save what you can. You've held onto things everyone else let go of, and some of them turned out to be the only copy.",
+        fact: "Gothic survives almost entirely on one manuscript — silver and gold ink on purple vellum. Of 336 original leaves, 188 remain. One more turned up in 1970, rolled around a wooden staff in a cathedral in Speyer. And it nearly didn't survive at all: Wulfila's church was Arian, and the later church erased Arian documents so thoroughly that we are lucky to have any of it. The Skeireins itself survives as a palimpsest — scraped off so the parchment could be reused. We read it anyway.",
+        uncertainty: "The surviving corpus is too small to reconstruct the language completely — we don't know how every noun inflected."
+      },
+      COPTIC: {
+        name: "Coptic", archetype: "the survivor", script: "Ϫⲉ ⲡⲉⲛⲓⲱⲧ ⲉⲧϧⲉⲛ ⲛⲓⲫⲏⲟⲩⲓ", scriptClass: "coptic", scriptFont: "Noto Sans Coptic",
+        transliteration: "Transliteration: Je Peniōt etħen niphēouí", pronunciation: "Pronunciation: jeh PEN-yote et-KHEN nee-fee-OO-ee",
+        translation: "“Our Father, who art in heaven.”", source: "Source: the Lord's Prayer, Matthew 6:9, Bohairic dialect. Chanted as “Je Peniot,” the Gospel response on weekends of the Great Fast — and at funerals.",
+        why: "You are the reason something survived. You carried it when carrying it was inconvenient, and you handed it on.",
+        fact: "Ancient Egyptian never wrote its vowels, which is why we don't know how it sounded. Coptic — Egyptian's own final stage — was written in Greek letters, and Greek letters do record vowels. So Coptic is how we know anything at all about the sound of the pharaohs' language. The child preserved the voice of the parent. Champollion cracked the Rosetta Stone because he knew Coptic. And it never fully died: it has no native speakers, but it is still chanted, this morning, in the Coptic Orthodox Church. The Egyptian language may have the longest documented history of any language on earth — from before 3200 BC to a hymn sung today.",
+        uncertainty: "Still chanted today — the only pronunciation here with living continuity."
+      }
+    };
+
+    const introView = document.getElementById("introView");
+    const quizView = document.getElementById("quizView");
+    const resultView = document.getElementById("resultView");
+    const questionTitle = document.getElementById("questionTitle");
+    const questionNumber = document.getElementById("questionNumber");
+    const answersElement = document.getElementById("answers");
+    const progressFill = document.getElementById("progressFill");
+    const progressText = document.getElementById("progressText");
+    const backButton = document.getElementById("backButton");
+    let currentQuestion = 0;
+    let selections = [];
+
+    function setText(id, value) { document.getElementById(id).textContent = value; }
+
+    function showView(view) {
+      [introView, quizView, resultView].forEach(function (item) {
+        item.hidden = item !== view;
+        item.classList.remove("view-enter");
+      });
+      view.classList.add("view-enter");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderQuestion() {
+      const question = questions[currentQuestion];
+      showView(quizView);
+      questionTitle.textContent = question.text;
+      questionNumber.textContent = "Question " + String(currentQuestion + 1);
+      progressText.textContent = String(currentQuestion + 1) + " / " + String(questions.length);
+      progressFill.style.width = String(((currentQuestion + 1) / questions.length) * 100) + "%";
+      backButton.disabled = currentQuestion === 0;
+      answersElement.replaceChildren();
+
+      question.answers.forEach(function (answer, index) {
+        const button = document.createElement("button");
+        const letter = document.createElement("span");
+        const label = document.createElement("span");
+        button.type = "button";
+        button.className = "answer";
+        letter.className = "answer-letter";
+        letter.setAttribute("aria-hidden", "true");
+        letter.textContent = String.fromCharCode(65 + index);
+        label.textContent = answer.text;
+        button.append(letter, label);
+        button.addEventListener("click", function () { chooseAnswer(index); });
+        answersElement.append(button);
+      });
+
+      window.requestAnimationFrame(function () {
+        const firstAnswer = answersElement.querySelector("button");
+        if (firstAnswer) firstAnswer.focus({ preventScroll: true });
+      });
+    }
+
+    function chooseAnswer(index) {
+      selections[currentQuestion] = index;
+      selections = selections.slice(0, currentQuestion + 1);
+      if (currentQuestion < questions.length - 1) {
+        currentQuestion += 1;
+        renderQuestion();
+      } else {
+        renderResult();
+      }
+    }
+
+    function calculateResult() {
+      const scores = {};
+      archetypeOrder.forEach(function (key) { scores[key] = 0; });
+      selections.forEach(function (answerIndex, questionIndex) {
+        const points = questions[questionIndex].answers[answerIndex].points;
+        Object.keys(points).forEach(function (key) { scores[key] += points[key]; });
+      });
+      return archetypeOrder.slice().sort(function (a, b) {
+        const difference = scores[b] - scores[a];
+        return difference !== 0 ? difference : archetypeOrder.indexOf(a) - archetypeOrder.indexOf(b);
+      });
+    }
+
+    function fontIsAvailable(fontName, sample) {
+      if (!fontName || !document.fonts || !document.fonts.check) return true;
+      return document.fonts.check("32px '" + fontName + "'", sample);
+    }
+
+    function renderResult() {
+      const ranking = calculateResult();
+      const winnerKey = ranking[0];
+      const runnerKey = ranking[1];
+      const result = results[winnerKey];
+      showView(resultView);
+      setText("languageName", result.name);
+      setText("archetype", result.archetype);
+
+      const scriptElement = document.getElementById("script");
+      scriptElement.className = "script " + result.scriptClass;
+      const canShowScript = !result.scriptFont || fontIsAvailable(result.scriptFont, result.script);
+      scriptElement.textContent = canShowScript ? result.script : "Original script: unavailable because the required font did not load.";
+      setText("transliteration", result.transliteration);
+      setText("pronunciation", result.pronunciation);
+      setText("translation", result.translation);
+      setText("source", result.source);
+      setText("why", result.why);
+      setText("fact", result.fact);
+      setText("uncertainty", result.uncertainty);
+      setText("receipt", "mostly " + result.name + ", with something of " + results[runnerKey].name + " in you · sorted by your answers, not by chance");
+      window.requestAnimationFrame(function () { document.getElementById("againButton").focus({ preventScroll: true }); });
+    }
+
+    document.getElementById("beginButton").addEventListener("click", function () {
+      currentQuestion = 0;
+      selections = [];
+      renderQuestion();
+    });
+
+    backButton.addEventListener("click", function () {
+      if (currentQuestion > 0) {
+        currentQuestion -= 1;
+        selections = selections.slice(0, currentQuestion);
+        renderQuestion();
+      }
+    });
+
+    document.getElementById("againButton").addEventListener("click", function () {
+      currentQuestion = 0;
+      selections = [];
+      showView(introView);
+      window.requestAnimationFrame(function () { document.getElementById("beginButton").focus({ preventScroll: true }); });
+    });
+  </script>
+</body>
+</html>

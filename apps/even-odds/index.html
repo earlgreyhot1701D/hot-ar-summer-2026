@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Even Odds</title>
+
+<!-- Social preview. Replace SITE_URL with the deployed URL (no trailing slash).
+     og-evenodds.png goes in the site root next to index.html. -->
+<meta property="og:title" content="Even Odds" />
+<meta property="og:description" content="Name two options. The scale weighs them, lands dead even, and refuses to decide for you. The point is that it can't. You have to." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="SITE_URL/og-evenodds.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Even Odds" />
+<meta name="twitter:description" content="The scale has no opinion. On purpose." />
+<meta name="twitter:image" content="SITE_URL/og-evenodds.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ivory:#F1EBDD; --ivory2:#E7DEC9; --ink:#232019; --soft:#6E6552;
+    --brass:#B8862F; --brass-l:#E6C878; --line:#CDBF9E;
+    --teal:#2E6E6A; --clay:#B5563C;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{
+    min-height:100svh; display:flex; flex-direction:column; overflow-x:hidden;
+    color:var(--ink); font-family:"JetBrains Mono",monospace;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.5), transparent 55%),
+      repeating-linear-gradient(0deg, transparent 0 3px, rgba(35,32,25,.014) 3px 4px),
+      var(--ivory);
+  }
+  header{text-align:center;padding:clamp(14px,3svh,26px) 16px clamp(4px,1svh,10px)}
+  .kicker{margin:0;font-size:clamp(.54rem,1.8vw,.68rem);letter-spacing:.24em;text-transform:uppercase;color:var(--brass)}
+  h1{margin:.04em 0 .04em;font-family:"Fraunces",serif;font-weight:600;
+    font-size:clamp(2.6rem,min(13vw,9svh),5rem);letter-spacing:.01em;color:var(--ink)}
+  .sub{margin:0;font-family:"Fraunces",serif;font-style:italic;font-size:clamp(.95rem,2.8vw,1.2rem);color:var(--soft)}
+
+  main{flex:1;width:100%;max-width:640px;margin:0 auto;padding:0 clamp(12px,3vw,22px) clamp(16px,3svh,30px)}
+
+  .inputs{display:flex;align-items:center;gap:10px;margin-top:clamp(10px,2svh,18px)}
+  .inputs .fld{flex:1}
+  label{display:block;font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;color:var(--soft);margin-bottom:6px;text-align:center}
+  input{width:100%;background:#FBF7EC;border:1px solid var(--line);border-bottom:2px solid var(--ink);
+    border-radius:2px;padding:12px 12px;font-family:"Fraunces",serif;font-size:clamp(1.05rem,3vw,1.25rem);
+    color:var(--ink);text-align:center}
+  input:focus{outline:3px solid var(--brass-l);outline-offset:1px}
+  .vs{font-family:"Fraunces",serif;font-style:italic;font-size:1.2rem;color:var(--brass);flex:none;padding-top:18px}
+
+  .row{display:flex;gap:9px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:14px}
+  .btn{font-family:"JetBrains Mono",monospace;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;
+    padding:12px 26px;border:2px solid var(--ink);border-radius:2px;cursor:pointer;
+    background:var(--ink);color:var(--ivory);box-shadow:0 4px 0 #000}
+  .btn:active{transform:translateY(3px);box-shadow:0 1px 0 #000}
+  .btn.ghost{background:transparent;color:var(--ink);box-shadow:0 4px 0 rgba(35,32,25,.3)}
+  .btn:focus-visible{outline:4px solid var(--brass-l);outline-offset:3px}
+  .warn{color:var(--clay);font-size:.76rem;text-align:center;min-height:1.3em;margin:10px 0 0}
+
+  /* balance scale */
+  .scalewrap{margin:clamp(10px,2svh,20px) auto 0;max-width:460px}
+  .scalewrap svg{display:block;width:100%;height:auto}
+  #beam{transform-box:view-box;transform-origin:230px 92px}
+  .weigh #beam{animation:wobble 1200ms cubic-bezier(.3,.7,.3,1) both}
+  @keyframes wobble{
+    0%{transform:rotate(0deg)} 15%{transform:rotate(-7deg)} 35%{transform:rotate(5deg)}
+    55%{transform:rotate(-3deg)} 75%{transform:rotate(1.5deg)} 100%{transform:rotate(0deg)}
+  }
+  @media (prefers-reduced-motion:reduce){ .weigh #beam{animation:none} }
+
+  .verdict{margin:clamp(10px,2svh,18px) 0 0;text-align:center}
+  .hidden{display:none!important}
+  .bar{display:flex;height:44px;border:2px solid var(--ink);border-radius:3px;overflow:hidden;margin-top:6px}
+  .bar .half{flex:1 1 50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;
+    letter-spacing:.04em;color:var(--ivory);padding:0 8px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bar .a{background:var(--teal)} .bar .b{background:var(--clay)}
+  .split{display:flex;justify-content:space-between;font-family:"JetBrains Mono",monospace;font-size:.7rem;color:var(--soft);margin-top:5px}
+  .line{font-family:"Fraunces",serif;font-style:italic;font-size:clamp(1.05rem,3.4vw,1.35rem);color:var(--ink);margin:16px 0 4px}
+  .prompt{font-size:.8rem;color:var(--soft);letter-spacing:.04em;margin:0 0 12px}
+
+  .choices{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .choose{font-family:"Fraunces",serif;font-size:clamp(1rem,3vw,1.2rem);cursor:pointer;
+    padding:13px 20px;border:2px solid var(--ink);border-radius:3px;background:#FBF7EC;color:var(--ink);
+    max-width:44%;box-shadow:0 4px 0 rgba(35,32,25,.28)}
+  .choose:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(35,32,25,.28)}
+  .choose.a{border-color:var(--teal)} .choose.b{border-color:var(--clay)}
+  .choose:focus-visible{outline:4px solid var(--brass-l);outline-offset:3px}
+
+  .decided{margin:6px 0 0;text-align:center}
+  .decided .big{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(1.6rem,7vw,2.6rem);color:var(--ink);
+    border:3px double var(--brass);display:inline-block;padding:8px 22px;transform:rotate(-1.2deg);margin-bottom:10px}
+  .decided p{font-family:"Fraunces",serif;font-style:italic;font-size:1.05rem;color:var(--soft);margin:6px 0}
+
+  footer{flex:none;margin-top:auto}
+  .sig{text-align:center;font-size:.55rem;letter-spacing:.13em;text-transform:uppercase;
+    color:#8E8368;margin:18px 0 10px;padding:0 16px;line-height:1.8}
+  .rail{height:6px;background:linear-gradient(90deg,var(--teal) 0 50%,var(--clay) 50% 100%)}
+</style>
+</head>
+<body>
+
+<header>
+  <p class="kicker">A scale that will not tip</p>
+  <h1>Even Odds</h1>
+  <p class="sub">Name two options. It refuses to decide for you.</p>
+</header>
+
+<main>
+  <div class="inputs">
+    <div class="fld">
+      <label for="a">This</label>
+      <input id="a" maxlength="34" placeholder="call them">
+    </div>
+    <div class="vs">vs</div>
+    <div class="fld">
+      <label for="b">That</label>
+      <input id="b" maxlength="34" placeholder="don't">
+    </div>
+  </div>
+
+  <div class="row">
+    <button class="btn" id="weigh" type="button">Weigh them</button>
+    <button class="btn ghost hidden" id="reset" type="button">Start over</button>
+  </div>
+  <p class="warn" id="warn" role="alert" aria-live="polite"></p>
+
+  <div class="scalewrap" aria-hidden="true">
+    <svg viewBox="0 0 460 240">
+      <!-- base + post -->
+      <rect x="150" y="214" width="160" height="12" rx="4" fill="#B8862F" stroke="#6B4E15" stroke-width="2"/>
+      <rect x="224" y="96" width="12" height="120" fill="#B8862F" stroke="#6B4E15" stroke-width="2"/>
+      <polygon points="230,80 214,100 246,100" fill="#B8862F" stroke="#6B4E15" stroke-width="2"/>
+      <!-- beam + pans (rotates a touch, settles perfectly level) -->
+      <g id="beam">
+        <line x1="70" y1="92" x2="390" y2="92" stroke="#8A6520" stroke-width="6" stroke-linecap="round"/>
+        <circle cx="230" cy="92" r="7" fill="#E6C878" stroke="#6B4E15" stroke-width="2"/>
+        <line x1="70" y1="92" x2="70" y2="132" stroke="#8A6520" stroke-width="2"/>
+        <line x1="390" y1="92" x2="390" y2="132" stroke="#8A6520" stroke-width="2"/>
+        <path d="M40 132 A30 20 0 0 0 100 132 Z" fill="#2E6E6A" stroke="#204E4B" stroke-width="2"/>
+        <path d="M360 132 A30 20 0 0 0 420 132 Z" fill="#B5563C" stroke="#7E3927" stroke-width="2"/>
+      </g>
+    </svg>
+  </div>
+
+  <section class="verdict hidden" id="verdict" aria-live="polite">
+    <div class="bar">
+      <div class="half a" id="barA">This</div>
+      <div class="half b" id="barB">That</div>
+    </div>
+    <div class="split"><span>50.0%</span><span>exactly even</span><span>50.0%</span></div>
+    <p class="line" id="line">Dead even. The scale has no opinion, and it never will.</p>
+    <p class="prompt" id="prompt">So it comes down to you. Which one?</p>
+    <div class="choices" id="choices"></div>
+  </section>
+
+  <section class="decided hidden" id="decided" aria-live="polite"></section>
+</main>
+
+<footer>
+  <p class="sig">No coin &middot; no randomness &middot; it cannot choose, on purpose &middot; nothing stored or sent<br>
+  AI assisted. Human approved. Powered by NLP.</p>
+  <div class="rail" aria-hidden="true"></div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+/* EVEN ODDS — the anti-coin. It weighs two options and lands exactly 50/50, forever.
+   MUST : always 50/50. There is NO decision logic and NO randomness. That is the joke.
+   MUST : the choice is recorded as the USER's, never the app's.
+   NEVER: Math.random, fetch, storage, innerHTML, eval. Nothing decides but the person.
+   STUB : share the dilemma via ?this=&that=, a gentle chime. */
+
+var $=function(i){return document.getElementById(i);};
+function el(t,c,x){var n=document.createElement(t);if(c)n.className=c;if(x!=null)n.textContent=x;return n;}
+
+var A="", B="";
+
+/* one soft, equal tap for each side (synth, no files, still no randomness) */
+var AC=null;
+function ac(){ if(AC) return AC; try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){AC=null;} return AC; }
+function tap(freq,at){
+  var a=ac(); if(!a) return;
+  try{
+    var t=a.currentTime+(at||0), o=a.createOscillator(), g=a.createGain();
+    o.type="sine"; o.frequency.value=freq;
+    g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.14,t+.01);
+    g.gain.exponentialRampToValueAtTime(.0001,t+.22);
+    o.connect(g); g.connect(a.destination); o.start(t); o.stop(t+.24);
+  }catch(e){}
+}
+
+function weigh(){
+  var w=$("warn"); w.textContent="";
+  A=String($("a").value||"").trim().slice(0,34);
+  B=String($("b").value||"").trim().slice(0,34);
+  if(!A || !B){ w.textContent="Give it both options. It weighs two things, not one."; return; }
+  if(A.toLowerCase()===B.toLowerCase()){ w.textContent="Those are the same thing. Even the scale can see that."; return; }
+
+  $("barA").textContent=A; $("barB").textContent=B;
+
+  var choices=$("choices"); choices.textContent="";
+  [["a",A],["b",B]].forEach(function(pair){
+    var btn=el("button","choose "+pair[0],pair[1]); btn.type="button";
+    btn.addEventListener("click",function(){ decide(pair[1], pair[0]); });
+    choices.appendChild(btn);
+  });
+
+  $("prompt").textContent="So it comes down to you. Which one?";
+  $("choices").classList.remove("hidden");
+  $("decided").classList.add("hidden");
+  $("verdict").classList.remove("hidden");
+  $("reset").classList.remove("hidden");
+
+  /* wobble the beam, then it settles dead level. two equal taps, one per pan. */
+  document.body.classList.remove("weigh"); void document.body.offsetWidth; document.body.classList.add("weigh");
+  tap(392,0); tap(392,0.14);   /* same note, same volume, both sides: perfectly even */
+}
+
+function decide(choice, side){
+  var d=$("decided");
+  d.textContent="";
+  var big=el("div","big",choice); d.appendChild(big);
+  d.appendChild(el("p",null,"You chose it. Not chance, not the scale. You did."));
+  d.appendChild(el("p",null,"It stayed even the whole time. The deciding was always yours."));
+  d.classList.remove("hidden");
+  $("prompt").textContent="Decided.";
+  $("choices").classList.add("hidden");
+  tap(side==="a"?523:440,0);   /* a small, human confirmation */
+  d.scrollIntoView({behavior:"smooth",block:"center"});
+}
+
+function reset(){
+  $("verdict").classList.add("hidden");
+  $("decided").classList.add("hidden");
+  $("choices").classList.remove("hidden");
+  $("reset").classList.add("hidden");
+  $("warn").textContent="";
+  $("a").value=""; $("b").value=""; $("a").focus();
+}
+
+$("weigh").addEventListener("click",weigh);
+$("reset").addEventListener("click",reset);
+$("b").addEventListener("keydown",function(e){ if(e.key==="Enter") weigh(); });
+$("a").addEventListener("keydown",function(e){ if(e.key==="Enter") $("b").focus(); });
+
+/* expose the "engine" for verification: it is, and always will be, 50/50 */
+window.__split=function(){ return {a:50.0, b:50.0}; };
+})();
+</script>
+</body>
+</html>

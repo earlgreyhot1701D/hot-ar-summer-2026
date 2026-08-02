@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Too Late to Text?</title>
+
+<!-- Social preview. Replace SITE_URL with the deployed URL (no trailing slash).
+     og-toolate.png goes in the site root next to index.html. -->
+<meta property="og:title" content="Too Late to Text?" />
+<meta property="og:description" content="The kiosk reads your clock and rules, with great courtesy. Kindly ring back at a decent hour." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="SITE_URL/og-toolate.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Too Late to Text?" />
+<meta name="twitter:description" content="Verdict from your device clock, nothing else." />
+<meta name="twitter:image" content="SITE_URL/og-toolate.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hammersmith+One&family=EB+Garamond:ital,wght@0,400;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --night:#0B0E1B; --sky-deep:#12162B; --brick:#161B29; --wall:#1E2332; --pave:#2E323C; --pave2:#383D48;
+    --red:#C41E25; --red-deep:#820F14; --red-light:#E02830; --ink:#1C1A18;
+    --cream:#F5EEDC; --glow:#FFD68C; --glow-bright:#FFE2A8;
+    --mist:#9AA4BE; --faint:#7E88A2;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;min-height:100%;}
+  body{
+    min-height:100svh;
+    overflow-x:hidden; overflow-y:auto;
+    display:flex; flex-direction:column;
+    color:var(--cream);
+    font-family:"EB Garamond",Georgia,serif;
+    background:
+      /* Deep space glow vignette */
+      radial-gradient(circle at 20% 20%, rgba(30, 40, 75, 0.6), transparent 50%),
+      radial-gradient(circle at 80% 15%, rgba(45, 35, 70, 0.4), transparent 40%),
+      /* Bright starfield */
+      radial-gradient(circle 2px at 12% 12%, #A0B0E0 99%, transparent),
+      radial-gradient(circle 1.5px at 34% 6%,  #7A87AE 99%, transparent),
+      radial-gradient(circle 2px at 58% 15%, #A0B0E0 99%, transparent),
+      radial-gradient(circle 1.5px at 76% 9%,  #7A87AE 99%, transparent),
+      radial-gradient(circle 2.5px at 88% 18%, #C0D0FF 99%, transparent),
+      radial-gradient(circle 1.5px at 22% 28%, #7A87AE 99%, transparent),
+      radial-gradient(circle 2px at 68% 32%, #A0B0E0 99%, transparent),
+      radial-gradient(circle 1.5px at 45% 22%, #8A96BE 99%, transparent),
+      /* Brick-course weave overlay */
+      repeating-linear-gradient(0deg, transparent 0 17px, rgba(255,255,255,0.025) 17px 18px),
+      repeating-linear-gradient(90deg, transparent 0 59px, rgba(255,255,255,0.018) 59px 60px),
+      var(--night);
+  }
+
+  main{
+    flex:1; min-height:0;
+    width:100%; max-width:980px; margin:0 auto;
+    display:flex; align-items:center; justify-content:center;
+    gap:clamp(20px,4.5vw,60px);
+    padding:clamp(16px,3svh,32px) clamp(16px,3vw,32px);
+    position:relative; z-index:2;
+  }
+
+  /* ---- Moon & Kiosk Frame ---- */
+  .kiosk-column {
+    flex:none; position:relative;
+    display:flex; flex-direction:column; align-items:center;
+  }
+
+  .moon {
+    width: clamp(38px, 6vw, 54px);
+    height: auto;
+    margin-bottom: clamp(6px, 1.2svh, 14px);
+    filter: drop-shadow(0px 0px 14px rgba(255, 226, 168, 0.65));
+  }
+
+  .kiosk-wrap{ 
+    position:relative; width:clamp(150px,24vw,230px); 
+    filter: drop-shadow(0px 8px 24px rgba(0,0,0,0.7)) drop-shadow(0px 0px 22px rgba(255, 214, 140, 0.28));
+  }
+  .kiosk-wrap svg{ display:block; width:100%; height:auto; }
+  .shadow{
+    position:absolute; left:-12%; right:-4%; bottom:-3%;
+    height:9%; background:radial-gradient(ellipse at 45% 50%, rgba(0,0,0,0.65), transparent 70%);
+  }
+
+  .pane-light { transition: fill 400ms ease; }
+
+  /* ---- Decision Stage ---- */
+  .verdict{ text-align:center; max-width:540px; width:100%; }
+  
+  .clockline{
+    font-family:"JetBrains Mono",monospace; font-weight:700;
+    letter-spacing:0.2em; font-size:clamp(0.75rem,2vw,0.95rem);
+    color:var(--mist); margin:0 0 clamp(12px,2svh,20px);
+  }
+
+  /* Hero Recipient Focus Field */
+  .askname{
+    margin:0 auto clamp(16px,2.8svh,26px);
+    width:100%;
+    background: linear-gradient(180deg, rgba(25, 31, 48, 0.8), rgba(18, 22, 35, 0.9));
+    border: 1.5px solid rgba(255, 214, 140, 0.35);
+    border-radius: 16px;
+    padding: clamp(16px, 2.5svh, 22px) clamp(16px, 3vw, 24px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    transition: all 300ms ease;
+  }
+  .askname:focus-within {
+    border-color: var(--glow-bright);
+    background: linear-gradient(180deg, rgba(30, 38, 60, 0.95), rgba(20, 26, 42, 0.95));
+    box-shadow: 0 0 24px rgba(255, 214, 140, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  }
+  .askname label{
+    display:block; 
+    font-family:"EB Garamond", Georgia, serif;
+    font-size:clamp(1.25rem, 3.2vw, 1.7rem); 
+    font-weight: 600;
+    line-height: 1.2;
+    color:var(--glow-bright); 
+    margin-bottom:10px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  }
+  .askname input{
+    width:100%; background:transparent; color:var(--cream);
+    border:0; border-bottom:2px solid var(--faint);
+    font-family:"EB Garamond",Georgia,serif; 
+    font-size:clamp(1.2rem,2.8vw,1.55rem);
+    text-align:center; padding:6px 4px; outline:none;
+    border-radius:0;
+    -webkit-tap-highlight-color: transparent;
+    transition: border-color 200ms ease;
+  }
+  .askname input::placeholder{ color:rgba(154,164,190,0.45); font-style:italic; }
+  .askname input:focus{ border-color:var(--glow-bright); }
+
+  /* Ruling Text Styling */
+  h1.ruling{
+    font-family:"Hammersmith One",sans-serif; font-weight:400;
+    font-size:clamp(2.2rem,min(9vw,7.5svh),4.2rem);
+    line-height:1.02; margin:0 0 clamp(8px,1.6svh,14px);
+    letter-spacing:0.01em;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+    transition: color 300ms ease;
+  }
+  h1.ruling.idle-ruling {
+    color: var(--faint);
+    font-size: clamp(1.6rem, min(6vw, 5svh), 2.8rem);
+    letter-spacing: 0.08em;
+    opacity: 0.7;
+  }
+
+  .courtesy{
+    font-style:italic; font-size:clamp(1.1rem,3vw,1.5rem);
+    color:var(--glow); margin:0 0 6px;
+    text-shadow: 0 0 10px rgba(255, 214, 140, 0.35);
+  }
+  .aside{
+    font-size:clamp(0.9rem,2.4vw,1.1rem);
+    color:var(--mist); margin:0 0 clamp(10px,2svh,18px);
+  }
+
+  .smallprint{
+    margin:clamp(12px,2.2svh,20px) 0 0;
+    padding-top:clamp(8px,1.6svh,14px);
+    border-top:1px solid rgba(154,164,190,0.25);
+    font-family:"JetBrains Mono",monospace;
+    font-size:0.6rem; letter-spacing:0.1em; color:var(--faint);
+    line-height:1.8;
+  }
+
+  footer{
+    flex:none; position:relative; z-index:1; width:100%; margin-top:auto;
+  }
+  .sig{
+    text-align:center; font-family:"JetBrains Mono",monospace;
+    font-size:0.56rem; letter-spacing:0.12em; text-transform:uppercase;
+    color:#5E6880; margin:0 0 10px; padding:0 16px; line-height:1.7;
+  }
+  .wallband{ height:clamp(20px,4svh,38px); background:var(--wall); border-top:1px solid #30384E; }
+  .paveband{
+    height:clamp(26px,5svh,44px); background:var(--pave);
+    border-top:3px solid #424858;
+    background-image:repeating-linear-gradient(105deg, transparent 0 84px, var(--pave2) 84px 87px);
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+
+  @media (max-width:640px){
+    main{ flex-direction:column; gap:clamp(12px,2svh,20px); justify-content:flex-start; padding-top:clamp(12px,3svh,24px); }
+    .kiosk-wrap{ width:clamp(120px,32vw,170px); }
+    .verdict{ max-width:94vw; }
+  }
+  [hidden]{ display:none !important; }
+  .settle{ animation:settle 600ms ease both; }
+  @keyframes settle{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+  @media (prefers-reduced-motion:reduce){ .settle{ animation:none; } }
+</style>
+</head>
+<body>
+
+<main>
+  <!-- Left Column: Crescent Moon & Telephone Kiosk -->
+  <div class="kiosk-column" aria-hidden="true">
+    <svg class="moon" viewBox="0 0 100 100" fill="none">
+      <path d="M70 15 C50 15 30 32 30 55 C30 78 50 95 75 92 C52 98 20 80 20 52 C20 28 48 8 70 15 Z" fill="#FFE2A8"/>
+    </svg>
+
+    <div class="kiosk-wrap">
+      <svg viewBox="0 0 200 430">
+        <defs>
+          <linearGradient id="kioskGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#E02830"/>
+            <stop offset="40%" stop-color="#C41E25"/>
+            <stop offset="100%" stop-color="#820F14"/>
+          </linearGradient>
+        </defs>
+
+        <!-- dome -->
+        <path d="M18 96 Q18 26 100 26 Q182 26 182 96 L182 110 L18 110 Z" fill="url(#kioskGrad)" stroke="#1C1A18" stroke-width="4"/>
+        <ellipse cx="100" cy="34" rx="11" ry="8" fill="none" stroke="#D4AF37" stroke-width="3"/>
+        <!-- body -->
+        <rect x="18" y="108" width="164" height="290" fill="url(#kioskGrad)" stroke="#1C1A18" stroke-width="4"/>
+        <!-- sign band -->
+        <rect id="signband" x="32" y="66" width="136" height="30" fill="#FFD68C" stroke="#1C1A18" stroke-width="3" class="pane-light"/>
+        <text id="signtext" x="100" y="87" text-anchor="middle"
+              font-family="Hammersmith One, sans-serif" font-size="17" letter-spacing="3" fill="#1C1A18">TELEPHONE</text>
+        <!-- panes: 3x6, ids p0..p17 -->
+        <g id="panes"></g>
+        <!-- plinth -->
+        <rect x="12" y="392" width="176" height="34" fill="#820F14" stroke="#1C1A18" stroke-width="3"/>
+      </svg>
+      <div class="shadow"></div>
+    </div>
+  </div>
+
+  <!-- Right Column: Decision Stage -->
+  <div class="verdict">
+    <p class="clockline" id="clockline">IT IS —</p>
+
+    <!-- HERO RECIPIENT INPUT -->
+    <div class="askname">
+      <label for="who">Who are you thinking of texting?</label>
+      <input id="who" type="text" maxlength="24" autocomplete="off" placeholder="e.g. your ex, crush, boss...">
+    </div>
+
+    <!-- REVEALABLE RULING STAGE -->
+    <h1 class="ruling idle-ruling" id="ruling">AWAITING RECIPIENT...</h1>
+    <p class="courtesy" id="courtesy">Type a name above to query the kiosk.</p>
+    <p class="aside" id="aside">The exchange stands ready.</p>
+
+    <p class="smallprint">
+      VERDICT FROM YOUR DEVICE CLOCK, NOTHING ELSE.<br>
+      THE KIOSK HAS SEEN THE DRAFTS. THE KIOSK UNDERSTANDS.
+    </p>
+  </div>
+</main>
+
+<footer>
+  <p class="sig">Nothing you type is stored or sent &middot; AI assisted &middot; Human approved &middot; Powered by NLP</p>
+  <div class="wallband" aria-hidden="true"></div>
+  <div class="paveband" aria-hidden="true"></div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+
+/* seven bands. courtesy lines personalize when a name is given. */
+var BANDS=[
+  { from:5,  to:9,  ruling:"PERFECTLY FINE.",  glow:1,
+    courtesyName:"Give {N} our regards.",
+    aside:"The kiosk opens with the sun." },
+  { from:9,  to:17, ruling:"GO RIGHT AHEAD.",  glow:1,
+    courtesyName:"{N} will be glad to hear from you.",
+    aside:"The line is clear." },
+  { from:17, to:21, ruling:"STILL FINE.",      glow:1,
+    courtesyName:"Ring {N} while the kettle's on.",
+    aside:"No cause for concern." },
+  { from:21, to:22, ruling:"GETTING LATE.",    glow:0.9,
+    courtesyName:"If it matters to {N}, it will keep.",
+    aside:"The kiosk begins to dim." },
+  { from:22, to:23, ruling:"RISKY.",           glow:0.75,
+    courtesyName:"Write it for {N}. Send it tomorrow.",
+    aside:"Nothing sent now reads the way you mean it." },
+  { from:23, to:24, ruling:"NOT AT THIS HOUR.",glow:0.5,
+    courtesyName:"Whatever you'd say to {N} will say better at ten.",
+    aside:"The kiosk is lit. You needn't be." },
+  { from:0,  to:5,  ruling:"ABSOLUTELY NOT.",  glow:0.2,
+    courtesyName:"{N} is asleep. Let that be mutual.",
+    aside:"One pane stays lit for emergencies. This is not one." }
+];
+
+function bandFor(hour){
+  for(var i=0;i<BANDS.length;i++){
+    if(hour>=BANDS[i].from && hour<BANDS[i].to) return BANDS[i];
+  }
+  return BANDS[BANDS.length-1];
+}
+
+/* build the panes */
+var panes=[];
+(function(){
+  var g=document.getElementById("panes");
+  var svgns="http://www.w3.org/2000/svg";
+  var x0=34, y0=126, w=42, h=40, gap=4;
+  for(var r=0;r<6;r++){
+    for(var c=0;c<3;c++){
+      var rect=document.createElementNS(svgns,"rect");
+      rect.setAttribute("x", x0+c*(w+gap));
+      rect.setAttribute("y", y0+r*(h+gap));
+      rect.setAttribute("width", w); rect.setAttribute("height", h);
+      rect.setAttribute("fill", "#FFD68C");
+      rect.setAttribute("stroke", "#1C1A18");
+      rect.setAttribute("stroke-width", "2");
+      rect.setAttribute("class", "pane-light");
+      g.appendChild(rect);
+      panes.push(rect);
+    }
+  }
+})();
+
+function fmtTime(dt){
+  var h=dt.getHours(), m=dt.getMinutes();
+  var ampm = h>=12 ? "PM" : "AM";
+  var h12 = h%12; if(h12===0) h12=12;
+  return "IT IS "+h12+":"+(m<10?"0":"")+m+" "+ampm+".";
+}
+
+function lightKiosk(level){
+  for(var i=0;i<panes.length;i++){
+    var lit;
+    if(level>=0.95) lit=true;
+    else if(level>=0.75) lit=(i%9!==4);
+    else if(level>=0.5)  lit=(i%3!==1);
+    else lit=(i===13);
+    panes[i].setAttribute("fill", lit ? "#FFD68C" : "#2A181B");
+  }
+  var sign=document.getElementById("signband");
+  sign.setAttribute("fill", level>=0.5 ? "#FFD68C" : "#6A4B29");
+}
+
+var currentBand=null;
+var hasRevealed=false;
+
+function render(){
+  var now=new Date();
+  var band=bandFor(now.getHours());
+  document.getElementById("clockline").textContent=fmtTime(now);
+  currentBand=band;
+  lightKiosk(band.glow);
+  applyCourtesy();
+}
+
+function applyCourtesy(){
+  var name=document.getElementById("who").value.trim();
+  var band=currentBand;
+  var rulingEl=document.getElementById("ruling");
+  var courtesyEl=document.getElementById("courtesy");
+  var asideEl=document.getElementById("aside");
+
+  if(!band) return;
+
+  if(name){
+    /* TRIGGER VERDICT STATE */
+    rulingEl.textContent = band.ruling;
+    rulingEl.classList.remove("idle-ruling");
+    courtesyEl.textContent = band.courtesyName.replace("{N}", name);
+    asideEl.textContent = band.aside;
+
+    if(!hasRevealed){
+      hasRevealed = true;
+      var v=document.querySelector(".verdict");
+      v.classList.remove("settle"); void v.offsetWidth; v.classList.add("settle");
+    }
+  } else {
+    /* RESET TO IDLE STATE */
+    hasRevealed = false;
+    rulingEl.textContent = "AWAITING RECIPIENT...";
+    rulingEl.classList.add("idle-ruling");
+    courtesyEl.textContent = "Type a name above to query the kiosk.";
+    asideEl.textContent = "The exchange stands ready.";
+  }
+}
+
+document.getElementById("who").addEventListener("input", applyCourtesy);
+
+render();
+setInterval(render, 15000);
+
+window.__bandFor = function(h){ return bandFor(h).ruling; };
+})();
+</script>
+</body>
+</html>

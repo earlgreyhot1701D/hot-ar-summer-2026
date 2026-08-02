@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Decision — 2026</title>
+  <meta name="description" content="LeBron's been in the NBA so long he's a unit of measurement. Type a year.">
+  <meta property="og:title" content="The Decision — 2026">
+  <meta property="og:description" content="LeBron's been in the NBA so long he's a unit of measurement. Type a year.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="SITE_URL/og-thedecision.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="The Decision — 2026">
+  <meta name="twitter:description" content="While the man decides, let's talk about how long he's been deciding things.">
+  <meta name="twitter:image" content="SITE_URL/og-thedecision.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&amp;family=Roboto+Slab:wght@800;900&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --purple: #552583;
+      --purple-dark: #241238;
+      --purple-soft: #694096;
+      --gold: #fdb927;
+      --cream: #f4eedc;
+      --paper-line: rgba(36, 18, 56, 0.075);
+      --ink: #21152d;
+      --muted: #6f6675;
+      --white: #fffdf6;
+      --shadow: #21152d;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background-color: var(--cream);
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 36px,
+        var(--paper-line) 37px,
+        transparent 38px
+      );
+      font-family: "DM Sans", Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    button,
+    input { font: inherit; }
+
+    button { cursor: pointer; }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      color: var(--white);
+      background-color: var(--purple);
+      background-image: repeating-linear-gradient(
+        135deg,
+        transparent 0,
+        transparent 46px,
+        rgba(255,255,255,0.055) 46px,
+        rgba(255,255,255,0.055) 88px
+      );
+      border-bottom: 7px solid var(--gold);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 44%;
+      pointer-events: none;
+      background: linear-gradient(to top, rgba(36,18,56,0.25), transparent);
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      width: min(1100px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 54px 0 64px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      margin: 0 0 18px;
+      padding: 7px 18px 6px;
+      color: var(--purple);
+      background: var(--gold);
+      border: 2px solid var(--purple-dark);
+      box-shadow: 4px 4px 0 var(--purple-dark);
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      line-height: 1.3;
+      text-transform: uppercase;
+      transform: rotate(-0.7deg);
+    }
+
+    h1,
+    h2,
+    .result-year,
+    .record-number {
+      font-family: "Roboto Slab", Rockwell, Georgia, serif;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0 auto;
+      color: var(--gold);
+      font-size: clamp(3.35rem, 9vw, 7.6rem);
+      line-height: 0.88;
+      letter-spacing: -0.045em;
+      text-shadow: 5px 6px 0 var(--purple-dark);
+    }
+
+    .edition {
+      display: block;
+      margin-top: 12px;
+      color: var(--white);
+      font-family: "DM Sans", Arial, sans-serif;
+      font-size: clamp(0.78rem, 1.5vw, 1rem);
+      font-weight: 800;
+      letter-spacing: 0.25em;
+      line-height: 1.4;
+      text-shadow: none;
+    }
+
+    .tagline {
+      max-width: 660px;
+      margin: 24px auto 0;
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      line-height: 1.55;
+    }
+
+    .tagline strong { color: var(--gold); }
+
+    .score-strip {
+      overflow: hidden;
+      padding: 10px 0 9px;
+      color: var(--gold);
+      background: var(--purple-dark);
+      border-bottom: 2px solid var(--ink);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-align: center;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .score-strip span { padding-inline: 18px; }
+
+    main {
+      width: min(980px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 56px 0 64px;
+    }
+
+    .opener {
+      margin: 0 auto 30px;
+      font-size: clamp(1.05rem, 2.5vw, 1.32rem);
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .opener span {
+      padding: 1px 6px 2px;
+      background: var(--gold);
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+    }
+
+    .measure-card,
+    .result-card,
+    .records {
+      border: 3px solid var(--ink);
+      background: rgba(255,253,246,0.94);
+      box-shadow: 8px 8px 0 var(--shadow);
+    }
+
+    .measure-card {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: clamp(24px, 5vw, 42px);
+    }
+
+    .prompt-label {
+      display: block;
+      margin-bottom: 12px;
+      font-family: "Roboto Slab", Rockwell, Georgia, serif;
+      font-size: clamp(1.55rem, 4vw, 2.35rem);
+      font-weight: 900;
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+    }
+
+    input {
+      width: 100%;
+      min-width: 0;
+      padding: 14px 16px;
+      color: var(--ink);
+      background: var(--cream);
+      border: 3px solid var(--ink);
+      border-radius: 0;
+      outline: none;
+      font-size: 1.12rem;
+      font-weight: 700;
+    }
+
+    input:focus {
+      border-color: var(--purple);
+      box-shadow: 0 0 0 4px rgba(85,37,131,0.18);
+    }
+
+    .primary-button,
+    .reset-button {
+      min-height: 56px;
+      padding: 13px 20px;
+      border: 3px solid var(--ink);
+      border-radius: 0;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      line-height: 1.25;
+      text-transform: uppercase;
+      transition: transform 150ms ease, box-shadow 150ms ease;
+    }
+
+    .primary-button {
+      color: var(--purple-dark);
+      background: var(--gold);
+      box-shadow: 4px 4px 0 var(--purple-dark);
+    }
+
+    .reset-button {
+      color: var(--white);
+      background: var(--purple);
+      box-shadow: 4px 4px 0 var(--gold);
+    }
+
+    .primary-button:hover,
+    .reset-button:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 var(--purple-dark);
+    }
+
+    .primary-button:active,
+    .reset-button:active {
+      transform: translate(3px, 3px);
+      box-shadow: 1px 1px 0 var(--purple-dark);
+    }
+
+    .form-note {
+      min-height: 1.5em;
+      margin: 12px 0 0;
+      color: #8b2449;
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    .result-card {
+      position: relative;
+      max-width: 860px;
+      margin: 44px auto 0;
+      padding: clamp(28px, 6vw, 54px);
+      overflow: hidden;
+    }
+
+    .result-card[hidden] { display: none; }
+
+    .result-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 14px;
+      height: 100%;
+      background: var(--gold);
+      border-right: 3px solid var(--ink);
+    }
+
+    .result-kicker {
+      margin: 0 0 6px;
+      color: var(--purple);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .result-year {
+      margin: 0;
+      color: var(--purple);
+      font-size: clamp(3.8rem, 10vw, 7.8rem);
+      line-height: 0.9;
+      letter-spacing: -0.04em;
+    }
+
+    .career-tag {
+      max-width: 760px;
+      margin: 22px 0 0;
+      font-size: clamp(1.28rem, 3vw, 2rem);
+      font-weight: 800;
+      line-height: 1.28;
+    }
+
+    .milestone {
+      margin: 28px 0 0;
+      padding: 18px 20px;
+      color: var(--purple-dark);
+      background: var(--gold);
+      border: 3px solid var(--ink);
+      box-shadow: 5px 5px 0 var(--purple);
+      font-family: "Roboto Slab", Rockwell, Georgia, serif;
+      font-size: clamp(1.08rem, 2.6vw, 1.5rem);
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .milestone[hidden] { display: none; }
+
+    .milestone.bronny {
+      padding-block: 25px;
+      border-width: 4px;
+      box-shadow: 7px 7px 0 var(--purple);
+      font-size: clamp(1.18rem, 3vw, 1.72rem);
+    }
+
+    .reset-button { margin-top: 32px; }
+
+    .section-heading {
+      width: fit-content;
+      max-width: 100%;
+      margin: 72px auto 28px;
+      padding: 7px 16px 9px;
+      color: var(--purple);
+      background: var(--gold);
+      border: 2px solid var(--ink);
+      box-shadow: 5px 5px 0 var(--purple-dark);
+      font-size: clamp(1.7rem, 5vw, 3rem);
+      line-height: 1;
+      text-align: center;
+      transform: rotate(0.4deg);
+    }
+
+    .records {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0;
+    }
+
+    .records summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 20px 24px;
+      color: var(--white);
+      background: var(--purple);
+      font-size: 0.86rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      list-style: none;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .records summary::-webkit-details-marker { display: none; }
+
+    .records summary::after {
+      content: "+";
+      color: var(--gold);
+      font-size: 1.7rem;
+      line-height: 1;
+    }
+
+    .records[open] summary::after { content: "×"; }
+
+    .record-list {
+      margin: 0;
+      padding: 14px 30px 26px;
+      list-style: none;
+      counter-reset: records;
+    }
+
+    .record-list li {
+      display: grid;
+      grid-template-columns: 54px minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+      padding: 19px 0;
+      border-bottom: 2px solid rgba(36,18,56,0.16);
+      counter-increment: records;
+    }
+
+    .record-list li:last-child { border-bottom: 0; }
+
+    .record-list li::before {
+      content: "0" counter(records);
+      color: var(--purple);
+      font-family: "Roboto Slab", Rockwell, Georgia, serif;
+      font-size: 1.35rem;
+      font-weight: 900;
+      line-height: 1.4;
+    }
+
+    footer {
+      padding: 24px 20px 28px;
+      color: var(--cream);
+      background: var(--purple-dark);
+      border-top: 6px solid var(--gold);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    @media (max-width: 650px) {
+      .hero-inner { width: min(100% - 28px, 1100px); padding: 38px 0 48px; }
+      h1 { text-shadow: 3px 4px 0 var(--purple-dark); }
+      .input-row { grid-template-columns: 1fr; }
+      .primary-button { width: 100%; }
+      .result-card { padding-left: 34px; }
+      .record-list { padding-inline: 20px; }
+      .record-list li { grid-template-columns: 42px minmax(0, 1fr); gap: 10px; }
+      .score-strip { text-align: left; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">LeBron as a unit of time</p>
+      <h1>The Decision<span class="edition">2026 edition</span></h1>
+      <p class="tagline">While the man decides, let's talk about how long he's been <strong>deciding things.</strong></p>
+    </div>
+  </header>
+
+  <div class="score-strip" aria-hidden="true">
+    <span>Born 1984 ★ Drafted 2003 ★ The first Decision 2010 ★ Four championships ★ Two generations on one court ★</span>
+  </div>
+
+  <main>
+    <p class="opener"><span id="opener">It's been 16 years since the first Decision.</span></p>
+
+    <form class="measure-card" id="year-form" novalidate>
+      <label class="prompt-label" for="year-input">Type a year.</label>
+      <div class="input-row">
+        <input id="year-input" name="year" type="text" inputmode="numeric" autocomplete="off" placeholder="2016" aria-describedby="form-note">
+        <button class="primary-button" type="submit">Measure it in LeBron</button>
+      </div>
+      <p class="form-note" id="form-note" aria-live="polite"></p>
+    </form>
+
+    <section class="result-card" id="result-card" aria-live="polite" tabindex="-1" hidden>
+      <p class="result-kicker">Measured in LeBron</p>
+      <p class="result-year" id="result-year"></p>
+      <p class="career-tag" id="career-tag"></p>
+      <p class="milestone" id="milestone" hidden></p>
+      <button class="reset-button" id="reset-button" type="button">Try another year</button>
+    </section>
+
+    <h2 class="section-heading">The records</h2>
+    <details class="records">
+      <summary>Open the record book</summary>
+      <ol class="record-list">
+        <li>All-time leading scorer. Passed Kareem Abdul-Jabbar on Feb 7, 2023 — a record that had stood 39 years.</li>
+        <li>First player ever to 40,000 regular-season points (March 2, 2024). Still the only one.</li>
+        <li>First to 50,000 points, regular season and playoffs combined (March 4, 2025). Nobody else is within 5,000.</li>
+        <li>All-time playoff scoring leader too — he passed Michael Jordan back in 2017.</li>
+        <li>4 championships (2012, 2013, 2016, 2020). 4 MVPs. 4 Finals MVPs. Rookie of the Year, 2004.</li>
+      </ol>
+    </details>
+  </main>
+
+  <footer>Historical facts only, nothing live. Nothing you type is stored or sent. AI assisted. Human approved. Powered by NLP.</footer>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const BORN = 1984;
+      const DRAFT = 2003;
+      const FIRST_DECISION = 2010;
+      const CURRENT_YEAR = new Date().getFullYear();
+
+      const MILESTONES = Object.freeze({
+        1984: "Born in Akron.",
+        2003: "Drafted first overall, straight out of high school. The hype was already immense.",
+        2004: "Rookie of the Year.",
+        2010: "The first Decision. He takes his talents to South Beach — on live television.",
+        2012: "First ring. Miami.",
+        2013: "Second ring. Miami, back-to-back.",
+        2016: "Third ring. He brings Cleveland its first title in 52 years.",
+        2017: "He passes Michael Jordan as the all-time playoff scoring leader.",
+        2020: "Fourth ring. The Lakers, in the bubble.",
+        2023: "Feb 7: he passes Kareem to become the all-time leading scorer. His kids watch courtside. One of them, Bronny, is now his teammate.",
+        2024: "First player ever to 40,000 regular-season points.",
+        2025: "First player ever to 50,000 points, regular season and playoffs combined."
+      });
+
+      const form = document.getElementById("year-form");
+      const input = document.getElementById("year-input");
+      const note = document.getElementById("form-note");
+      const opener = document.getElementById("opener");
+      const resultCard = document.getElementById("result-card");
+      const resultYear = document.getElementById("result-year");
+      const careerTag = document.getElementById("career-tag");
+      const milestone = document.getElementById("milestone");
+      const resetButton = document.getElementById("reset-button");
+
+      opener.textContent = `It's been ${CURRENT_YEAR - FIRST_DECISION} years since the first Decision.`;
+
+      function careerLine(year) {
+        if (year < BORN) {
+          return `LeBron didn't exist yet. That's ${BORN - year} years before he was even born.`;
+        }
+        if (year < DRAFT) {
+          return `LeBron was ${year - BORN} and not yet in the league.`;
+        }
+        if (year === DRAFT) {
+          return "Year zero. It begins.";
+        }
+        if (year <= CURRENT_YEAR) {
+          return `Career year ${year - DRAFT}. He was ${year - BORN}.`;
+        }
+        return `That would be career year ${year - DRAFT}. If he's still going. He might be.`;
+      }
+
+      function showError(message) {
+        note.textContent = message;
+        input.setAttribute("aria-invalid", "true");
+        resultCard.hidden = true;
+      }
+
+      function showResult(year) {
+        note.textContent = "";
+        input.removeAttribute("aria-invalid");
+        resultYear.textContent = String(year);
+        careerTag.textContent = careerLine(year);
+
+        const event = MILESTONES[year];
+        if (event) {
+          milestone.textContent = event;
+          milestone.hidden = false;
+          milestone.classList.toggle("bronny", year === 2023);
+        } else {
+          milestone.textContent = "";
+          milestone.hidden = true;
+          milestone.classList.remove("bronny");
+        }
+
+        resultCard.hidden = false;
+        resultCard.focus({ preventScroll: true });
+        resultCard.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const raw = input.value.trim();
+
+        if (raw === "") {
+          showError("Give me a year and I'll put it on the LeBron timeline.");
+          return;
+        }
+
+        if (!/^-?\d+$/.test(raw)) {
+          showError("Use a whole-number year, like 1984, 2016, or -3000.");
+          return;
+        }
+
+        const year = Number(raw);
+        if (!Number.isSafeInteger(year) || year < -3000 || year > 3000) {
+          showError("Choose a whole-number year from -3000 through 3000.");
+          return;
+        }
+
+        showResult(year);
+      });
+
+      resetButton.addEventListener("click", () => {
+        resultCard.hidden = true;
+        note.textContent = "";
+        input.value = "";
+        input.removeAttribute("aria-invalid");
+        input.focus();
+      });
+    })();
+  </script>
+</body>
+</html>

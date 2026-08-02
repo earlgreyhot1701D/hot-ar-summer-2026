@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palindrome</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--pool:#0c1e26;--pool2:#0a151b;--ink:#eaf1ee;--soft:#8fb0ad;--gold:#e6c878;
+    --match:#57d1a0;--break:#f0766a;--axis:rgba(180,230,225,.5)}
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{min-height:100svh;display:flex;flex-direction:column;overflow-x:hidden;color:var(--ink);
+    font-family:"JetBrains Mono",monospace;
+    background:radial-gradient(ellipse at 50% 0%,#123039,transparent 60%),
+      linear-gradient(180deg,var(--pool),var(--pool2))}
+  header{text-align:center;padding:clamp(14px,3svh,26px) 16px clamp(4px,1svh,8px)}
+  .kick{margin:0;font-size:.56rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold)}
+  h1{margin:.04em 0 .04em;font-family:"Cormorant Garamond",serif;font-weight:600;font-style:italic;
+    font-size:clamp(2.4rem,10vw,4rem);letter-spacing:.03em;text-shadow:0 2px 26px rgba(90,200,190,.4)}
+  .hint{margin:0 auto;max-width:460px;font-size:.72rem;color:var(--soft);line-height:1.5}
+  main{flex:1;width:100%;max-width:820px;margin:0 auto;padding:0 clamp(12px,3vw,22px) clamp(14px,3svh,26px)}
+  .entry{width:min(100%,540px);margin:clamp(10px,2svh,18px) auto 0}
+  input{width:100%;background:rgba(10,25,32,.7);border:1px solid #24484f;border-radius:999px;
+    padding:12px 20px;color:var(--ink);font-family:"Cormorant Garamond",serif;font-size:1.35rem;text-align:center}
+  input::placeholder{color:#5f807d;font-style:italic}
+  input:focus{outline:2px solid var(--gold);outline-offset:1px}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+  .chip{font-size:.62rem;padding:5px 11px;border:1px solid #24484f;border-radius:999px;background:transparent;color:var(--soft);cursor:pointer}
+  .chip:hover{color:var(--ink);border-color:var(--gold)}
+  .stage{margin:clamp(12px,2.4svh,22px) 0 0}
+  .stage svg{display:block;width:100%;height:auto}
+  .verdict{text-align:center;margin:clamp(10px,2svh,18px) 0 0}
+  .vbig{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:clamp(1.5rem,5vw,2.3rem);margin:0}
+  .vbig.yes{color:var(--match)} .vbig.no{color:var(--break)}
+  .vdetail{font-size:.72rem;letter-spacing:.03em;color:var(--soft);margin:6px 0 0;line-height:1.5}
+  .vdetail b{color:var(--ink);font-weight:500}
+  footer{flex:none;margin-top:auto}
+  .sig{text-align:center;font-size:.53rem;letter-spacing:.13em;text-transform:uppercase;color:#5b7a77;margin:16px 0 10px;line-height:1.7}
+  .rail{height:6px;background:linear-gradient(90deg,var(--match),var(--gold) 50%,var(--break))}
+</style>
+</head>
+<body>
+<header>
+  <p class="kick">Read it backward</p>
+  <h1>Palindrome</h1>
+  <p class="hint">Type a word or phrase. It folds on its mirror line and checks every pair, the same the other way or not.</p>
+</header>
+<main>
+  <div class="entry"><input id="phrase" maxlength="34" autocomplete="off" spellcheck="false" placeholder="type a word or phrase…"></div>
+  <div class="chips" id="chips"></div>
+  <div class="stage" id="stage" aria-live="polite"></div>
+  <div class="verdict" aria-live="polite">
+    <p class="vbig" id="vbig">—</p>
+    <p class="vdetail" id="vdetail">Letters only are compared. Spaces, case, and punctuation are ignored.</p>
+  </div>
+</main>
+<footer>
+  <p class="sig">Deterministic &middot; every mirrored pair shown &middot; nothing stored or sent<br>AI assisted. Human approved. Powered by NLP.</p>
+  <div class="rail" aria-hidden="true"></div>
+</footer>
+<script>
+(function(){
+"use strict";
+/* PALINDROME — a reflecting pool. Nested arcs pair each letter to its mirror,
+   green where they match, coral where the symmetry breaks. Deterministic.
+   No Math.random / network / storage / innerHTML. */
+var NS="http://www.w3.org/2000/svg";
+function sv(t,a,txt){var n=document.createElementNS(NS,t);if(a)for(var k in a)if(a.hasOwnProperty(k))n.setAttribute(k,a[k]);if(txt!=null)n.textContent=txt;return n;}
+var $=function(i){return document.getElementById(i);};
+
+function clean(s){ return s.toLowerCase().replace(/[^a-z0-9]/g,""); }
+
+function draw(raw){
+  var stage=$("stage"); stage.textContent="";
+  var c=clean(raw), n=c.length;
+  var vbig=$("vbig"), vdet=$("vdetail");
+  if(n===0){ vbig.textContent="—"; vbig.className="vbig"; vdet.textContent="Letters only are compared. Spaces, case, and punctuation are ignored."; return; }
+
+  var reversed=c.split("").reverse().join("");
+  var isPal=(c===reversed);
+  var firstBreak=-1;
+  for(var i=0;i<Math.floor(n/2);i++){ if(c[i]!==c[n-1-i]){ firstBreak=i; break; } }
+
+  /* geometry */
+  var VW=1000, pad=60, step=(VW-2*pad)/Math.max(1,(n-1||1));
+  var topY=70, arcMaxDepth=Math.min(300, 70+n*16), reflY=topY+38;
+  var VH=topY+arcMaxDepth+90;
+  var svg=sv("svg",{viewBox:"0 0 "+VW+" "+VH,role:"img","aria-label":(isPal?"A palindrome: ":"Not a palindrome: ")+c});
+  function xAt(i){ return n===1?VW/2:(pad+i*step); }
+
+  /* axis shimmer */
+  svg.appendChild(sv("line",{x1:VW/2,y1:topY-34,x2:VW/2,y2:VH-30,stroke:"rgba(180,230,225,.35)","stroke-width":1,"stroke-dasharray":"2 7"}));
+
+  /* nested arcs (pairs) */
+  for(var p=0;p<Math.floor(n/2);p++){
+    var i=p, j=n-1-p, x1=xAt(i), x2=xAt(j);
+    var span=(x2-x1), depth=topY+ (arcMaxDepth*(span/(VW-2*pad)));
+    var midx=(x1+x2)/2;
+    var match=(c[i]===c[j]);
+    var col=match?"#57d1a0":"#f0766a";
+    svg.appendChild(sv("path",{d:"M "+x1+" "+(topY+16)+" Q "+midx+" "+depth+" "+x2+" "+(topY+16),
+      fill:"none",stroke:col,"stroke-width":match?2.4:3.2,"stroke-opacity":match?0.7:0.95,"stroke-linecap":"round"}));
+  }
+
+  /* letters (top) + faded reflection below */
+  var fs=Math.max(20,Math.min(52, step*0.9));
+  for(var k=0;k<n;k++){
+    var x=xAt(k);
+    var mate = (k<n-1-k)? c[k]===c[n-1-k] : (k>n-1-k? c[k]===c[n-1-k] : true);
+    var lc = (n>1 && firstBreak!==-1 && (k===firstBreak||k===n-1-firstBreak))? "#f0766a"
+             : (n>1? "#eaf1ee":"#eaf1ee");
+    svg.appendChild(sv("text",{x:x,y:topY+16,"text-anchor":"middle","dominant-baseline":"middle",
+      "font-family":"Cormorant Garamond, serif","font-size":fs,fill:lc},c[k].toUpperCase()));
+    /* reflection */
+    svg.appendChild(sv("text",{x:x,y:VH-24,"text-anchor":"middle","dominant-baseline":"middle",
+      "font-family":"Cormorant Garamond, serif","font-size":fs*0.9,fill:"rgba(143,176,173,.28)",
+      transform:"scale(1,-1)","transform-origin":x+"px "+(VH-24)+"px"},c[k].toUpperCase()));
+  }
+  /* center pivot marker for odd length */
+  if(n%2===1){ var xc=xAt((n-1)/2);
+    svg.appendChild(sv("circle",{cx:xc,cy:topY+16,r:fs*0.62,fill:"none",stroke:"var(--gold)","stroke-width":1.5,"stroke-opacity":.6}));
+  }
+
+  stage.appendChild(svg);
+
+  /* verdict */
+  if(isPal){
+    vbig.className="vbig yes"; vbig.textContent="✦  A palindrome  ✦";
+    vdet.textContent="";
+    vdet.appendChild(document.createTextNode("Reads the same both ways: "));
+    var b=document.createElement("b"); b.textContent=c; vdet.appendChild(b);
+    vdet.appendChild(document.createTextNode(" · "+Math.floor(n/2)+" mirrored pair"+(Math.floor(n/2)===1?"":"s")+", all matched."));
+  }else{
+    vbig.className="vbig no"; vbig.textContent="Not a palindrome";
+    vdet.textContent="";
+    var pos=firstBreak+1;
+    vdet.appendChild(document.createTextNode("The mirror breaks at pair "+pos+": "));
+    var b2=document.createElement("b"); b2.textContent=c[firstBreak].toUpperCase()+" ≠ "+c[n-1-firstBreak].toUpperCase();
+    vdet.appendChild(b2);
+    vdet.appendChild(document.createTextNode(".  Backward it reads "));
+    var b3=document.createElement("b"); b3.textContent=reversed; vdet.appendChild(b3);
+    vdet.appendChild(document.createTextNode("."));
+  }
+}
+
+$("phrase").addEventListener("input",function(){ draw(this.value); });
+["racecar","taco cat","A man, a plan, a canal: Panama","level","hello","Was it a car or a cat I saw?"].forEach(function(w){
+  var b=document.createElement("button"); b.className="chip"; b.type="button"; b.textContent=w.length>22?w.slice(0,20)+"…":w;
+  b.addEventListener("click",function(){ $("phrase").value=w; draw(w); $("phrase").focus(); });
+  $("chips").appendChild(b);
+});
+draw("");   /* empty on load */
+window.__pal=function(s){var c=clean(s);return {clean:c,isPalindrome:c===c.split("").reverse().join("")};};
+})();
+</script>
+</body>
+</html>

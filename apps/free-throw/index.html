@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free Throw</title>
+
+<!-- Social preview. Replace SITE_URL with the deployed URL (no trailing slash).
+     og-freethrow.png goes in the site root next to index.html. -->
+<meta property="og:title" content="Free Throw" />
+<meta property="og:description" content="Pull back, let go. The ball follows the arc the numbers predict. Angle, speed, and the trajectory equation, shown live." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="SITE_URL/og-freethrow.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Free Throw" />
+<meta name="twitter:description" content="No aim assist. No luck. Just the physics, shown." />
+<meta name="twitter:image" content="SITE_URL/og-freethrow.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --court:#B5732E; --court2:#9C5F23; --line:#F4ECDC;
+    --ink:#20160C; --chalk:#F4ECDC; --net:#EDE3CE;
+    --orange:#E4761B; --orange-d:#B8590F; --rim:#E23B1B;
+    --board:#F2ECDD; --sky:#14202C; --score:#2FA36B; --miss:#C6402E;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{
+    min-height:100svh; display:flex; flex-direction:column; overflow-x:hidden;
+    color:var(--chalk); font-family:"Oswald",sans-serif;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.08), transparent 55%),
+      linear-gradient(180deg, var(--sky), #0C141C);
+  }
+  header{text-align:center;padding:clamp(12px,2.6svh,22px) 16px clamp(4px,1svh,10px)}
+  .kicker{margin:0;font-family:"JetBrains Mono",monospace;font-size:clamp(.54rem,1.8vw,.68rem);
+    letter-spacing:.26em;text-transform:uppercase;color:var(--orange)}
+  h1{margin:.02em 0 .04em;font-family:"Bebas Neue",sans-serif;font-weight:400;
+    font-size:clamp(3rem,min(15vw,10svh),6rem);letter-spacing:.04em;color:var(--chalk);
+    text-shadow:0 3px 0 var(--orange-d),0 5px 24px rgba(0,0,0,.6)}
+  .sub{margin:0;font-size:clamp(.72rem,2.2vw,.9rem);color:#9FB0BE}
+
+  main{flex:1;width:100%;max-width:760px;margin:0 auto;padding:0 clamp(10px,3vw,20px) clamp(16px,3svh,30px)}
+  .frame{
+    border:3px solid var(--ink);border-radius:4px;overflow:hidden;
+    box-shadow:0 16px 40px rgba(0,0,0,.55);background:var(--court)
+  }
+  canvas{display:block;width:100%;height:auto;touch-action:none;cursor:crosshair}
+
+  .hud{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:0;
+    background:var(--ink);border-top:0;font-family:"JetBrains Mono",monospace
+  }
+  .hud div{padding:9px 8px;text-align:center;border-right:1px solid rgba(244,236,220,.16)}
+  .hud div:last-child{border-right:0}
+  .hud b{display:block;font-size:.54rem;letter-spacing:.16em;color:#C79A6A;margin-bottom:3px}
+  .hud span{font-size:clamp(.9rem,3.4vw,1.15rem);font-weight:700;color:var(--chalk)}
+
+  .eq{
+    margin:12px 0 0;background:var(--sky);border:1px solid #29405A;border-radius:3px;
+    padding:11px 13px;font-family:"JetBrains Mono",monospace;font-size:.72rem;line-height:1.7;color:#BFD0DE
+  }
+  .eq .v{color:var(--orange)} .eq .lbl{color:#7E93A4}
+  .row{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:12px}
+  .btn{font-family:"JetBrains Mono",monospace;font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;
+    padding:11px 22px;border:2px solid var(--chalk);border-radius:3px;cursor:pointer;
+    background:transparent;color:var(--chalk)}
+  .btn:hover{background:rgba(244,236,220,.12)}
+  .btn:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
+  .hint{margin-left:auto;font-size:.72rem;color:#8093A2}
+
+  footer{flex:none;margin-top:auto}
+  .sig{text-align:center;font-family:"JetBrains Mono",monospace;font-size:.55rem;letter-spacing:.13em;
+    text-transform:uppercase;color:#6E8091;margin:14px 0 10px;padding:0 16px;line-height:1.8}
+  .stripe{height:7px;background:repeating-linear-gradient(90deg,var(--orange) 0 40px,var(--ink) 40px 46px)}
+  @media (max-width:520px){ .hint{width:100%;margin:6px 0 0;order:5} }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="kicker">One shot &middot; no aim assist &middot; no luck</p>
+  <h1>Free Throw</h1>
+  <p class="sub">Drag from the ball toward the hoop, let go. It follows the numbers.</p>
+</header>
+
+<main>
+  <div class="frame">
+    <canvas id="c" width="720" height="440" aria-label="Basketball free-throw court. Drag from the ball to aim and shoot."></canvas>
+    <div class="hud">
+      <div><b>ANGLE</b><span id="hAng">—</span></div>
+      <div><b>SPEED</b><span id="hSpd">—</span></div>
+      <div><b>MADE / SHOTS</b><span id="hScore">0 / 0</span></div>
+    </div>
+  </div>
+
+  <div class="eq" id="eq" aria-live="polite">
+    <span class="lbl">trajectory:</span> y = x&middot;tan&theta; &minus; (g&middot;x²) / (2&middot;v²&middot;cos²&theta;)<br>
+    <span class="lbl">launch:</span> drag from the ball toward the hoop. Same drag, same shot.
+  </div>
+
+  <div class="row">
+    <button class="btn" id="reset" type="button">Reset ball</button>
+    <button class="btn" id="clr" type="button">Clear score</button>
+    <span class="hint" id="hint">Drag from the ball toward the hoop.</span>
+  </div>
+</main>
+
+<footer>
+  <p class="sig">Real projectile motion &middot; deterministic &middot; nothing stored or sent<br>
+  AI assisted. Human approved. Powered by NLP.</p>
+  <div class="stripe" aria-hidden="true"></div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+/* FREE THROW — canvas projectile motion.
+   MUST : the flight is a pure integration of the launch velocity. Same pull, same shot.
+   MUST : show the angle, the speed, and the equation with live numbers.
+   NEVER: Math.random, network, storage, innerHTML, eval, aim assist.
+   STUB : wind toggle, three-point line, shot chart. */
+
+var cvs=document.getElementById("c"), ctx=cvs.getContext("2d");
+var W=cvs.width, H=cvs.height;
+var DPR=Math.min(window.devicePixelRatio||1,2);
+(function hidpi(){
+  cvs.width=W*DPR; cvs.height=H*DPR; ctx.scale(DPR,DPR);
+  cvs.style.aspectRatio=W+" / "+H;
+})();
+
+var FLOOR=H-46;
+var BALL_R=13;
+var start={x:96,y:FLOOR-BALL_R};
+var G=1500;                     /* px/s^2 */
+var K=3.2;                      /* pull -> launch velocity gain */
+var MAXV=1650;                  /* clamp launch speed */
+
+/* hoop geometry */
+var rimY=H*0.40, rimFront=W-150, rimBack=W-96, boardX=W-88;
+var boardTop=rimY-96, boardBot=rimY+18;
+
+var ball={x:start.x,y:start.y,vx:0,vy:0,flying:false,rest:true};
+var aiming=false, pull={x:0,y:0};
+var made=0, shots=0, lastResult="", resultT=0;
+var trail=[];
+
+function reset(){ ball.x=start.x; ball.y=start.y; ball.vx=0; ball.vy=0; ball.flying=false; ball.rest=true; trail=[]; setHud(null); }
+
+/* ---------- input ---------- */
+function pos(e){
+  var r=cvs.getBoundingClientRect();
+  var cx=(e.touches?e.touches[0].clientX:e.clientX)-r.left;
+  var cy=(e.touches?e.touches[0].clientY:e.clientY)-r.top;
+  return {x:cx*(W/r.width), y:cy*(H/r.height)};
+}
+/* generous grab radius so the ball is an easy touch target on a phone */
+function near(p){ return Math.hypot(p.x-ball.x,p.y-ball.y) < 64; }
+
+/* drag TOWARD the hoop: the drag vector IS the launch direction and power.
+   the ball sits bottom-left, so the whole open court is up-and-right of it —
+   room to drag on any screen, unlike a back-corner slingshot. */
+function down(e){
+  if(ball.flying) return;
+  var p=pos(e);
+  if(!ball.rest || !near(p)) return;
+  e.preventDefault(); aiming=true; pull={x:0,y:0};
+  document.getElementById("hint").textContent="Aiming… drag toward the hoop.";
+}
+function move(e){
+  if(!aiming) return;
+  e.preventDefault();
+  var p=pos(e);
+  pull={x:p.x-ball.x, y:p.y-ball.y};                 /* drag = launch vector */
+  var ang=Math.atan2(-pull.y,pull.x)*180/Math.PI;    /* up positive */
+  var spd=Math.min(Math.hypot(pull.x,pull.y)*K,MAXV);
+  setHud({ang:ang,spd:spd});
+}
+function up(e){
+  if(!aiming) return;
+  aiming=false;
+  var vx=pull.x*K, vy=pull.y*K;
+  var spd=Math.hypot(vx,vy);
+  if(spd>MAXV){ var s=MAXV/spd; vx*=s; vy*=s; }
+  if(spd<40){ document.getElementById("hint").textContent="Drag it a little harder."; return; }
+  ball.vx=vx; ball.vy=vy; ball.flying=true; ball.rest=false;
+  shots++; setScore();
+  document.getElementById("hint").textContent="";
+}
+cvs.addEventListener("pointerdown",down);
+window.addEventListener("pointermove",move,{passive:false});
+window.addEventListener("pointerup",up);
+
+/* ---------- HUD ---------- */
+function setHud(v){
+  var a=document.getElementById("hAng"), s=document.getElementById("hSpd");
+  if(!v){ a.textContent="—"; s.textContent="—"; setEq(null); return; }
+  a.textContent=v.ang.toFixed(0)+"°";
+  s.textContent=(v.spd/100).toFixed(1)+" m/s";
+  setEq(v);
+}
+function setScore(){ document.getElementById("hScore").textContent=made+" / "+shots; }
+function setEq(v){
+  var e=document.getElementById("eq");
+  while(e.firstChild) e.removeChild(e.firstChild);
+  function span(cls,t){var n=document.createElement("span");if(cls)n.className=cls;n.textContent=t;return n;}
+  if(!v){
+    e.appendChild(span("lbl","trajectory: "));
+    e.appendChild(document.createTextNode("y = x·tanθ − (g·x²) / (2·v²·cos²θ)"));
+    e.appendChild(document.createElement("br"));
+    e.appendChild(span("lbl","launch: "));
+    e.appendChild(document.createTextNode("pull the ball back and release. Same pull, same shot."));
+    return;
+  }
+  var th=v.ang*Math.PI/180, v2=(v.spd)*(v.spd);
+  var apex=(v.spd*Math.sin(th))*(v.spd*Math.sin(th))/(2*G);
+  e.appendChild(span("lbl","θ = "));      e.appendChild(span("v",v.ang.toFixed(1)+"°"));
+  e.appendChild(document.createTextNode("   "));
+  e.appendChild(span("lbl","v = "));      e.appendChild(span("v",(v.spd/100).toFixed(1)+" m/s"));
+  e.appendChild(document.createTextNode("   "));
+  e.appendChild(span("lbl","g = "));      e.appendChild(span("v","9.8 m/s²"));
+  e.appendChild(document.createElement("br"));
+  e.appendChild(span("lbl","apex height = v²·sin²θ / 2g = "));
+  e.appendChild(span("v",(apex/100).toFixed(2)+" m"));
+}
+
+/* ---------- physics ---------- */
+var prev={x:0,y:0};
+function step(dt){
+  if(!ball.flying) return;
+  prev.x=ball.x; prev.y=ball.y;
+  ball.vy+=G*dt;
+  ball.x+=ball.vx*dt; ball.y+=ball.vy*dt;
+  trail.push({x:ball.x,y:ball.y}); if(trail.length>26) trail.shift();
+
+  /* backboard bounce */
+  if(ball.x+BALL_R>=boardX && prev.x+BALL_R<boardX && ball.y>boardTop && ball.y<rimY-6 && ball.vx>0){
+    ball.x=boardX-BALL_R; ball.vx*=-0.5; ball.vy*=0.7;
+  }
+  /* rim crossing = descending through the hoop plane, inside the gap */
+  if(ball.vy>0 && prev.y<=rimY && ball.y>=rimY){
+    if(ball.x>rimFront+6 && ball.x<rimBack-6){ score(true); return; }
+  }
+  /* floor */
+  if(ball.y+BALL_R>=FLOOR){
+    ball.y=FLOOR-BALL_R;
+    if(Math.abs(ball.vy)<60){ ball.vy=0; ball.vx*=0.7; if(Math.abs(ball.vx)<20){ ball.flying=false; if(shots>0 && lastResult!=="MADE") score(false);} }
+    else { ball.vy*=-0.42; ball.vx*=0.8; }
+    if(ball.x>W){ ball.flying=false; if(lastResult!=="MADE") score(false); }
+  }
+  if(ball.x-BALL_R>W || ball.y>H+80){ ball.flying=false; if(lastResult!=="MADE") score(false); }
+}
+
+function score(makeIt){
+  ball.flying=false;
+  if(makeIt){ made++; lastResult="MADE"; swish(); }
+  else{ lastResult="MISS"; }
+  resultT=performance.now();
+  setScore();
+  document.getElementById("hint").textContent = makeIt ? "Swish. Reset for another." : "Off the mark. Reset and try again.";
+}
+
+/* swish / clank (synth, no files) */
+var AC=null;
+function ac(){ if(AC) return AC; try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){AC=null;} return AC; }
+function swish(){
+  var a=ac(); if(!a) return;
+  try{
+    var t=a.currentTime, len=Math.floor(a.sampleRate*.22), b=a.createBuffer(1,len,a.sampleRate), d=b.getChannelData(0);
+    var seed=12345;
+    for(var i=0;i<len;i++){ seed=(seed*1103515245+12345)&0x7fffffff; d[i]=((seed/0x7fffffff)*2-1)*(1-i/len); }
+    var s=a.createBufferSource(); s.buffer=b;
+    var f=a.createBiquadFilter(); f.type="bandpass"; f.frequency.setValueAtTime(1800,t); f.frequency.exponentialRampToValueAtTime(5200,t+.2); f.Q.value=1.2;
+    var g=a.createGain(); g.gain.setValueAtTime(.5,t); g.gain.exponentialRampToValueAtTime(.0001,t+.22);
+    s.connect(f); f.connect(g); g.connect(a.destination); s.start(t);
+  }catch(e){}
+}
+
+/* ---------- draw ---------- */
+function draw(){
+  ctx.clearRect(0,0,W,H);
+
+  /* wall + court */
+  ctx.fillStyle="#14202C"; ctx.fillRect(0,0,W,FLOOR);
+  var grd=ctx.createLinearGradient(0,FLOOR,0,H); grd.addColorStop(0,"#B5732E"); grd.addColorStop(1,"#9C5F23");
+  ctx.fillStyle=grd; ctx.fillRect(0,FLOOR,W,H-FLOOR);
+  ctx.strokeStyle="rgba(244,236,220,.5)"; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(0,FLOOR); ctx.lineTo(W,FLOOR); ctx.stroke();
+  /* free-throw line */
+  ctx.strokeStyle="rgba(244,236,220,.35)"; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(start.x,FLOOR); ctx.lineTo(start.x,FLOOR-9); ctx.stroke();
+
+  /* backboard */
+  ctx.fillStyle="#F2ECDD"; ctx.strokeStyle="#20160C"; ctx.lineWidth=3;
+  ctx.fillRect(boardX,boardTop,10,boardBot-boardTop); ctx.strokeRect(boardX,boardTop,10,boardBot-boardTop);
+  ctx.strokeStyle="#E4761B"; ctx.lineWidth=3; ctx.strokeRect(boardX-2,rimY-40,7,34);
+  /* rim */
+  ctx.strokeStyle="#E23B1B"; ctx.lineWidth=5; ctx.lineCap="round";
+  ctx.beginPath(); ctx.moveTo(rimFront,rimY); ctx.lineTo(rimBack,rimY); ctx.stroke();
+  /* net */
+  ctx.strokeStyle="rgba(237,227,206,.75)"; ctx.lineWidth=1.4;
+  for(var n=0;n<=6;n++){
+    var fx=rimFront+(rimBack-rimFront)*(n/6);
+    ctx.beginPath(); ctx.moveTo(fx,rimY); ctx.lineTo(rimFront+18+ (rimBack-rimFront-36)*(n/6), rimY+30); ctx.stroke();
+  }
+
+  /* aim guide */
+  if(aiming){
+    var vx=pull.x*K, vy=pull.y*K, spd=Math.hypot(vx,vy);
+    if(spd>MAXV){ var s=MAXV/spd; vx*=s; vy*=s; }
+    ctx.setLineDash([6,7]); ctx.strokeStyle="rgba(244,236,220,.6)"; ctx.lineWidth=2;
+    var px=ball.x, py=ball.y, pvx=vx, pvy=vy, t=0;
+    ctx.beginPath(); ctx.moveTo(px,py);
+    for(var k=0;k<90;k++){ t=0.016; pvy+=G*t; px+=pvx*t; py+=pvy*t; if(py>FLOOR||px>W) break; ctx.lineTo(px,py); }
+    ctx.stroke(); ctx.setLineDash([]);
+    /* aim arrow: points where you're dragging = where it launches */
+    ctx.strokeStyle="rgba(228,118,27,.9)"; ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.moveTo(ball.x,ball.y); ctx.lineTo(ball.x+pull.x,ball.y+pull.y); ctx.stroke();
+  }
+
+  /* trail */
+  for(var i=0;i<trail.length;i++){
+    ctx.globalAlpha=i/trail.length*0.5; ctx.fillStyle="#E4761B";
+    ctx.beginPath(); ctx.arc(trail[i].x,trail[i].y,BALL_R*0.5,0,7); ctx.fill();
+  }
+  ctx.globalAlpha=1;
+
+  /* ball */
+  ctx.fillStyle="#E4761B"; ctx.strokeStyle="#20160C"; ctx.lineWidth=2.5;
+  ctx.beginPath(); ctx.arc(ball.x,ball.y,BALL_R,0,7); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(ball.x-BALL_R,ball.y); ctx.lineTo(ball.x+BALL_R,ball.y);
+  ctx.moveTo(ball.x,ball.y-BALL_R); ctx.lineTo(ball.x,ball.y+BALL_R); ctx.stroke();
+
+  /* result flash */
+  if(lastResult && performance.now()-resultT<1400){
+    ctx.font="700 44px 'Bebas Neue', sans-serif"; ctx.textAlign="center";
+    ctx.fillStyle=lastResult==="MADE"?"#2FA36B":"#C6402E";
+    ctx.globalAlpha=1-(performance.now()-resultT)/1400;
+    ctx.fillText(lastResult, W/2, rimY-70); ctx.globalAlpha=1;
+  }
+}
+
+/* ---------- loop ---------- */
+/* fixed timestep: the flight is identical at 60Hz, 120Hz, or any framerate,
+   so "same pull, same shot" is literally true, not approximately */
+var last=performance.now(), acc=0, FIXED=1/180;
+function frame(now){
+  var dt=Math.min((now-last)/1000,0.05); last=now;
+  acc+=dt;
+  while(acc>=FIXED){ step(FIXED); acc-=FIXED; }
+  draw();
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+document.getElementById("reset").addEventListener("click",function(){ reset(); document.getElementById("hint").textContent="Drag from the ball toward the hoop."; });
+document.getElementById("clr").addEventListener("click",function(){ made=0; shots=0; lastResult=""; setScore(); });
+
+reset();
+})();
+</script>
+</body>
+</html>

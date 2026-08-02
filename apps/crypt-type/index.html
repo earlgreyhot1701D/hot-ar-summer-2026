@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>What Kind of Goth Are You? Full Quiz Mockup</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Oswald:wght@300;400;500;600;700&family=Special+Elite&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --paper: #F2F0EB;
+      --ink: #0A0A0A;
+      --blood: #C01717;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      position: relative;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 18px 22px 44px;
+      background:
+        radial-gradient(circle at 50% 20%, var(--blood) 0 2px, transparent 3px 100%),
+        radial-gradient(circle at 12% 18%, rgba(242, 240, 235, 0.26) 0 1px, transparent 2px 100%),
+        radial-gradient(circle at 80% 72%, rgba(242, 240, 235, 0.22) 0 1px, transparent 2px 100%),
+        var(--ink);
+      color: var(--ink);
+      font-family: "Oswald", sans-serif;
+      overflow-x: hidden;
+      isolation: isolate;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.085;
+      background-image:
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 42"><path fill="%23F2F0EB" d="M2 25c9-10 21-12 34-4 1-7 5-13 12-17 7 4 11 10 12 17 13-8 25-6 34 4-10 0-17 4-21 12-6-6-14-7-25 2-11-9-19-8-25-2C19 29 12 25 2 25Z"/><path fill="%230A0A0A" opacity="0.45" d="M43 8l5 7 5-7-5 2-5-2Z"/></svg>'),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 42"><path fill="%23F2F0EB" d="M2 25c9-10 21-12 34-4 1-7 5-13 12-17 7 4 11 10 12 17 13-8 25-6 34 4-10 0-17 4-21 12-6-6-14-7-25 2-11-9-19-8-25-2C19 29 12 25 2 25Z"/><path fill="%230A0A0A" opacity="0.45" d="M43 8l5 7 5-7-5 2-5-2Z"/></svg>'),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 42"><path fill="%23F2F0EB" d="M2 25c9-10 21-12 34-4 1-7 5-13 12-17 7 4 11 10 12 17 13-8 25-6 34 4-10 0-17 4-21 12-6-6-14-7-25 2-11-9-19-8-25-2C19 29 12 25 2 25Z"/><path fill="%230A0A0A" opacity="0.45" d="M43 8l5 7 5-7-5 2-5-2Z"/></svg>'),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 42"><path fill="%23F2F0EB" d="M2 25c9-10 21-12 34-4 1-7 5-13 12-17 7 4 11 10 12 17 13-8 25-6 34 4-10 0-17 4-21 12-6-6-14-7-25 2-11-9-19-8-25-2C19 29 12 25 2 25Z"/><path fill="%230A0A0A" opacity="0.45" d="M43 8l5 7 5-7-5 2-5-2Z"/></svg>'),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 42"><path fill="%23F2F0EB" d="M2 25c9-10 21-12 34-4 1-7 5-13 12-17 7 4 11 10 12 17 13-8 25-6 34 4-10 0-17 4-21 12-6-6-14-7-25 2-11-9-19-8-25-2C19 29 12 25 2 25Z"/><path fill="%230A0A0A" opacity="0.45" d="M43 8l5 7 5-7-5 2-5-2Z"/></svg>'),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 42"><path fill="%23F2F0EB" d="M2 25c9-10 21-12 34-4 1-7 5-13 12-17 7 4 11 10 12 17 13-8 25-6 34 4-10 0-17 4-21 12-6-6-14-7-25 2-11-9-19-8-25-2C19 29 12 25 2 25Z"/><path fill="%230A0A0A" opacity="0.45" d="M43 8l5 7 5-7-5 2-5-2Z"/></svg>'),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 42"><path fill="%23F2F0EB" d="M2 25c9-10 21-12 34-4 1-7 5-13 12-17 7 4 11 10 12 17 13-8 25-6 34 4-10 0-17 4-21 12-6-6-14-7-25 2-11-9-19-8-25-2C19 29 12 25 2 25Z"/><path fill="%230A0A0A" opacity="0.45" d="M43 8l5 7 5-7-5 2-5-2Z"/></svg>'),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 42"><path fill="%23F2F0EB" d="M2 25c9-10 21-12 34-4 1-7 5-13 12-17 7 4 11 10 12 17 13-8 25-6 34 4-10 0-17 4-21 12-6-6-14-7-25 2-11-9-19-8-25-2C19 29 12 25 2 25Z"/><path fill="%230A0A0A" opacity="0.45" d="M43 8l5 7 5-7-5 2-5-2Z"/></svg>'),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 42"><path fill="%23F2F0EB" d="M2 25c9-10 21-12 34-4 1-7 5-13 12-17 7 4 11 10 12 17 13-8 25-6 34 4-10 0-17 4-21 12-6-6-14-7-25 2-11-9-19-8-25-2C19 29 12 25 2 25Z"/><path fill="%230A0A0A" opacity="0.45" d="M43 8l5 7 5-7-5 2-5-2Z"/></svg>'),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 42"><path fill="%23F2F0EB" d="M2 25c9-10 21-12 34-4 1-7 5-13 12-17 7 4 11 10 12 17 13-8 25-6 34 4-10 0-17 4-21 12-6-6-14-7-25 2-11-9-19-8-25-2C19 29 12 25 2 25Z"/><path fill="%230A0A0A" opacity="0.45" d="M43 8l5 7 5-7-5 2-5-2Z"/></svg>'),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 42"><path fill="%23F2F0EB" d="M2 25c9-10 21-12 34-4 1-7 5-13 12-17 7 4 11 10 12 17 13-8 25-6 34 4-10 0-17 4-21 12-6-6-14-7-25 2-11-9-19-8-25-2C19 29 12 25 2 25Z"/><path fill="%230A0A0A" opacity="0.45" d="M43 8l5 7 5-7-5 2-5-2Z"/></svg>'),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 42"><path fill="%23F2F0EB" d="M2 25c9-10 21-12 34-4 1-7 5-13 12-17 7 4 11 10 12 17 13-8 25-6 34 4-10 0-17 4-21 12-6-6-14-7-25 2-11-9-19-8-25-2C19 29 12 25 2 25Z"/><path fill="%230A0A0A" opacity="0.45" d="M43 8l5 7 5-7-5 2-5-2Z"/></svg>'),
+        radial-gradient(circle at 14% 20%, rgba(242, 240, 235, 0.14) 0 1px, transparent 2px 100%),
+        radial-gradient(circle at 82% 74%, rgba(242, 240, 235, 0.11) 0 1px, transparent 2px 100%);
+      background-repeat: no-repeat;
+      background-size:
+        74px 33px,
+        58px 25px,
+        82px 36px,
+        62px 27px,
+        70px 31px,
+        54px 24px,
+        86px 38px,
+        60px 26px,
+        76px 34px,
+        52px 23px,
+        68px 30px,
+        56px 25px,
+        420px 420px,
+        460px 460px;
+      background-position:
+        5% 8%,
+        22% 18%,
+        72% 10%,
+        91% 23%,
+        12% 42%,
+        35% 56%,
+        82% 47%,
+        6% 73%,
+        25% 86%,
+        58% 78%,
+        88% 83%,
+        48% 30%,
+        0 0,
+        100% 100%;
+      transform: rotate(-1deg);
+    }
+
+    button {
+      font: inherit;
+    }
+
+    button:focus-visible,
+    a:focus-visible {
+      outline: 4px solid var(--blood);
+      outline-offset: 4px;
+    }
+
+    .app-shell {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 34px;
+    }
+
+    .preview-controls {
+      width: min(560px, 100%);
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 0 auto 6px;
+      padding: 8px;
+      border: 2px solid var(--paper);
+      background: var(--ink);
+      transform: rotate(0.4deg);
+      box-shadow: 8px 8px 0 var(--blood);
+    }
+
+    .preview-controls button {
+      min-height: 34px;
+      padding: 7px 12px 5px;
+      border: 2px solid var(--paper);
+      color: var(--paper);
+      background: var(--ink);
+      font-family: "Special Elite", monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .preview-controls button[aria-pressed="true"] {
+      color: var(--blood);
+      background: var(--paper);
+      border-color: var(--blood);
+      box-shadow: 3px 3px 0 var(--blood);
+    }
+
+    .stage {
+      position: relative;
+      width: min(440px, 100%);
+      transform: rotate(-1.35deg);
+      filter: drop-shadow(18px 26px 0 var(--ink));
+    }
+
+    .stage::before {
+      content: "";
+      position: absolute;
+      inset: 16px -14px -18px 20px;
+      z-index: -2;
+      background: var(--blood);
+      transform: rotate(2.2deg);
+      clip-path: polygon(
+        1% 4%, 10% 1%, 24% 3%, 39% 0, 52% 2%, 66% 0, 82% 3%, 99% 1%,
+        97% 13%, 100% 28%, 98% 42%, 100% 57%, 96% 69%, 99% 84%, 96% 98%,
+        82% 96%, 68% 99%, 55% 97%, 38% 100%, 25% 97%, 12% 99%, 0 96%,
+        3% 81%, 0 66%, 2% 52%, 0 37%, 3% 21%
+      );
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.is-active {
+      display: block;
+    }
+
+    .flyer {
+      position: relative;
+      width: 100%;
+      min-height: 650px;
+      padding: 24px;
+      background: var(--paper);
+      clip-path: polygon(
+        0 3%, 7% 0, 18% 2%, 31% 1%, 44% 3%, 59% 0, 72% 2%, 86% 0, 100% 3%,
+        98% 16%, 100% 29%, 97% 43%, 100% 58%, 98% 70%, 100% 86%, 96% 100%,
+        82% 98%, 69% 100%, 54% 97%, 39% 99%, 26% 96%, 13% 100%, 2% 96%,
+        4% 83%, 0 69%, 3% 55%, 0 40%, 2% 25%
+      );
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .flyer::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        radial-gradient(circle, var(--ink) 0 0.9px, transparent 1.35px),
+        radial-gradient(circle at 18% 22%, var(--ink) 0 1px, transparent 1.6px),
+        radial-gradient(circle at 82% 78%, var(--ink) 0 1px, transparent 1.8px),
+        linear-gradient(178deg, transparent 0 12%, var(--ink) 13% 13.6%, transparent 15% 100%);
+      background-size: 8px 8px, 23px 21px, 31px 29px, 100% 100%;
+      opacity: 0.13;
+      -webkit-mask-image: radial-gradient(ellipse at center, transparent 0 48%, var(--ink) 74% 100%);
+      mask-image: radial-gradient(ellipse at center, transparent 0 48%, var(--ink) 74% 100%);
+      mix-blend-mode: multiply;
+    }
+
+    .flyer::after {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      z-index: -1;
+      pointer-events: none;
+      border: 4px solid var(--ink);
+      clip-path: polygon(
+        0 2%, 11% 0, 28% 1%, 43% 0, 61% 2%, 78% 0, 100% 2%,
+        98% 21%, 100% 39%, 97% 57%, 100% 76%, 98% 100%,
+        79% 98%, 62% 100%, 41% 98%, 22% 100%, 0 97%,
+        3% 76%, 0 58%, 2% 41%, 0 24%
+      );
+      opacity: 0.96;
+    }
+
+    .top-row {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 6px 4px 18px;
+    }
+
+    .kicker {
+      display: inline-block;
+      margin: 0;
+      padding: 8px 14px 6px;
+      border: 3px solid var(--blood);
+      color: var(--blood);
+      background: var(--paper);
+      font-family: "Special Elite", monospace;
+      font-size: 0.9rem;
+      line-height: 1;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      transform: rotate(-3.8deg);
+      box-shadow: 4px 4px 0 var(--ink);
+    }
+
+    .date-tag {
+      display: inline-block;
+      margin: 4px 2px 0 0;
+      padding: 6px 8px 4px;
+      color: var(--paper);
+      background: var(--ink);
+      font-family: "Special Elite", monospace;
+      font-size: 0.74rem;
+      line-height: 1;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transform: rotate(3deg);
+      white-space: nowrap;
+    }
+
+    .headline-wrap {
+      position: relative;
+      margin: 8px 0 22px;
+      padding: 14px 10px 13px;
+      background: var(--ink);
+      color: var(--paper);
+      clip-path: polygon(
+        0 4%, 9% 0, 21% 3%, 34% 1%, 47% 4%, 63% 0, 78% 3%, 100% 1%,
+        98% 20%, 100% 39%, 97% 60%, 100% 79%, 96% 100%,
+        81% 97%, 67% 100%, 50% 96%, 35% 99%, 20% 96%, 4% 100%,
+        2% 80%, 0 61%, 3% 40%, 0 20%
+      );
+      box-shadow: 0 8px 0 var(--blood), 0 14px 0 var(--ink);
+    }
+
+    .headline-wrap::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle, var(--paper) 0 0.8px, transparent 1.35px),
+        linear-gradient(1deg, transparent 0 58%, var(--paper) 59% 59.45%, transparent 61% 100%);
+      background-size: 12px 12px, 100% 100%;
+      opacity: 0.075;
+      mix-blend-mode: screen;
+    }
+
+    .type-name {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      font-family: "Anton", "Archivo Black", sans-serif;
+      font-size: var(--headline-size, clamp(4.9rem, 21vw, 6.95rem));
+      line-height: 0.88;
+      letter-spacing: 0.035em;
+      text-align: center;
+      text-transform: uppercase;
+      text-shadow: 4px 4px 0 var(--blood);
+      -webkit-text-stroke: 0.65px var(--paper);
+      paint-order: stroke fill;
+      overflow-wrap: anywhere;
+    }
+
+    .type-name span {
+      display: block;
+    }
+
+    .type-name .line-one {
+      transform: rotate(-0.15deg);
+    }
+
+    .type-name .line-two {
+      margin-top: 5px;
+      transform: rotate(0.2deg);
+    }
+
+    .type-name .line-three {
+      margin-top: 5px;
+      transform: rotate(-0.1deg);
+    }
+
+    .question-headline {
+      line-height: 1.02;
+      letter-spacing: 0.025em;
+      text-align: left;
+      text-shadow: 3px 3px 0 var(--blood);
+    }
+
+    .quiz-title {
+      line-height: 0.97;
+      letter-spacing: 0.035em;
+      text-align: center;
+    }
+
+    .vibe-strip {
+      position: relative;
+      margin: 30px 4px 18px;
+      padding: 12px 14px 10px;
+      background: var(--paper);
+      border: 3px solid var(--ink);
+      transform: rotate(1.3deg);
+      box-shadow: -6px 7px 0 var(--ink);
+      clip-path: polygon(0 7%, 8% 0, 23% 4%, 40% 0, 60% 5%, 77% 0, 100% 6%, 97% 100%, 80% 94%, 62% 100%, 45% 96%, 27% 100%, 11% 95%, 1% 100%);
+    }
+
+    .vibe {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Special Elite", monospace;
+      font-size: 1rem;
+      line-height: 1.36;
+      text-align: center;
+    }
+
+    .intro-copy {
+      margin: 34px 8px 26px;
+      color: var(--ink);
+      font-family: "Special Elite", monospace;
+      font-size: 1.02rem;
+      line-height: 1.45;
+      text-align: center;
+      transform: rotate(-0.7deg);
+    }
+
+    .intro-actions {
+      display: flex;
+      justify-content: center;
+      margin: 32px 0 28px;
+    }
+
+    .kicker-button {
+      display: inline-block;
+      min-height: 48px;
+      padding: 12px 20px 9px;
+      border: 3px solid var(--blood);
+      color: var(--blood);
+      background: var(--paper);
+      font-family: "Special Elite", monospace;
+      font-size: 1rem;
+      line-height: 1;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+      transform: rotate(-3.8deg);
+      box-shadow: 5px 5px 0 var(--ink);
+      cursor: pointer;
+    }
+
+    .kicker-button:hover {
+      color: var(--paper);
+      background: var(--blood);
+    }
+
+    .honesty-line {
+      position: absolute;
+      right: 42px;
+      bottom: 34px;
+      left: 42px;
+      margin: 0;
+      color: var(--ink);
+      font-family: "Special Elite", monospace;
+      font-size: 0.72rem;
+      line-height: 1.35;
+      text-align: center;
+      transform: rotate(1.1deg);
+    }
+
+    .copy-block {
+      position: relative;
+      margin: 18px 6px 22px;
+      padding: 4px 8px;
+      text-align: left;
+    }
+
+    .copy-block::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 7px;
+      background: var(--ink);
+    }
+
+    .description {
+      margin: 0 0 0 20px;
+      color: var(--ink);
+      font-family: "Oswald", sans-serif;
+      font-size: 1.05rem;
+      font-weight: 400;
+      line-height: 1.48;
+      letter-spacing: 0.01em;
+    }
+
+    .answer-list {
+      display: grid;
+      gap: 14px;
+      margin: 31px 4px 22px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .answer-option {
+      width: 100%;
+      min-height: 58px;
+      padding: 14px 16px 12px;
+      color: var(--ink);
+      background: var(--paper);
+      border: 3px solid var(--ink);
+      font-family: "Oswald", sans-serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1.25;
+      letter-spacing: 0.02em;
+      text-align: left;
+      text-transform: uppercase;
+      box-shadow: -5px 6px 0 var(--ink);
+      cursor: pointer;
+      clip-path: polygon(0 7%, 8% 0, 23% 4%, 40% 0, 60% 5%, 77% 0, 100% 6%, 97% 100%, 80% 94%, 62% 100%, 45% 96%, 27% 100%, 11% 95%, 1% 100%);
+    }
+
+    .answer-list li:nth-child(1) .answer-option {
+      transform: rotate(0.9deg);
+    }
+
+    .answer-list li:nth-child(2) .answer-option {
+      transform: rotate(-0.7deg);
+    }
+
+    .answer-list li:nth-child(3) .answer-option {
+      transform: rotate(1.4deg);
+    }
+
+    .answer-list li:nth-child(4) .answer-option {
+      transform: rotate(-1deg);
+    }
+
+    .answer-option:hover {
+      color: var(--paper);
+      background: var(--ink);
+      text-shadow: 2px 2px 0 var(--blood);
+    }
+
+    .back-button {
+      margin: 18px 0 0 4px;
+      padding: 7px 0 4px;
+      border: 0;
+      border-bottom: 2px solid var(--ink);
+      color: var(--ink);
+      background: transparent;
+      font-family: "Special Elite", monospace;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transform: rotate(-0.8deg);
+    }
+
+    .band-bill {
+      position: relative;
+      margin: 26px 2px 22px;
+      border: 4px solid var(--ink);
+      background: var(--paper);
+      transform: rotate(-0.8deg);
+      box-shadow: 7px 7px 0 var(--ink);
+    }
+
+    .band-bill::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 2px dashed var(--ink);
+      pointer-events: none;
+      opacity: 0.55;
+    }
+
+    .soundtrack-label {
+      position: relative;
+      margin: 0;
+      padding: 11px 12px 9px;
+      color: var(--paper);
+      background: var(--ink);
+      font-family: "Anton", "Archivo Black", sans-serif;
+      font-size: 1.25rem;
+      line-height: 1;
+      letter-spacing: 0.08em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .soundtrack {
+      position: relative;
+      margin: 0;
+      padding: 20px 24px 19px;
+      color: var(--ink);
+      font-family: "Oswald", sans-serif;
+      font-size: 1.22rem;
+      font-weight: 600;
+      line-height: 1.32;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .receipt {
+      position: relative;
+      display: block;
+      width: fit-content;
+      max-width: 94%;
+      margin: 30px auto 0;
+      padding: 9px 12px 7px;
+      color: var(--ink);
+      background: var(--paper);
+      border-top: 2px solid var(--ink);
+      border-bottom: 2px solid var(--ink);
+      font-family: "Special Elite", monospace;
+      font-size: 0.78rem;
+      line-height: 1.35;
+      text-align: center;
+      transform: rotate(1.8deg);
+    }
+
+    .receipt::before,
+    .receipt::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 18px;
+      height: 2px;
+      background: var(--ink);
+      transform: translateY(-50%);
+    }
+
+    .receipt::before {
+      left: -24px;
+    }
+
+    .receipt::after {
+      right: -24px;
+    }
+
+    .tear-one,
+    .tear-two,
+    .tear-three {
+      position: absolute;
+      background: var(--ink);
+      pointer-events: none;
+      opacity: 0.96;
+    }
+
+    .tear-one {
+      top: 102px;
+      right: -10px;
+      width: 54px;
+      height: 13px;
+      transform: rotate(5deg);
+      clip-path: polygon(0 28%, 18% 0, 39% 40%, 60% 10%, 78% 55%, 100% 18%, 100% 100%, 0 100%);
+    }
+
+    .tear-two {
+      left: -14px;
+      bottom: 155px;
+      width: 64px;
+      height: 15px;
+      transform: rotate(-6deg);
+      clip-path: polygon(0 0, 20% 32%, 36% 2%, 58% 37%, 77% 8%, 100% 44%, 100% 100%, 0 100%);
+    }
+
+    .tear-three {
+      right: 46px;
+      bottom: 20px;
+      width: 90px;
+      height: 5px;
+      transform: rotate(2deg);
+      opacity: 0.82;
+    }
+
+    .headline-preview {
+      width: min(1120px, 100%);
+      margin-top: 18px;
+      padding: 22px 18px 26px;
+      color: var(--paper);
+      border: 3px solid var(--paper);
+      background:
+        radial-gradient(circle, var(--paper) 0 0.7px, transparent 1.25px),
+        var(--ink);
+      background-size: 9px 9px, auto;
+      box-shadow: 12px 12px 0 var(--blood);
+      overflow-x: auto;
+    }
+
+    .preview-heading {
+      margin: 0 0 18px;
+      color: var(--paper);
+      font-family: "Special Elite", monospace;
+      font-size: 0.9rem;
+      letter-spacing: 0.09em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .headline-grid {
+      display: flex;
+      align-items: stretch;
+      gap: 18px;
+      min-width: max-content;
+      padding: 0 0 6px;
+    }
+
+    .headline-test-card {
+      flex: 0 0 440px;
+      min-height: 205px;
+      padding: 24px;
+      background: var(--paper);
+      color: var(--ink);
+      border: 3px solid var(--paper);
+      box-shadow: 5px 5px 0 var(--blood);
+      transform: rotate(var(--tilt, -0.6deg));
+    }
+
+    .headline-test-card:nth-child(2n) {
+      --tilt: 0.7deg;
+    }
+
+    .headline-test-card:nth-child(3n) {
+      --tilt: -1deg;
+    }
+
+    .headline-test-card .headline-wrap {
+      min-height: 116px;
+      display: grid;
+      place-items: center;
+      margin: 0;
+      padding: 14px 10px 13px;
+    }
+
+    .headline-test-card .type-name {
+      font-size: var(--headline-size, clamp(4.9rem, 21vw, 6.95rem));
+    }
+
+    .fit-meta {
+      margin: 12px 0 0;
+      color: var(--ink);
+      font-family: "Special Elite", monospace;
+      font-size: 0.64rem;
+      line-height: 1.35;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 680px) {
+      .headline-test-card {
+        flex-basis: min(440px, calc(100vw - 76px));
+      }
+    }
+
+    @media (max-width: 430px) {
+      body {
+        padding: 14px 16px 34px;
+      }
+
+      .preview-controls {
+        flex-wrap: wrap;
+        box-shadow: 6px 6px 0 var(--blood);
+      }
+
+      .stage {
+        filter: drop-shadow(12px 18px 0 var(--ink));
+      }
+
+      .flyer {
+        min-height: auto;
+        padding: 20px;
+      }
+
+      .type-name {
+        letter-spacing: 0.025em;
+      }
+
+      .description {
+        font-size: 1rem;
+      }
+
+      .soundtrack {
+        font-size: 1.05rem;
+      }
+
+      .honesty-line {
+        position: static;
+        margin: 44px 20px 6px;
+      }
+
+      .headline-test-card {
+        flex-basis: min(392px, calc(100vw - 62px));
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <nav class="preview-controls" aria-label="Preview screen switcher">
+      <button type="button" data-screen-target="intro" aria-pressed="true">Intro</button>
+      <button type="button" data-screen-target="question" aria-pressed="false">Question</button>
+      <button type="button" data-screen-target="result" aria-pressed="false">Result</button>
+    </nav>
+
+    <main class="stage" aria-label="What Kind of Goth Are You quiz mockup">
+      <section class="screen is-active" data-screen="intro">
+        <div class="flyer" aria-label="Quiz intro screen">
+          <span class="tear-one" aria-hidden="true"></span>
+          <span class="tear-two" aria-hidden="true"></span>
+          <span class="tear-three" aria-hidden="true"></span>
+
+          <div class="top-row">
+            <p class="kicker">BATCAVE TEST</p>
+            <p class="date-tag">OPEN</p>
+          </div>
+
+          <div class="headline-wrap">
+            <h1 class="type-name quiz-title js-fit-headline" data-fit-text="What Kind of Goth Are You?">
+              <span class="line-one">WHAT KIND</span>
+              <span class="line-two">OF GOTH</span>
+              <span class="line-three">ARE YOU?</span>
+            </h1>
+          </div>
+
+          <p class="intro-copy">Answer eight suspicious little questions and receive your assigned corner of the club flyer.</p>
+
+          <div class="intro-actions">
+            <button type="button" class="kicker-button" data-begin>Begin</button>
+          </div>
+
+          <p class="honesty-line">nothing you answer is stored or sent.</p>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="question" hidden>
+        <div class="flyer" aria-label="Quiz question screen">
+          <span class="tear-one" aria-hidden="true"></span>
+          <span class="tear-two" aria-hidden="true"></span>
+          <span class="tear-three" aria-hidden="true"></span>
+
+          <div class="top-row">
+            <p class="kicker">QUESTION</p>
+            <p class="date-tag" data-slot="progress-tag">3 / 8</p>
+          </div>
+
+          <div class="headline-wrap">
+            <h1 class="type-name question-headline js-fit-headline" data-fit-text="What's on the stereo?">
+              <span class="line-one">WHAT'S ON</span>
+              <span class="line-two">THE STEREO?</span>
+            </h1>
+          </div>
+
+          <ul class="answer-list" aria-label="Answer options">
+            <li><button type="button" class="answer-option" data-answer>Scratchy post-punk with dramatic bass</button></li>
+            <li><button type="button" class="answer-option" data-answer>Velvet vocals, candle wax, and doomed romance</button></li>
+            <li><button type="button" class="answer-option" data-answer>Metal-on-metal machine rhythm</button></li>
+            <li><button type="button" class="answer-option" data-answer>Synths, gloss, smoke, and platform boots</button></li>
+          </ul>
+
+          <button type="button" class="back-button" data-back>Back</button>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="result" hidden>
+        <div class="flyer" aria-label="Quiz result card">
+          <span class="tear-one" aria-hidden="true"></span>
+          <span class="tear-two" aria-hidden="true"></span>
+          <span class="tear-three" aria-hidden="true"></span>
+
+          <div class="top-row">
+            <p class="kicker">YOUR RESULT</p>
+            <p class="date-tag" data-slot="era-tag"></p>
+          </div>
+
+          <div class="headline-wrap">
+            <h1 class="type-name" data-slot="display-name" id="result-headline"></h1>
+          </div>
+
+          <div class="vibe-strip">
+            <p class="vibe" data-slot="vibe-line"></p>
+          </div>
+
+          <div class="copy-block">
+            <p class="description" data-slot="description"></p>
+          </div>
+
+          <section class="band-bill" aria-label="Soundtrack">
+            <p class="soundtrack-label">SOUNDTRACK</p>
+            <p class="soundtrack" data-slot="soundtrack-line"></p>
+          </section>
+
+          <p class="receipt" data-slot="receipt-line"></p>
+        </div>
+      </section>
+    </main>
+
+    <section class="headline-preview" aria-label="Auto-fit headline preview strip">
+      <h2 class="preview-heading">Auto-fit headline strip, all result display names</h2>
+      <div class="headline-grid" id="headline-preview-grid"></div>
+    </section>
+  </div>
+
+  <script>
+    const fitSizes = [
+      { max: 6, value: "clamp(4.9rem, 21vw, 6.95rem)", mini: "clamp(2.35rem, 7.2vw, 3.45rem)", label: "<= 6" },
+      { max: 9, value: "clamp(3.9rem, 17vw, 5.4rem)", mini: "clamp(2rem, 6.1vw, 2.75rem)", label: "7-9" },
+      { max: 12, value: "clamp(3.1rem, 14vw, 4.4rem)", mini: "clamp(1.7rem, 5.1vw, 2.35rem)", label: "10-12" },
+      { max: Infinity, value: "clamp(2.5rem, 11vw, 3.5rem)", mini: "clamp(1.45rem, 4.5vw, 1.95rem)", label: "13+" }
+    ];
+
+    const resultSlots = [
+      {
+        key: "trad",
+        displayName: "Trad Goth",
+        headlineLines: ["Trad", "Goth"],
+        vibeLine: "Trad Goth / 1983: the original, backcombed and black-eyelinered.",
+        descriptionLines: [
+          "You arrived before the fog machine became a personality and remained correctly unimpressed.",
+          "Your wardrobe is archival, your opinions are footnoted, and your eyeliner has tenure."
+        ],
+        soundtrackLine: "Bauhaus, Siouxsie and the Banshees, The Cure, Sisters of Mercy",
+        receiptLine: "scored highest on: post-punk roots, DIY, batcave",
+        eraTag: "1983"
+      },
+      {
+        key: "romantic",
+        displayName: "Romantic",
+        headlineLines: ["Romantic"],
+        vibeLine: "Romantic Goth / 1986: candlelit drama with excellent sleeve volume.",
+        descriptionLines: [
+          "You prefer your melancholy ornate, literate, and framed by velvet curtains.",
+          "Every room becomes a chapel if the lighting is wounded enough."
+        ],
+        soundtrackLine: "Dead Can Dance, Cocteau Twins, This Mortal Coil, Faith and the Muse",
+        receiptLine: "scored highest on: romance, atmosphere, cathedral lighting",
+        eraTag: "1986"
+      },
+      {
+        key: "victorian",
+        displayName: "Victorian",
+        headlineLines: ["Victorian"],
+        vibeLine: "Victorian Goth / 1887: mourning jewelry, lace discipline, literary menace.",
+        descriptionLines: [
+          "You believe restraint is most effective when paired with a collar that could intimidate a ghost.",
+          "Your drama is historical, your details are exact, and your silhouette files paperwork."
+        ],
+        soundtrackLine: "Rasputina, Sopor Aeternus, Emilie Autumn, dark chamber strings",
+        receiptLine: "scored highest on: velvet, etiquette, antique gloom",
+        eraTag: "1887"
+      },
+      {
+        key: "deathrock",
+        displayName: "Deathrock",
+        headlineLines: ["Deathrock"],
+        vibeLine: "Deathrock / 1981: punk bones, graveyard humor, haunted speed.",
+        descriptionLines: [
+          "You like the edges jagged and the eyeliner slightly hostile.",
+          "Your ideal entrance looks accidental, but somehow the bats were briefed."
+        ],
+        soundtrackLine: "Christian Death, 45 Grave, Alien Sex Fiend, Kommunity FK",
+        receiptLine: "scored highest on: punk bite, horror camp, jagged riffs",
+        eraTag: "1981"
+      },
+      {
+        key: "industrial",
+        displayName: "Industrial",
+        headlineLines: ["Industrial"],
+        vibeLine: "Industrial / Rivethead / 1989: machine rhythm with steel-toed conviction.",
+        descriptionLines: [
+          "You hear romance in machinery and efficiency in menace.",
+          "Your best accessory is a bassline that sounds like a factory developing a thesis."
+        ],
+        soundtrackLine: "Nine Inch Nails, Ministry, Front 242, KMFDM",
+        receiptLine: "scored highest on: machinery, noise, black utility",
+        eraTag: "1989"
+      },
+      {
+        key: "cyber",
+        displayName: "Cyber Goth",
+        headlineLines: ["Cyber", "Goth"],
+        vibeLine: "Cyber Goth / 2001: black PVC, neon interference, dancefloor circuitry.",
+        descriptionLines: [
+          "You are less haunted mansion and more rave bunker with excellent posture.",
+          "Your gloom has bandwidth, your boots have architecture, and your playlist glows."
+        ],
+        soundtrackLine: "VNV Nation, Combichrist, Covenant, Apoptygma Berzerk",
+        receiptLine: "scored highest on: neon, motion, synthetic gloom",
+        eraTag: "2001"
+      },
+      {
+        key: "nu",
+        displayName: "Nu Goth",
+        headlineLines: ["Nu", "Goth"],
+        vibeLine: "Nu Goth / 2014: minimalist black, moon symbols, algorithmic mystery.",
+        descriptionLines: [
+          "You like the shadow polished, cropped, and ready for a clean grid layout.",
+          "Your ritual objects include black denim, silver rings, and suspiciously good typography."
+        ],
+        soundtrackLine: "Chelsea Wolfe, Zola Jesus, TR/ST, The Soft Moon",
+        receiptLine: "scored highest on: minimalism, mood, digital occult",
+        eraTag: "2014"
+      },
+      {
+        key: "gothabilly",
+        displayName: "Gothabilly",
+        headlineLines: ["Gothabilly"],
+        vibeLine: "Gothabilly / 1957: coffin polish, hot rods, and haunted jukebox swagger.",
+        descriptionLines: [
+          "You brought a pompadour to a séance and somehow improved the agenda.",
+          "Your taste is part drive-in, part graveyard, and all commitment."
+        ],
+        soundtrackLine: "The Cramps, The Meteors, Tiger Army, Nekromantix",
+        receiptLine: "scored highest on: rockabilly menace, camp, sharp silhouettes",
+        eraTag: "1957"
+      },
+      {
+        key: "whimsigoth",
+        displayName: "Whimsigoth",
+        headlineLines: ["Whimsigoth"],
+        vibeLine: "Whimsigoth / 1998: celestial velvet, attic magic, thrifted moonlight.",
+        descriptionLines: [
+          "You are a stack of tarot cards wearing crushed velvet in a secondhand mirror.",
+          "Your darkness is soft around the edges, but still knows where the secret door is."
+        ],
+        soundtrackLine: "The Cranberries, Mazzy Star, Stevie Nicks, Switchblade Symphony",
+        receiptLine: "scored highest on: moons, velvet, enchanted clutter",
+        eraTag: "1998"
+      },
+      {
+        key: "pastel",
+        displayName: "Pastel Goth",
+        headlineLines: ["Pastel", "Goth"],
+        vibeLine: "Pastel Goth / 2012: candy color over a structurally gloomy foundation.",
+        descriptionLines: [
+          "You understand that softness can still arrive carrying a tiny scythe.",
+          "Your palette is sweet, your references are spooky, and your contrast is intentional."
+        ],
+        soundtrackLine: "Grimes, Crystal Castles, Kerli, pastel witch playlists",
+        receiptLine: "scored highest on: cute menace, contrast, internet occult",
+        eraTag: "2012"
+      },
+      {
+        key: "not",
+        displayName: "Not a Goth",
+        headlineLines: ["Not a Goth"],
+        vibeLine: "Not a Goth / OCT 31: beloved visitor, technically not on the bill.",
+        descriptionLines: [
+          "You wandered in for the lighting, stayed for the commitment, and respect the eyeliner economy.",
+          "No shame. The club needs civilians who can hold coats and ask useful questions."
+        ],
+        soundtrackLine: "A little Cure, a little Depeche Mode, and one suspicious Halloween playlist",
+        receiptLine: "scored highest on: curiosity, costume energy, adjacent gloom",
+        eraTag: "OCT 31"
+      }
+    ];
+
+    function fitInfo(length) {
+      return fitSizes.find((step) => length <= step.max);
+    }
+
+    function fitBasis(lines) {
+      return Math.max(...lines.map((line) => line.length));
+    }
+
+    function renderHeadline(element, lines, options = {}) {
+      const length = options.fitLength || fitBasis(lines);
+      const info = fitInfo(length);
+      const property = options.mini ? "--mini-headline-size" : "--headline-size";
+      element.style.setProperty(property, options.mini ? info.mini : info.value);
+      element.dataset.fitLength = String(length);
+      element.dataset.fitRange = info.label;
+      while (element.firstChild) element.removeChild(element.firstChild);
+      lines.forEach((line, index) => {
+        const span = document.createElement("span");
+        span.className = "line-" + (["one", "two", "three"][index] || "one");
+        span.textContent = line;
+        element.appendChild(span);
+      });
+    }
+
+    function renderStaticFitHeadlines() {
+      document.querySelectorAll(".js-fit-headline").forEach((element) => {
+        const text = element.dataset.fitText || element.textContent.trim();
+        const lines = Array.from(element.querySelectorAll("span")).map((span) => span.textContent.trim());
+        renderHeadline(element, lines.length ? lines : [text], { fitLength: text.length });
+      });
+    }
+
+    function renderResult(index = 0) {
+      const result = resultSlots[index];
+      const headline = document.querySelector('[data-slot="display-name"]');
+      renderHeadline(headline, result.headlineLines);
+      headline.dataset.mockValue = result.displayName;
+      document.querySelector('[data-slot="era-tag"]').textContent = result.eraTag;
+      document.querySelector('[data-slot="era-tag"]').dataset.mockValue = result.eraTag;
+      document.querySelector('[data-slot="vibe-line"]').textContent = result.vibeLine;
+      document.querySelector('[data-slot="vibe-line"]').dataset.mockValue = result.vibeLine;
+      const desc = document.querySelector('[data-slot="description"]');
+      while (desc.firstChild) desc.removeChild(desc.firstChild);
+      result.descriptionLines.forEach((line, i) => {
+        if (i) desc.appendChild(document.createElement("br"));
+        desc.appendChild(document.createTextNode(line));
+      });
+      document.querySelector('[data-slot="description"]').dataset.mockValue = result.descriptionLines.join(" ");
+      document.querySelector('[data-slot="soundtrack-line"]').textContent = result.soundtrackLine;
+      document.querySelector('[data-slot="soundtrack-line"]').dataset.mockValue = result.soundtrackLine;
+      document.querySelector('[data-slot="receipt-line"]').textContent = result.receiptLine;
+      document.querySelector('[data-slot="receipt-line"]').dataset.mockValue = result.receiptLine;
+    }
+
+    function renderHeadlinePreview() {
+      const grid = document.getElementById("headline-preview-grid");
+      while (grid.firstChild) grid.removeChild(grid.firstChild);
+      resultSlots.forEach((result) => {
+        const length = fitBasis(result.headlineLines);
+        const info = fitInfo(length);
+        const card = document.createElement("article");
+        card.className = "headline-test-card";
+
+        const wrap = document.createElement("div");
+        wrap.className = "headline-wrap";
+        wrap.setAttribute("aria-label", result.displayName + " headline preview");
+        const heading = document.createElement("h3");
+        heading.className = "type-name";
+        wrap.appendChild(heading);
+        card.appendChild(wrap);
+
+        const meta = document.createElement("p");
+        meta.className = "fit-meta";
+        meta.textContent = result.displayName + " · longest line " + length + " chars · " + info.label + " fit";
+        card.appendChild(meta);
+
+        renderHeadline(heading, result.headlineLines);
+        grid.appendChild(card);
+      });
+    }
+
+    function showScreen(name) {
+      document.querySelectorAll(".screen").forEach((screen) => {
+        const isActive = screen.dataset.screen === name;
+        screen.classList.toggle("is-active", isActive);
+        screen.hidden = !isActive;
+      });
+      document.querySelectorAll(".preview-controls button").forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.screenTarget === name));
+      });
+    }
+
+    document.querySelectorAll("[data-screen-target]").forEach((button) => {
+      button.addEventListener("click", () => showScreen(button.dataset.screenTarget));
+    });
+
+    document.querySelector("[data-begin]").addEventListener("click", () => showScreen("question"));
+    document.querySelector("[data-back]").addEventListener("click", () => showScreen("intro"));
+    document.querySelectorAll("[data-answer]").forEach((button) => {
+      button.addEventListener("click", () => showScreen("result"));
+    });
+
+    renderStaticFitHeadlines();
+    renderResult(0);
+    renderHeadlinePreview();
+  </script>
+</body>
+</html>

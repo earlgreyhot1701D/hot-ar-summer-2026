@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Same Boat</title>
+
+<!-- Social preview. Replace SITE_URL with the real deployed URL (no trailing slash).
+     og-sameboat.png goes in the site root next to index.html. -->
+<meta property="og:title" content="Same Boat" />
+<meta property="og:description" content="One screen, the same words for everyone here right now. No feed, no names, no count." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="SITE_URL/og-sameboat.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Same Boat" />
+<meta name="twitter:description" content="Whoever's here right now is seeing exactly this." />
+<meta name="twitter:image" content="SITE_URL/og-sameboat.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --slate:#2B3A55; --dusk:#4C4F6B; --lavender:#6B6A8A;
+    --rose:#C98B7A; --horizon:#E8D8C4; --star:#F4EEE4;
+    --sky-top:var(--slate); --sky-mid:var(--lavender);
+    --sky-low:var(--rose); --sky-horizon:var(--horizon);
+    --ink:#F7F2E9; --ink-soft:rgba(247,242,233,0.80); --ink-faint:rgba(247,242,233,0.58);
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;margin:0;}
+  body{
+    min-height:100svh; display:flex; flex-direction:column;
+    color:var(--ink); font-family:"Fraunces",Georgia,serif;
+    background:radial-gradient(120% 90% at 50% 118%,
+      var(--sky-horizon) 0%, var(--sky-low) 26%, var(--sky-mid) 58%, var(--sky-top) 100%);
+    transition:background 2400ms cubic-bezier(.4,0,.2,1);
+    overflow:hidden; position:relative;
+  }
+  .horizon{
+    position:fixed; left:0; right:0; bottom:22svh; height:1px;
+    background:linear-gradient(90deg, transparent,
+      rgba(244,238,228,0.10) 12%, rgba(244,238,228,0.55) 50%,
+      rgba(244,238,228,0.10) 88%, transparent);
+    pointer-events:none; z-index:1;
+  }
+  .horizon::after{
+    content:""; position:absolute; left:0; right:0; bottom:0; height:120px;
+    background:radial-gradient(60% 100% at 50% 100%, rgba(244,238,228,0.14), transparent 70%);
+  }
+  .water{
+    position:fixed; left:0; right:0; bottom:0; height:22svh;
+    background:linear-gradient(180deg, rgba(43,58,85,0.0), rgba(43,58,85,0.28));
+    pointer-events:none; z-index:1;
+  }
+  main{
+    position:relative; z-index:2; flex:1;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:32px 26px 0;
+  }
+  .eyebrow{
+    font-family:"JetBrains Mono",monospace; font-size:11px; letter-spacing:.34em;
+    text-transform:uppercase; color:var(--ink-faint); margin-bottom:38px;
+  }
+  .line{
+    font-optical-sizing:auto; font-weight:300;
+    font-size:clamp(1.6rem,4.6vw,3.1rem); line-height:1.32;
+    max-width:16ch; margin:0 auto; letter-spacing:-0.01em; text-wrap:balance;
+    animation:rise 1600ms cubic-bezier(.2,.7,.2,1) both;
+  }
+  .line em{font-style:italic;}
+  @keyframes rise{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+  .ritual{
+    margin-top:34px; font-size:clamp(0.98rem,2.2vw,1.18rem);
+    font-weight:300; font-style:italic; color:var(--ink-soft); max-width:22ch;
+    animation:rise 1600ms cubic-bezier(.2,.7,.2,1) 260ms both;
+  }
+  footer{
+    position:relative; z-index:2; padding:20px 26px 26px;
+    display:flex; flex-direction:column; align-items:center; gap:12px; text-align:center;
+  }
+  .countdown{ font-family:"JetBrains Mono",monospace; font-size:11px; letter-spacing:.18em; color:var(--ink-faint); }
+  .countdown b{color:var(--ink-soft);font-weight:400;}
+  .note{
+    font-family:"JetBrains Mono",monospace; font-size:10.5px; line-height:1.7;
+    letter-spacing:.02em; color:var(--ink-faint); max-width:52ch;
+  }
+  .sig{
+    font-family:"JetBrains Mono",monospace; font-size:9.5px; letter-spacing:.22em;
+    text-transform:uppercase; color:rgba(247,242,233,0.42);
+  }
+  @media (prefers-reduced-motion: reduce){
+    body{transition:none;} .line,.ritual{animation:none;}
+  }
+</style>
+</head>
+<body>
+  <div class="horizon" aria-hidden="true"></div>
+  <div class="water" aria-hidden="true"></div>
+  <main>
+    <p class="eyebrow">same boat</p>
+    <p class="line" id="line" aria-live="polite">&nbsp;</p>
+    <p class="ritual" id="ritual"></p>
+  </main>
+  <footer>
+    <p class="countdown" id="countdown">&nbsp;</p>
+    <p class="note">
+      There's no counter and no server. It feels shared because it's timed, not tracked &mdash;
+      the clock is the only thing we have in common, and it's the same clock.
+    </p>
+    <p class="sig">Nothing is stored or sent &middot; AI assisted &middot; Human approved &middot; Powered by NLP</p>
+  </footer>
+<script>
+(function(){
+  "use strict";
+  var LINES = [
+    "Whoever is reading this is reading it now, same as you.",
+    "Somewhere, someone just refreshed this and got the same words.",
+    "Right now, take one breath. So is whoever else is here.",
+    "You are one of an unknown number of people on this exact screen.",
+    "This moment is shared, even if the room isn't.",
+    "Nobody here can see each other. Everybody here is here anyway.",
+    "The same sentence, on every screen this is open on, right now.",
+    "You didn't plan to be here at the same time as them. You are.",
+    "For the next few minutes, this is what we're all looking at.",
+    "Somewhere it's morning. Somewhere it's late. Here, it's this.",
+    "Look up for a second. Someone else just did too.",
+    "You are briefly, quietly, in the same boat as strangers.",
+    "This changes soon, and everyone's will change at once.",
+    "Whatever you're carrying today, you're not carrying it alone in here.",
+    "Right now is the only thing everyone here has in common. It's enough.",
+    "Unclench your jaw. Statistically, someone else just did.",
+    "The internet is enormous and you found the same small room as them.",
+    "No feed, no names, no count. Just the same words at the same time.",
+    "Someone is having the best day of their life. Someone the worst. Both are here.",
+    "Rest your eyes on this line. It's holding still for all of us.",
+    "We will never meet. We are, for a minute, looking at the same thing.",
+    "You arrived at the same moment as people you'll never know.",
+    "Breathe out slowly. Let this be a small, shared pause.",
+    "Whoever's here right now is seeing exactly this. Hello."
+  ];
+  var RITUALS = [
+    "Say hello back, if you like.",
+    "Refresh in a few minutes. It'll have moved on, for all of us.",
+    "In. Hold. Out.",
+    "You don't need to know the number to be part of it.",
+    "Close your eyes for the length of one breath.",
+    "That's the whole point, really.",
+    "Read it once more, slower.",
+    "No plan. Just timing.",
+    "Stay a minute if you can.",
+    "Wherever you are, it's this hour here.",
+    "There. Now you're both doing it.",
+    "The boat is small and the water is calm.",
+    "Watch the light change. It changes for everyone.",
+    "Set it down for a second. It'll keep.",
+    "One shared minute is not nothing.",
+    "Roll your shoulders down while you're at it.",
+    "Funny, how that works.",
+    "That's all this is. That's all it needs to be.",
+    "Room enough for both.",
+    "Let it hold still a moment longer.",
+    "That's not sad. That's kind of nice.",
+    "Strangers, on the same small tide.",
+    "There's no hurry here.",
+    "Wave, silently. Someone will feel it."
+  ];
+  var SLOT_MS = 10 * 60 * 1000;
+  var EPOCH = Date.UTC(2025, 0, 1);
+  var lineEl = document.getElementById("line");
+  var ritualEl = document.getElementById("ritual");
+  var countEl = document.getElementById("countdown");
+  var bodyStyle = document.body.style;
+  function slotFor(now){ return Math.floor((now - EPOCH) / SLOT_MS); }
+  function idxFor(slot, len){ return ((slot % len) + len) % len; }
+  var SKIES = [
+    { top:"#2B3A55", mid:"#6B6A8A", low:"#C98B7A", horizon:"#E8D8C4" },
+    { top:"#1C2438", mid:"#39406A", low:"#5A5A86", horizon:"#8E86A8" },
+    { top:"#2A2F4A", mid:"#4E4E77", low:"#8A6E86", horizon:"#C6A6A0" },
+    { top:"#3B4266", mid:"#7E7096", low:"#D79A82", horizon:"#F0DAC0" },
+    { top:"#4A5570", mid:"#77839A", low:"#A9AEB4", horizon:"#D8D4CC" },
+    { top:"#33334F", mid:"#6E5D82", low:"#D08A6E", horizon:"#E8CBA6" }
+  ];
+  function paint(slot){
+    var s = SKIES[idxFor(slot, SKIES.length)];
+    bodyStyle.setProperty("--sky-top", s.top);
+    bodyStyle.setProperty("--sky-mid", s.mid);
+    bodyStyle.setProperty("--sky-low", s.low);
+    bodyStyle.setProperty("--sky-horizon", s.horizon);
+  }
+  var currentSlot = null;
+  function render(now){
+    var slot = slotFor(now);
+    if(slot !== currentSlot){
+      currentSlot = slot;
+      var i = idxFor(slot, LINES.length);
+      lineEl.textContent = LINES[i];
+      ritualEl.textContent = RITUALS[i];
+      paint(slot);
+      lineEl.style.animation = "none";
+      ritualEl.style.animation = "none";
+      void lineEl.offsetWidth;
+      lineEl.style.animation = "";
+      ritualEl.style.animation = "";
+    }
+  }
+  function tick(){
+    var now = Date.now();
+    render(now);
+    var into = (now - EPOCH) % SLOT_MS;
+    var left = SLOT_MS - into;
+    var m = Math.floor(left / 60000);
+    var sec = Math.floor((left % 60000) / 1000);
+    var pad = function(n){ return (n < 10 ? "0" : "") + n; };
+    while(countEl.firstChild){ countEl.removeChild(countEl.firstChild); }
+    countEl.appendChild(document.createTextNode("a new line for everyone in "));
+    var b = document.createElement("b");
+    b.textContent = m + ":" + pad(sec);
+    countEl.appendChild(b);
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>
+</body>
+</html>

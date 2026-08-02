@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Saint of Small Things</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --card: #F3ECD8;
+      --ink: #1B1B3A;
+      --gold: #C6A15B;
+      --faint: rgba(27,27,58,0.55);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: clamp(18px, 4vw, 42px);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 50% 16%, rgba(198,161,91,0.2), transparent 28%),
+        radial-gradient(circle at 18% 82%, rgba(27,27,58,0.18), transparent 26%),
+        linear-gradient(135deg, #10102A 0%, #1B1B3A 48%, #0C0C1E 100%);
+      font-family: "EB Garamond", Georgia, serif;
+    }
+
+    .card {
+      width: min(92vw, 520px);
+      min-height: min(86vh, 760px);
+      position: relative;
+      display: grid;
+      place-items: center;
+      padding: clamp(42px, 8vw, 76px) clamp(30px, 7vw, 58px);
+      text-align: center;
+      background:
+        radial-gradient(circle at 50% 16%, rgba(198,161,91,0.16), transparent 25%),
+        radial-gradient(circle at 12% 24%, rgba(27,27,58,0.045), transparent 20%),
+        radial-gradient(circle at 85% 76%, rgba(198,161,91,0.12), transparent 22%),
+        repeating-linear-gradient(
+          90deg,
+          rgba(27,27,58,0.018) 0px,
+          rgba(27,27,58,0.018) 1px,
+          transparent 1px,
+          transparent 7px
+        ),
+        var(--card);
+      border-radius: 22px;
+      box-shadow:
+        0 28px 80px rgba(0,0,0,0.36),
+        inset 0 0 70px rgba(27,27,58,0.055),
+        inset 0 0 0 1px rgba(198,161,91,0.35);
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border: 2px solid var(--gold);
+      border-radius: 16px;
+      pointer-events: none;
+      opacity: 0.9;
+    }
+
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: 27px;
+      border: 1px solid rgba(198,161,91,0.78);
+      border-radius: 11px;
+      pointer-events: none;
+    }
+
+    .corner {
+      position: absolute;
+      width: 56px;
+      height: 56px;
+      border-color: rgba(198,161,91,0.72);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .corner.one {
+      top: 38px;
+      left: 38px;
+      border-top: 1px solid;
+      border-left: 1px solid;
+      border-radius: 14px 0 0 0;
+    }
+
+    .corner.two {
+      top: 38px;
+      right: 38px;
+      border-top: 1px solid;
+      border-right: 1px solid;
+      border-radius: 0 14px 0 0;
+    }
+
+    .corner.three {
+      bottom: 38px;
+      left: 38px;
+      border-bottom: 1px solid;
+      border-left: 1px solid;
+      border-radius: 0 0 0 14px;
+    }
+
+    .corner.four {
+      right: 38px;
+      bottom: 38px;
+      border-right: 1px solid;
+      border-bottom: 1px solid;
+      border-radius: 0 0 14px 0;
+    }
+
+    .content {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      display: grid;
+      justify-items: center;
+      gap: clamp(20px, 4vw, 32px);
+    }
+
+    .halo-wrap {
+      position: relative;
+      width: 100%;
+      padding: clamp(26px, 6vw, 54px) 0 clamp(18px, 4vw, 32px);
+      isolation: isolate;
+    }
+
+    .halo-wrap::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 48%;
+      width: min(80%, 350px);
+      aspect-ratio: 1;
+      transform: translate(-50%, -50%);
+      border-radius: 999px;
+      background:
+        radial-gradient(
+          circle,
+          rgba(198,161,91,0.42) 0%,
+          rgba(198,161,91,0.23) 31%,
+          rgba(198,161,91,0.08) 53%,
+          transparent 72%
+        );
+      filter: blur(2px);
+      z-index: -2;
+    }
+
+    .halo-wrap::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 48%;
+      width: min(52%, 220px);
+      aspect-ratio: 1;
+      transform: translate(-50%, -50%);
+      border-radius: 999px;
+      border: 1px solid rgba(198,161,91,0.58);
+      box-shadow:
+        0 0 0 11px rgba(198,161,91,0.045),
+        0 0 42px rgba(198,161,91,0.24);
+      z-index: -1;
+    }
+
+    .saint-name {
+      margin: 0;
+      font-family: "Cinzel", Georgia, serif;
+      font-size: clamp(2.35rem, 9vw, 5.1rem);
+      line-height: 0.94;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--ink);
+      text-transform: uppercase;
+      text-shadow:
+        0 1px 0 rgba(255,255,255,0.45),
+        0 0 24px rgba(198,161,91,0.34);
+    }
+
+    .patron {
+      margin: 0;
+      max-width: 360px;
+      font-size: clamp(1.55rem, 4vw, 2.2rem);
+      line-height: 1.12;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .feast {
+      margin: 0;
+      font-size: clamp(1.02rem, 2.3vw, 1.25rem);
+      line-height: 1.4;
+      color: var(--faint);
+      letter-spacing: 0.02em;
+    }
+
+    .rule {
+      width: min(250px, 58%);
+      height: 1px;
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          rgba(198,161,91,0.9),
+          transparent
+        );
+    }
+
+    .blessing {
+      margin: 0;
+      max-width: 390px;
+      font-size: clamp(1.26rem, 3vw, 1.66rem);
+      line-height: 1.34;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .seal {
+      width: 42px;
+      aspect-ratio: 1;
+      border-radius: 999px;
+      border: 1px solid rgba(198,161,91,0.82);
+      box-shadow:
+        inset 0 0 0 5px rgba(198,161,91,0.08),
+        0 0 24px rgba(198,161,91,0.14);
+    }
+
+    @media (max-width: 520px) {
+      .card {
+        min-height: 82vh;
+        padding: 48px 28px;
+      }
+
+      .corner {
+        width: 46px;
+        height: 46px;
+      }
+
+      .corner.one,
+      .corner.two {
+        top: 34px;
+      }
+
+      .corner.three,
+      .corner.four {
+        bottom: 34px;
+      }
+
+      .corner.one,
+      .corner.three {
+        left: 34px;
+      }
+
+      .corner.two,
+      .corner.four {
+        right: 34px;
+      }
+
+      .halo-wrap {
+        padding-top: 34px;
+      }
+    }
+
+    /* Interactive UI additions */
+    .form-container {
+      width: 100%;
+      max-width: 380px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .form-title {
+      font-family: "Cinzel", Georgia, serif;
+      font-size: clamp(1.6rem, 5vw, 2.2rem);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      margin: 0 0 8px 0;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+
+    .form-desc {
+      font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+      color: var(--faint);
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 14px 18px;
+      font-family: "EB Garamond", Georgia, serif;
+      font-size: 1.25rem;
+      border: 1px solid rgba(198,161,91,0.5);
+      background-color: rgba(255, 255, 255, 0.4);
+      color: var(--ink);
+      border-radius: 8px;
+      outline: none;
+      transition: all 0.25s ease;
+      text-align: center;
+    }
+
+    .input-field:focus {
+      border-color: var(--gold);
+      background-color: rgba(255, 255, 255, 0.85);
+      box-shadow: 0 0 12px rgba(198, 161, 91, 0.2);
+    }
+
+    .btn {
+      cursor: pointer;
+      font-family: "Cinzel", Georgia, serif;
+      font-weight: 600;
+      font-size: 1.05rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 14px 28px;
+      border: 1px solid var(--gold);
+      background-color: var(--ink);
+      color: var(--card);
+      border-radius: 8px;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn:hover {
+      background-color: #2b2b52;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--ink);
+      border: 1px solid rgba(27, 27, 58, 0.3);
+      margin-top: 10px;
+    }
+
+    .btn-secondary:hover {
+      background-color: rgba(27, 27, 58, 0.05);
+      border-color: var(--ink);
+    }
+
+    /* Utilities to toggle states */
+    [hidden] {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="card" aria-label="Canonization card">
+    <span class="corner one" aria-hidden="true"></span>
+    <span class="corner two" aria-hidden="true"></span>
+    <span class="corner three" aria-hidden="true"></span>
+    <span class="corner four" aria-hidden="true"></span>
+
+    <!-- Input Mode Block -->
+    <div id="input-view" class="content">
+      <div class="form-container">
+        <div class="seal" aria-hidden="true" style="margin-bottom: 8px;"></div>
+        <h1 class="form-title">Saint of Small Things</h1>
+        <p class="form-desc">Type your minor struggle, everyday annoyance, or tiny hurdle to receive your patronage.</p>
+        <form id="canonize-form" style="width: 100%; display: flex; flex-direction: column; gap: 16px; align-items: center;">
+          <input type="text" id="struggle-input" class="input-field" placeholder="e.g. losing my keys, slow internet" required maxlength="100" />
+          <button type="submit" class="btn">Canonize me</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Result Mode Block -->
+    <section id="result-view" class="content" hidden>
+      <div class="halo-wrap">
+        <h1 class="saint-name" id="saint-name-el">SAINT AMBROSE</h1>
+      </div>
+
+      <p class="patron" id="patron-el">Patron of replying to emails</p>
+
+      <p class="feast" id="feast-el">Feast Day: the 19th of March</p>
+
+      <div class="rule" aria-hidden="true"></div>
+
+      <p class="blessing" id="blessing-el">The saints keep the big miracles. This one keeps the small ones.</p>
+
+      <div class="seal" aria-hidden="true"></div>
+
+      <button id="reset-btn" class="btn btn-secondary">Canonize another</button>
+    </section>
+  </main>
+
+  <script>
+    const NAMES = [
+      "Perpetua", "Ambrose", "Serilda", "Cassian", "Bede", "Winifred", 
+      "Odile", "Fenwick", "Genevieve", "Ansel", "Brigid", "Corvin", 
+      "Dymphna", "Ignatia", "Rowan", "Thea"
+    ];
+
+    const FEASTS = [
+      "the 3rd of February", "the 19th of March", "the 7th of May", 
+      "the 22nd of June", "the 11th of August", "the 4th of September", 
+      "the 30th of October", "the 13th of November", "the 6th of December", 
+      "the 28th of January", "the 15th of July", "the 9th of April"
+    ];
+
+    const BLESSINGS = [
+      "Canonized for enduring the small indignities without complaint. Mostly.",
+      "May the minor trials find you already seated.",
+      "Patronage granted to all who persevere in tedious things.",
+      "Blessed are the mildly inconvenienced, for they carry on anyway.",
+      "For services rendered to the perpetually almost-finished.",
+      "May your patience outlast the annoyance by a comfortable margin.",
+      "Elevated for grace under petty circumstances.",
+      "The saints keep the big miracles. This one keeps the small ones.",
+      "Recognized for suffering the forgettable with dignity.",
+      "May the thing that vexes you grow bored and leave.",
+      "Ordained keeper of lost causes too small to name.",
+      "Sainthood is mostly showing up. You showed up."
+    ];
+
+    // Helper: Simple deterministic hash function (djb2-like)
+    function getDeterministicHash(str) {
+      // Normalize and trim lowercase text to ensure consistent hashing
+      const normalized = str.trim().toLowerCase();
+      let hash = 5381;
+      for (let i = 0; i < normalized.length; i++) {
+        hash = (hash * 33) ^ normalized.charCodeAt(i);
+      }
+      return Math.abs(hash);
+    }
+
+    const form = document.getElementById('canonize-form');
+    const input = document.getElementById('struggle-input');
+    const inputView = document.getElementById('input-view');
+    const resultView = document.getElementById('result-view');
+    const resetBtn = document.getElementById('reset-btn');
+
+    const saintNameEl = document.getElementById('saint-name-el');
+    const patronEl = document.getElementById('patron-el');
+    const feastEl = document.getElementById('feast-el');
+    const blessingEl = document.getElementById('blessing-el');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const struggle = input.value.trim();
+      if (!struggle) return;
+
+      const hashValue = getDeterministicHash(struggle);
+
+      // Select values deterministically using the hash
+      const name = NAMES[hashValue % NAMES.length];
+      const feast = FEASTS[hashValue % FEASTS.length];
+      const blessing = BLESSINGS[hashValue % BLESSINGS.length];
+
+      // Update elements
+      saintNameEl.textContent = `SAINT ${name.toUpperCase()}`;
+      patronEl.textContent = `Patron of ${struggle}`;
+      feastEl.textContent = `Feast Day: ${feast}`;
+      blessingEl.textContent = blessing;
+
+      // Switch view state
+      inputView.hidden = true;
+      resultView.hidden = false;
+    });
+
+    resetBtn.addEventListener('click', function() {
+      // Reset the form and input value
+      form.reset();
+      
+      // Switch view state back
+      resultView.hidden = true;
+      inputView.hidden = false;
+      
+      // Focus back on the input for a great user experience
+      input.focus();
+    });
+  </script>
+</body>
+</html>

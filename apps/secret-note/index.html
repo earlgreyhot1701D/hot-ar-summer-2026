@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Secret Note</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--field:#0d0f14;--field2:#141821;--ink:#efe6cf;--soft:#a49d8c;
+    --brass:#c9a24b;--brass-d:#8a6d22;--brass-l:#f0d68a;--green:#6ad6a8;--panel:#0a0c11}
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{min-height:100svh;display:flex;flex-direction:column;overflow-x:hidden;color:var(--ink);
+    font-family:"JetBrains Mono",monospace;
+    background:radial-gradient(ellipse at 50% 4%,rgba(201,162,75,.10),transparent 55%),
+      repeating-linear-gradient(0deg,transparent 0 4px,rgba(255,255,255,.012) 4px 5px),
+      linear-gradient(180deg,var(--field2),var(--field))}
+  header{text-align:center;padding:clamp(10px,2.2svh,18px) 16px 4px}
+  .kick{margin:0;font-size:.56rem;letter-spacing:.26em;text-transform:uppercase;color:var(--brass)}
+  h1{margin:.02em 0 .04em;font-family:"Cinzel",serif;font-weight:700;font-size:clamp(1.8rem,7vw,3rem);
+    letter-spacing:.05em;color:var(--brass-l);text-shadow:0 2px 16px rgba(0,0,0,.6)}
+  .hint{margin:0 auto;max-width:520px;font-size:.72rem;color:var(--soft);line-height:1.5}
+  main{flex:1;width:100%;max-width:640px;margin:0 auto;padding:clamp(8px,1.6svh,14px) clamp(12px,3vw,22px) clamp(10px,2svh,16px);
+    display:flex;flex-direction:column;gap:clamp(10px,1.8svh,15px)}
+
+  .toggle{display:inline-flex;border:1px solid #4a3d1e;border-radius:999px;overflow:hidden;align-self:center}
+  .toggle button{font:inherit;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;padding:9px 18px;
+    border:0;background:transparent;color:var(--soft);cursor:pointer;min-height:40px}
+  .toggle button[aria-pressed="true"]{background:var(--brass);color:#1a1206;font-weight:700}
+
+  label{display:block;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--brass);margin-bottom:6px}
+  input[type=text]{width:100%;background:var(--panel);border:1px solid #4a3d1e;border-bottom:2px solid var(--brass-d);border-radius:4px;
+    padding:12px 14px;color:var(--ink);font-family:"JetBrains Mono",monospace;font-size:1.1rem;letter-spacing:.04em}
+  input:focus{outline:3px solid var(--brass);outline-offset:2px}
+
+  .keyrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .stepper{display:inline-flex;align-items:center;border:1px solid #4a3d1e;border-radius:6px;overflow:hidden}
+  .stepper button{font:inherit;font-size:1.4rem;width:44px;height:44px;border:0;background:#161009;color:var(--brass-l);cursor:pointer}
+  .stepper button:hover{background:#20180d}
+  .stepper .num{font-family:"Cinzel",serif;font-size:1.5rem;color:var(--brass-l);min-width:52px;text-align:center}
+  .keycap{font-size:.72rem;color:var(--soft);line-height:1.45;margin:0}
+  .keycap b{color:var(--ink);font-weight:600}
+
+  .result{background:var(--panel);border:1px solid #4a3d1e;border-radius:6px;padding:13px 15px}
+  .rlabel{font-size:.52rem;letter-spacing:.16em;text-transform:uppercase;color:var(--soft);margin:0 0 3px}
+  .rin{font-size:1rem;color:#cfc7b2;letter-spacing:.04em;word-break:break-word;min-height:1.3em}
+  .arrow{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--brass);margin:7px 0}
+  .rout{font-size:clamp(1.2rem,3.6vw,1.6rem);color:var(--green);letter-spacing:.14em;word-break:break-word;min-height:1.4em;font-weight:500}
+  .rowbtns{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
+  .btn{font:inherit;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:9px 15px;border:1px solid var(--brass);
+    border-radius:4px;background:transparent;color:var(--brass-l);cursor:pointer;min-height:38px}
+  .btn:hover{background:rgba(201,162,75,.12)}
+  .btn.ghost{border-color:#4a3d1e;color:var(--soft)} .btn.ghost:hover{border-color:var(--brass);color:var(--ink)}
+
+  /* the sliding alphabet: shows every letter over its coded letter; your letters light up */
+  .keystrip{border:1px solid #4a3d1e;border-radius:6px;padding:10px 12px;background:rgba(255,255,255,.02)}
+  .kslabel{font-size:.52rem;letter-spacing:.16em;text-transform:uppercase;color:var(--brass);margin:0 0 8px}
+  .kslabel span{color:var(--soft);text-transform:none;letter-spacing:0}
+  .cells{display:flex;flex-wrap:wrap;gap:3px;justify-content:center}
+  .cell{display:flex;flex-direction:column;align-items:center;min-width:20px;padding:3px 3px;border:1px solid transparent;border-radius:4px}
+  .cell .p{font-size:.72rem;color:#7d7768;line-height:1.2}
+  .cell .d{font-size:.5rem;color:#4d4636;line-height:.8}
+  .cell .c{font-size:.86rem;color:#c7bfa9;line-height:1.2;font-weight:500}
+  .cell.on{background:rgba(201,162,75,.16);border-color:var(--brass)}
+  .cell.on .p{color:var(--brass-l)} .cell.on .c{color:var(--green)} .cell.on .d{color:var(--brass)}
+
+  footer{flex:none;margin-top:auto}
+  .sig{text-align:center;font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;color:#7a7156;margin:12px 0 8px;line-height:1.6}
+  .rail{height:6px;background:linear-gradient(90deg,var(--brass-d),var(--brass) 50%,var(--brass-d))}
+</style>
+</head>
+<body>
+<header>
+  <p class="kick">Write a secret note</p>
+  <h1>Secret Note</h1>
+  <p class="hint">Slide every letter down the alphabet by a secret number. Send the code and the number, and only they can read it back.</p>
+</header>
+<main>
+  <div class="toggle" role="group" aria-label="Mode">
+    <button id="mEnc" type="button" aria-pressed="true">Hide a message</button>
+    <button id="mDec" type="button" aria-pressed="false">Read a code</button>
+  </div>
+
+  <div>
+    <label id="inlabel" for="msg">Your message</label>
+    <input id="msg" type="text" maxlength="60" autocomplete="off" spellcheck="false" placeholder="type something to hide, like MEET AT NOON">
+  </div>
+
+  <div class="keyrow">
+    <div>
+      <label for="key">Secret key</label>
+      <div class="stepper">
+        <button id="keyDown" type="button" aria-label="Lower the key">−</button>
+        <span class="num" id="key" aria-live="polite">3</span>
+        <button id="keyUp" type="button" aria-label="Raise the key">+</button>
+      </div>
+    </div>
+    <p class="keycap" id="keycap">Every letter slides <b>3</b> forward. A becomes D.</p>
+  </div>
+
+  <div class="result">
+    <p class="rlabel" id="outInLabel">Your message</p>
+    <div class="rin" id="rin">—</div>
+    <p class="arrow" id="arrow">↓ scrambled with key 3</p>
+    <p class="rlabel" id="outOutLabel">Secret code</p>
+    <div class="rout" id="rout">—</div>
+    <div class="rowbtns">
+      <button class="btn" id="copy" type="button">Copy code</button>
+      <button class="btn" id="tryEx" type="button">Try an example</button>
+      <button class="btn ghost" id="clear" type="button">Clear</button>
+    </div>
+  </div>
+
+  <div class="keystrip">
+    <p class="kslabel">The key, letter by letter <span>— your letters light up</span></p>
+    <div class="cells" id="cells"></div>
+  </div>
+</main>
+<footer>
+  <p class="sig">Real Caesar cipher &middot; deterministic &middot; no randomness &middot; nothing stored or sent<br>AI assisted. Human approved. Powered by NLP.</p>
+  <div class="rail" aria-hidden="true"></div>
+</footer>
+<script>
+(function(){
+"use strict";
+/* SECRET NOTE — plain-language Caesar cipher. The sliding alphabet shows each letter
+   over its coded letter and lights up the ones in your message. Deterministic.
+   No randomness/network/storage/innerHTML. */
+var A="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+var $=function(i){return document.getElementById(i);};
+function shiftCh(ch,s){var i=A.indexOf(ch);if(i<0)return ch;return A[((i+s)%26+26)%26];}
+function shiftStr(str,s){str=str.toUpperCase();var o="";for(var i=0;i<str.length;i++)o+=shiftCh(str[i],s);return o;}
+
+var key=3, mode="enc";
+
+function buildStrip(){
+  var cells=$("cells"); cells.textContent="";
+  for(var i=0;i<26;i++){
+    var cell=document.createElement("div"); cell.className="cell"; cell.id="cell"+i;
+    var p=document.createElement("div"); p.className="p"; p.textContent=A[i];
+    var d=document.createElement("div"); d.className="d"; d.textContent="↓";
+    var c=document.createElement("div"); c.className="c";
+    cell.appendChild(p); cell.appendChild(d); cell.appendChild(c);
+    cells.appendChild(cell);
+  }
+}
+
+function render(){
+  $("key").textContent=key;
+  var encoding=(mode==="enc");
+  var eff = encoding ? key : -key;
+
+  $("inlabel").textContent = encoding ? "Your message" : "Coded message";
+  $("msg").setAttribute("placeholder", encoding ? "type something to hide, like MEET AT NOON" : "paste a code to read, like PHHW DW QRRQ");
+  $("outInLabel").textContent = encoding ? "Your message" : "Coded message";
+  $("outOutLabel").textContent = encoding ? "Secret code" : "Reads as";
+  $("arrow").textContent = encoding ? ("↓ scrambled with key "+key) : ("↓ unscrambled with key "+key);
+
+  var kc=$("keycap"); kc.textContent="";
+  kc.appendChild(document.createTextNode("Every letter slides "));
+  var kb=document.createElement("b"); kb.textContent=String(key); kc.appendChild(kb);
+  kc.appendChild(document.createTextNode(" "+(encoding?"forward":"back")+". A becomes "+shiftCh("A",eff)+"."));
+
+  var raw=$("msg").value||"";
+  $("rin").textContent = raw ? raw.toUpperCase() : "—";
+  $("rout").textContent = raw ? shiftStr(raw,eff) : "—";
+
+  /* update the sliding alphabet: bottom row = shifted; light up letters used */
+  var used={}; var up=raw.toUpperCase();
+  for(var u=0;u<up.length;u++){ if(A.indexOf(up[u])>=0) used[up[u]]=1; }
+  for(var i=0;i<26;i++){
+    var cell=$("cell"+i);
+    cell.querySelector(".c").textContent=shiftCh(A[i],eff);
+    if(used[A[i]]) cell.classList.add("on"); else cell.classList.remove("on");
+  }
+}
+
+function setMode(m){ mode=m; $("mEnc").setAttribute("aria-pressed",String(m==="enc")); $("mDec").setAttribute("aria-pressed",String(m==="dec")); render(); }
+function reset(){ mode="enc"; key=3; $("msg").value=""; setMode("enc"); $("msg").focus(); }
+
+buildStrip();
+$("mEnc").addEventListener("click",function(){ setMode("enc"); });
+$("mDec").addEventListener("click",function(){ setMode("dec"); });
+$("keyUp").addEventListener("click",function(){ key=(key%25)+1; render(); });
+$("keyDown").addEventListener("click",function(){ key=key<=1?25:key-1; render(); });
+$("msg").addEventListener("input",render);
+$("tryEx").addEventListener("click",function(){ mode="enc"; key=3; $("msg").value="MEET AT NOON"; setMode("enc"); $("msg").focus(); });
+$("clear").addEventListener("click",reset);
+$("copy").addEventListener("click",function(){ var t=$("rout").textContent; if(!t||t==="—")return;
+  try{ navigator.clipboard.writeText(t).then(function(){ $("copy").textContent="Copied"; setTimeout(function(){$("copy").textContent="Copy code";},1400); },function(){}); }catch(e){} });
+
+render();
+window.__cipher=function(msg,shift){return shiftStr(msg,shift);};
+})();
+</script>
+</body>
+</html>

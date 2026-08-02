@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dewey</title>
+
+<!-- Social preview. Replace SITE_URL with the real deployed URL (no trailing slash).
+     og-dewey.png goes in the site root next to index.html. -->
+<meta property="og:title" content="Dewey" />
+<meta property="og:description" content="Type a worry. Get it filed. The call numbers are real; the comfort is unofficial." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="SITE_URL/og-dewey.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Dewey" />
+<meta name="twitter:description" content="A card catalog for your worries." />
+<meta name="twitter:image" content="SITE_URL/og-dewey.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --oak:#6B4A2F; --oak-dark:#4A321F; --oak-deep:#3A2718;
+    --manila:#E8DCC0; --manila-dark:#D6C7A6; --rule:#B2A080;
+    --ink:#2A2620; --red:#B33A2B; --brass:#C9A227;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;min-height:100%;}
+  body{
+    min-height:100svh;
+    display:flex; flex-direction:column; align-items:center;
+    padding:clamp(14px,3vw,34px);
+    background:
+      repeating-linear-gradient(92deg, transparent 0 34px, rgba(0,0,0,0.10) 34px 36px),
+      linear-gradient(180deg, var(--oak), var(--oak-dark));
+    font-family:"Courier Prime","Courier New",monospace;
+    color:var(--ink);
+  }
+
+  .masthead-wrap{ width:min(100%,720px); }
+  /* drawer front */
+  .drawer{
+    width:100%;
+    background:linear-gradient(180deg,#7A5536,#5A3C25);
+    border:4px solid var(--oak-deep);
+    border-radius:4px;
+    padding:16px 20px;
+    display:flex; align-items:center; justify-content:center; gap:22px;
+    box-shadow:0 6px 0 var(--oak-deep), 0 14px 30px rgba(0,0,0,0.35);
+  }
+  .byline{
+    margin:14px 4px 0;
+    text-align:center;
+    color:#E4D6B2;
+    font-size:0.82rem;
+    line-height:1.55;
+    letter-spacing:0.03em;
+  }
+  .pull{
+    width:22px; height:22px; border-radius:50%;
+    border:4px solid var(--brass); flex:none;
+    box-shadow:inset 0 2px 3px rgba(0,0,0,0.4);
+  }
+  .label{
+    background:var(--manila); border:2px solid var(--ink);
+    padding:8px 26px; letter-spacing:0.35em; font-weight:700;
+    font-family:"Special Elite","Courier Prime",monospace;
+    font-size:clamp(1.2rem,4vw,1.7rem);
+  }
+
+  main{
+    width:min(100%,720px);
+    flex:1; display:flex; flex-direction:column;
+    margin-top:clamp(18px,3.5vw,34px);
+  }
+
+  /* the catalog card */
+  .card{
+    position:relative;
+    background:
+      repeating-linear-gradient(0deg, transparent 0 41px, var(--rule) 41px 42px),
+      linear-gradient(160deg, #EEE3CA, var(--manila) 55%, #DFD2B0);
+    background-position:0 118px, 0 0;
+    border:2px solid var(--ink);
+    box-shadow:8px 10px 0 rgba(20,12,6,0.55);
+    padding:clamp(20px,4vw,34px) clamp(18px,4vw,34px) clamp(56px,8vw,72px);
+    min-height:380px;
+  }
+  .card::before{ /* the classic red top rule */
+    content:""; position:absolute; left:0; right:0; top:64px;
+    height:3px; background:var(--red);
+  }
+  .card::after{ /* hole punch */
+    content:""; position:absolute; left:50%; bottom:18px;
+    width:26px; height:26px; transform:translateX(-50%);
+    border-radius:50%; background:var(--oak-dark);
+    border:2px solid var(--ink);
+  }
+
+  .card-head{
+    font-family:"Special Elite","Courier Prime",monospace;
+    font-size:0.85rem; letter-spacing:0.18em;
+    color:#6B5F49; margin:0 0 34px;
+  }
+
+  /* ask state */
+  .ask label{
+    display:block;
+    font-family:"Special Elite","Courier Prime",monospace;
+    font-size:clamp(1.15rem,3.4vw,1.5rem);
+    margin-bottom:22px;
+  }
+  .ask input{
+    width:100%; border:0; border-bottom:2px solid var(--ink);
+    background:transparent; color:var(--ink);
+    font:inherit; font-size:1.05rem; padding:10px 4px;
+    outline:none;
+  }
+  .ask input:focus{ border-color:var(--red); }
+  .nudge{ min-height:1.4em; color:var(--red); font-size:0.85rem; margin:10px 0 0; }
+  .actions{ margin-top:26px; }
+  button{
+    font:inherit; font-weight:700; cursor:pointer;
+    background:var(--ink); color:var(--manila);
+    border:2px solid var(--ink); padding:12px 24px;
+    letter-spacing:0.06em;
+    box-shadow:3px 3px 0 rgba(179,58,43,0.5);
+  }
+  button:hover{ transform:translateY(-2px); }
+  button:focus-visible, input:focus-visible{ outline:3px solid var(--red); outline-offset:3px; }
+  button.quiet{ background:transparent; color:var(--ink); box-shadow:none; }
+
+  /* filed state */
+  .filing{ display:grid; grid-template-columns:auto 1fr; gap:8px clamp(16px,4vw,34px); align-items:start; }
+  .filing:focus{ outline:none; }
+  .callnum{
+    font-family:"Special Elite","Courier Prime",monospace;
+    font-size:clamp(2.6rem,9vw,4.4rem); line-height:0.95; font-weight:400;
+  }
+  .cutter{
+    font-family:"Special Elite","Courier Prime",monospace;
+    font-size:clamp(1.1rem,3.4vw,1.5rem); margin-top:6px;
+  }
+  .cutter-note{
+    font-size:0.62rem; line-height:1.4; letter-spacing:0.05em;
+    color:#8A7B60; margin-top:4px; text-transform:uppercase;
+  }
+  .entry{ font-size:clamp(0.95rem,2.6vw,1.05rem); line-height:1.55; }
+  .subject{
+    font-family:"Special Elite","Courier Prime",monospace;
+    font-weight:700; font-size:clamp(1.02rem,3vw,1.25rem);
+    text-transform:uppercase; margin:0 0 10px;
+    overflow-wrap:anywhere;
+  }
+  .division{ margin:0 0 18px; color:#4A4234; }
+  .shelf, .circ{ margin:0 0 14px; }
+
+  /* the stamp — in the flow, so it can never cover the controls */
+  .stamp{
+    display:inline-block;
+    border:4px solid var(--red); color:var(--red);
+    font-family:"Special Elite","Courier Prime",monospace;
+    font-weight:400; font-size:clamp(0.95rem,3vw,1.3rem);
+    letter-spacing:0.05em; text-align:center; white-space:pre-line;
+    padding:8px 16px; transform:rotate(-5deg);
+    opacity:0.92; pointer-events:none;
+    margin:10px 0 20px;
+  }
+
+  footer{
+    width:min(100%,720px);
+    margin-top:clamp(16px,3vw,26px);
+    text-align:center; color:#D9CBA8;
+    font-size:0.72rem; line-height:1.8; letter-spacing:0.06em;
+  }
+  footer .honest{ color:#C4B48D; }
+
+  [hidden]{ display:none !important; }
+
+  .settle{ animation:settle 420ms ease both; }
+  @keyframes settle{
+    from{ opacity:0; transform:translateY(8px); }
+    to{ opacity:1; transform:none; }
+  }
+  @media (prefers-reduced-motion:reduce){
+    .settle{ animation:none; }
+    button:hover{ transform:none; }
+  }
+  @media (max-width:520px){
+    .filing{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead-wrap">
+  <div class="drawer" aria-label="Dewey card catalog drawer">
+    <span class="pull" aria-hidden="true"></span>
+    <span class="label">DEWEY</span>
+    <span class="pull" aria-hidden="true"></span>
+  </div>
+  <p class="byline">Named for the Dewey Decimal System &mdash; how libraries filed everything, before search bars. This one files worries.</p>
+</header>
+
+<main>
+  <section class="card" aria-live="polite">
+    <p class="card-head">CARD CATALOG &mdash; SUBJECT INDEX &mdash; WORRIES &amp; RELATED MATTERS</p>
+
+    <div class="ask" id="ask">
+      <label for="worry">State the worry, for filing purposes.</label>
+      <input id="worry" type="text" maxlength="80" autocomplete="off"
+             placeholder="e.g. fear of being behind in life" aria-describedby="nudge">
+      <p class="nudge" id="nudge" role="status"></p>
+      <div class="actions">
+        <button id="file" type="button">File it</button>
+      </div>
+    </div>
+
+    <div class="filing" id="filing" hidden tabindex="-1">
+      <div>
+        <div class="callnum" id="callnum">158.1</div>
+        <div class="cutter" id="cutter">COR</div>
+        <div class="cutter-note">your worry's<br>spine code</div>
+      </div>
+      <div class="entry">
+        <p class="subject" id="subject"></p>
+        <p class="division" id="division"></p>
+        <p class="shelf" id="shelf"></p>
+        <p class="circ" id="circ"></p>
+        <div class="stamp" id="stamp" hidden></div>
+        <div class="actions">
+          <button id="another" type="button" class="quiet">File another</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span class="honest">The call numbers are drawn from the real Dewey Decimal system. The filing is deterministic. The comfort is unofficial.</span><br>
+  Nothing you type is stored or sent. AI assisted. Human approved. Powered by NLP.
+</footer>
+
+<script>
+(function(){
+"use strict";
+
+/* FNV-1a 32-bit */
+function hash(str){
+  var h=0x811c9dc5;
+  for(var i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,0x01000193); }
+  return h>>>0;
+}
+function norm(s){ return s.trim().toLowerCase().replace(/\s+/g," "); }
+
+/* Real Dewey classes, keyword-matched first (the "it knows me" layer).
+   Every class number below is a genuine Dewey classification. */
+var KNOWN=[
+  { k:["money","rent","debt","bills","broke","finance","afford"],
+    num:"332.024", div:"Personal finance -- Worry, recurring -- See also: enough, the concept of." },
+  { k:["work","job","boss","career","fired","deadline","meeting"],
+    num:"158.7", div:"Industrial psychology -- Workplace -- Sundays, dread thereof." },
+  { k:["love","relationship","partner","dating","marriage","crush","alone","lonely"],
+    num:"306.7", div:"Interpersonal relations -- The heart -- Filing under M for maybe." },
+  { k:["health","sick","doctor","pain","body","tired","exhausted"],
+    num:"613", div:"Personal health -- The body, keeping of -- Rest, radical notion of." },
+  { k:["sleep","insomnia","awake","3am","night"],
+    num:"154.6", div:"Sleep and dreams -- The hour of uhtceare -- Ceiling, staring at." },
+  { k:["time","late","behind","age","aging","old","deadline","clock"],
+    num:"529", div:"Chronology -- Time, the insufficiency of -- Everyone else, keeping up with." },
+  { k:["family","mother","father","parent","kids","children","sister","brother"],
+    num:"306.85", div:"Family -- Complicated, the standard configuration -- Holidays, survival of." },
+  { k:["friend","friends","social","party","people"],
+    num:"302.34", div:"Interpersonal relations -- Friendship -- Texting back, the ethics of." },
+  { k:["future","purpose","meaning","life","direction","lost","stuck"],
+    num:"128", div:"Humankind -- The big questions -- Answers, partial, see librarian." },
+  { k:["failure","fail","mistake","regret","wrong","mess"],
+    num:"158.1", div:"Applied psychology -- Self-acceptance -- Errata, personal, ongoing." },
+  { k:["climate","world","news","war","politics","planet"],
+    num:"363.7", div:"Environmental problems -- The world, state of -- Hope, stubborn, in stock." },
+  { k:["decision","choice","choose","decide"],
+    num:"153.83", div:"Decision making -- Both options, merits of -- Coins, flipping of, insufficient." }
+];
+
+/* Hash-fallback classes for unmatched worries. All real Dewey. */
+var GENERAL=[
+  { num:"158.1", div:"Applied psychology -- Self-help -- Comparisons, unfair." },
+  { num:"152.4", div:"Emotions -- The full catalog -- Feelings, feeling of." },
+  { num:"155.9", div:"Environmental psychology -- Stress -- Circumstances, beyond one's control." },
+  { num:"170", div:"Ethics -- Doing one's best -- Good enough, the doctrine of." },
+  { num:"001.9", div:"Controversial knowledge -- The unknown -- Worrying about, efficacy of: none." },
+  { num:"025.4", div:"Classification -- Things, putting away of -- This worry, included." },
+  { num:"640", div:"Home management -- Life, general administration of -- Drawers, junk." },
+  { num:"113", div:"Cosmology -- The universe -- Perspective, available on request." }
+];
+
+var SHELVES=[
+  "Shelved: second floor, between AMBITION and ACCEPTANCE.",
+  "Shelved: ground floor, between HOPE and HINDSIGHT.",
+  "Shelved: mezzanine, between ALMOST and ALREADY.",
+  "Shelved: third floor, between PATIENCE and PANIC. Closer to patience.",
+  "Shelved: reading room, between COURAGE and COFFEE.",
+  "Shelved: quiet section, between ENOUGH and EXTRA.",
+  "Shelved: by the window, between SOMEDAY and SOON."
+];
+
+var CIRC=[
+  "1 copy. Currently checked out by nearly everyone.",
+  "3 copies. All renewed indefinitely.",
+  "Reference only. It cannot leave the building. You, however, can.",
+  "Several holds. You are not the only one.",
+  "1 copy. Returned this morning by someone who felt better.",
+  "In circulation since antiquity. Condition: worn, still readable.",
+  "Available. Turns out fewer people are judging than estimated."
+];
+
+var STAMPS=[
+  "DUE: WHENEVER\nYOU'RE READY",
+  "DUE: NOT\nTONIGHT",
+  "NO FINES\nACCRUE",
+  "DUE: SOMEDAY,\nGENTLY",
+  "RENEWED,\nAUTOMATICALLY",
+  "RETURN WHEN\nFINISHED. NO RUSH."
+];
+
+function cutter(s){
+  var letters = s.replace(/[^a-z]/gi,"").toUpperCase();
+  return (letters.slice(0,3) || "ANX");
+}
+
+function file(worry){
+  var n = norm(worry);
+  var h = hash(n);
+  var cls = null;
+  for(var i=0;i<KNOWN.length && !cls;i++){
+    for(var j=0;j<KNOWN[i].k.length;j++){
+      if(n.indexOf(KNOWN[i].k[j])>-1){ cls=KNOWN[i]; break; }
+    }
+  }
+  if(!cls) cls = GENERAL[h % GENERAL.length];
+  return {
+    num: cls.num,
+    div: cls.div,
+    cut: cutter(n),
+    shelf: SHELVES[(h>>>3) % SHELVES.length],
+    circ: CIRC[(h>>>7) % CIRC.length],
+    stamp: STAMPS[(h>>>11) % STAMPS.length]
+  };
+}
+
+var $ = function(id){ return document.getElementById(id); };
+
+$("file").addEventListener("click", function(){
+  var v = $("worry").value.trim();
+  if(!v){
+    $("nudge").textContent = "The catalog needs a subject.";
+    $("worry").focus();
+    return;
+  }
+  var r = file(v);
+  $("callnum").textContent = r.num;
+  $("cutter").textContent = r.cut;
+  $("subject").textContent = v.toUpperCase() + ".";
+  $("division").textContent = r.div;
+  $("shelf").textContent = r.shelf;
+  $("circ").textContent = r.circ;
+  $("stamp").textContent = r.stamp;
+  $("ask").hidden = true;
+  $("filing").hidden = false;
+  $("stamp").hidden = false;
+  $("filing").classList.remove("settle");
+  void $("filing").offsetWidth;
+  $("filing").classList.add("settle");
+  $("filing").focus();
+});
+
+$("worry").addEventListener("keydown", function(e){
+  if(e.key==="Enter"){ e.preventDefault(); $("file").click(); }
+});
+
+$("another").addEventListener("click", function(){
+  $("filing").hidden = true;
+  $("stamp").hidden = true;
+  $("ask").hidden = false;
+  $("worry").value = "";
+  $("nudge").textContent = "";
+  $("worry").focus();
+});
+
+})();
+</script>
+</body>
+</html>

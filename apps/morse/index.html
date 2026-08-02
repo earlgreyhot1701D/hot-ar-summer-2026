@@ -1,0 +1,1141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Convert text to Standard International Morse code and see each character mapped live.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Morse | Signal in Code">
+  <meta property="og:description" content="Type a message. Read its signal. See every character mapped.">
+  <meta property="og:image" content="SITE_URL/og-morse.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Morse | Signal in Code">
+  <meta name="twitter:description" content="Type a message. Read its signal. See every character mapped.">
+  <meta name="twitter:image" content="SITE_URL/og-morse.png">
+  <title>Morse | Signal in Code</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Oswald:wght@500;600&family=Special+Elite&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --black: #080909;
+      --desk: #18120f;
+      --panel: #101514;
+      --panel-blue: #263f46;
+      --panel-blue-light: #4a737c;
+      --cream: #eee3ca;
+      --muted: #a99d88;
+      --amber: #ffc45a;
+      --amber-soft: #d79331;
+      --red: #9f2f22;
+      --red-dark: #541b16;
+      --brass: #b88b48;
+      --line: rgba(206, 159, 84, 0.38);
+      --danger: #e29b79;
+      --focus: #ffe09a;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--black);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--cream);
+      font-family: "IBM Plex Mono", monospace;
+      background:
+        radial-gradient(circle at 16% 20%, rgba(201, 119, 48, 0.09) 0 1px, transparent 2px),
+        radial-gradient(circle at 78% 72%, rgba(125, 169, 179, 0.055) 0 1px, transparent 2px),
+        linear-gradient(116deg, rgba(159, 47, 34, 0.05), transparent 40%),
+        #090b0b;
+      background-size: 41px 41px, 57px 57px, auto, auto;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .console {
+      position: relative;
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+      overflow: hidden;
+      border: 7px solid #191513;
+      box-shadow:
+        inset 0 0 0 1px #6c4d30,
+        inset 0 0 0 5px #0a0b0a,
+        inset 0 0 0 7px rgba(184, 139, 72, 0.28),
+        inset 0 0 68px rgba(0, 0, 0, 0.9);
+    }
+
+    .console::before {
+      position: absolute;
+      inset: 17px;
+      z-index: 0;
+      border: 1px solid rgba(184, 139, 72, 0.31);
+      box-shadow:
+        inset 0 0 0 3px rgba(0, 0, 0, 0.54),
+        0 0 0 1px rgba(240, 198, 125, 0.06);
+      content: "";
+      pointer-events: none;
+    }
+
+    .screw {
+      position: absolute;
+      z-index: 3;
+      width: 15px;
+      height: 15px;
+      border: 1px solid #17100b;
+      border-radius: 50%;
+      background:
+        linear-gradient(45deg, transparent 43%, #3e291b 44% 56%, transparent 57%),
+        radial-gradient(circle at 34% 30%, #d0a165, #745033 48%, #281c14 74%);
+      box-shadow: 0 1px 4px #000;
+    }
+
+    .screw.one {
+      top: 20px;
+      left: 20px;
+    }
+
+    .screw.two {
+      top: 20px;
+      right: 20px;
+    }
+
+    .screw.three {
+      right: 20px;
+      bottom: 20px;
+    }
+
+    .screw.four {
+      bottom: 20px;
+      left: 20px;
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      width: min(100% - 34px, 1050px);
+      flex: 1;
+      gap: 15px;
+      margin: 0 auto;
+      padding: 38px 0 20px;
+    }
+
+    header {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 34px;
+      width: min(100%, 900px);
+      margin: 0 auto;
+      padding: 14px 36px 16px;
+      overflow: hidden;
+      border: 1px solid rgba(87, 138, 148, 0.62);
+      border-radius: 5px;
+      background:
+        linear-gradient(112deg, rgba(117, 172, 181, 0.14), transparent 48%),
+        #17272b;
+      box-shadow:
+        inset 0 0 0 3px rgba(4, 7, 7, 0.52),
+        inset 0 0 28px rgba(2, 4, 4, 0.46),
+        0 10px 25px rgba(0, 0, 0, 0.38);
+      text-align: center;
+    }
+
+    header::before {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 7px;
+      background: var(--red);
+      box-shadow: 3px 0 13px rgba(159, 47, 34, 0.38);
+      content: "";
+    }
+
+    header::after {
+      content: none;
+    }
+
+    .key-mark {
+      position: absolute;
+      top: 50%;
+      left: 30px;
+      transform: translateY(-50%);
+      width: 148px;
+      height: 68px;
+      flex: 0 0 auto;
+      border: 1px solid #421713;
+      border-radius: 48% 52% 8px 8px;
+      background:
+        linear-gradient(180deg, #ba3a2a, #721f19 70%, #481512);
+      box-shadow:
+        inset 0 0 0 3px rgba(255, 170, 91, 0.08),
+        inset 0 -7px 0 rgba(57, 14, 12, 0.3),
+        0 8px 13px rgba(0, 0, 0, 0.55);
+    }
+
+    .key-mark::before {
+      position: absolute;
+      top: 20px;
+      left: 24px;
+      width: 93px;
+      height: 9px;
+      border: 2px solid #d3a95f;
+      border-radius: 6px;
+      background: var(--red);
+      box-shadow:
+        0 5px 0 -2px #3a1714,
+        0 8px 12px rgba(0, 0, 0, 0.58);
+      content: "";
+      transform: rotate(-9deg);
+      transform-origin: 12px center;
+    }
+
+    .key-mark::after {
+      position: absolute;
+      top: 4px;
+      right: 12px;
+      width: 24px;
+      height: 24px;
+      border: 2px solid #68461f;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #f0ce7e, #a97a34 56%, #5a3b1d);
+      box-shadow: 0 4px 8px #000;
+      content: "";
+    }
+
+    .key-pivot {
+      position: absolute;
+      top: 28px;
+      left: 29px;
+      width: 12px;
+      height: 24px;
+      border: 1px solid #4d321a;
+      background: linear-gradient(90deg, #8b622f, #e0ba6b 48%, #765026);
+      box-shadow: 0 3px 5px #1d0b08;
+    }
+
+    .key-pivot::before,
+    .key-pivot::after {
+      position: absolute;
+      top: 17px;
+      width: 13px;
+      height: 13px;
+      border: 1px solid #4e321a;
+      border-radius: 50%;
+      background: #c79b51;
+      content: "";
+    }
+
+    .key-pivot::before {
+      left: 44px;
+    }
+
+    .key-pivot::after {
+      left: 72px;
+    }
+
+    .title-block {
+      min-width: 0;
+    }
+
+    .station-label {
+      margin: 0 0 3px;
+      color: var(--brass);
+      font-size: 0.63rem;
+      letter-spacing: 0.19em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      color: #d8a44c;
+      font-family: "Oswald", sans-serif;
+      font-size: clamp(3.5rem, 9vw, 6.3rem);
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      line-height: 0.9;
+      text-indent: 0;
+      text-shadow:
+        0 1px 0 #ffe0a0,
+        0 3px 0 #5d351b,
+        0 7px 16px #000;
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      margin: 7px 0 0;
+      color: #b8ccce;
+      font-family: "Special Elite", serif;
+      font-size: clamp(0.8rem, 2.6vw, 1rem);
+      letter-spacing: 0.07em;
+    }
+
+    .input-panel {
+      position: relative;
+      width: min(100%, 820px);
+      margin: 0 auto;
+      padding: 18px 21px;
+      border: 1px solid #64432a;
+      border-radius: 5px;
+      background:
+        linear-gradient(110deg, rgba(101, 155, 165, 0.16), transparent 44%),
+        #162529;
+      box-shadow:
+        inset 0 0 0 3px #070908,
+        inset 0 0 0 5px rgba(184, 139, 72, 0.18),
+        0 10px 24px rgba(0, 0, 0, 0.52);
+    }
+
+    .input-panel::before,
+    .input-panel::after {
+      position: absolute;
+      top: 9px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--brass);
+      box-shadow: inset 0 0 0 2px #382518;
+      content: "";
+    }
+
+    .input-panel::before {
+      left: 9px;
+    }
+
+    .input-panel::after {
+      right: 9px;
+    }
+
+    label,
+    .panel-label {
+      display: block;
+      margin: 0 0 8px;
+      color: var(--brass);
+      font-size: 0.66rem;
+      font-weight: 600;
+      letter-spacing: 0.17em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    input {
+      width: 100%;
+      min-height: 56px;
+      padding: 10px 16px;
+      border: 1px solid rgba(190, 146, 77, 0.52);
+      border-radius: 3px;
+      outline: none;
+      color: var(--cream);
+      background:
+        linear-gradient(110deg, rgba(255, 255, 255, 0.035), transparent 46%),
+        #080b0a;
+      box-shadow:
+        inset 0 3px 10px rgba(0, 0, 0, 0.88),
+        inset 0 0 0 3px rgba(48, 76, 81, 0.14);
+      font-size: clamp(1.08rem, 3vw, 1.45rem);
+      letter-spacing: 0.03em;
+      text-align: center;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-tip {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 50%;
+      z-index: 5;
+      width: max-content;
+      max-width: min(92vw, 340px);
+      margin: 0;
+      padding: 7px 11px;
+      border: 1px solid rgba(184, 139, 72, 0.58);
+      border-radius: 3px;
+      opacity: 0;
+      color: #e6d7ba;
+      background: #15110e;
+      box-shadow: 0 7px 16px rgba(0, 0, 0, 0.52);
+      font-size: 0.68rem;
+      line-height: 1.35;
+      pointer-events: none;
+      text-align: center;
+      transform: translate(-50%, -4px);
+      transition: opacity 140ms ease, transform 140ms ease;
+    }
+
+    .input-tip::before {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      width: 8px;
+      height: 8px;
+      border-top: 1px solid rgba(184, 139, 72, 0.58);
+      border-left: 1px solid rgba(184, 139, 72, 0.58);
+      background: #15110e;
+      content: "";
+      transform: translate(-50%, 4px) rotate(45deg);
+    }
+
+    .input-wrap:hover .input-tip,
+    .input-wrap:focus-within .input-tip {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    input::placeholder {
+      color: #777268;
+    }
+
+    input:hover {
+      border-color: var(--brass);
+    }
+
+    input:focus-visible,
+    button:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    .readout {
+      display: grid;
+      min-height: 0;
+      gap: 14px;
+    }
+
+    .morse-panel {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-height: 104px;
+      padding: 16px 20px 14px;
+      overflow: hidden;
+      border: 1px solid #9b733a;
+      border-radius: 5px;
+      background:
+        radial-gradient(ellipse at 50% 52%, rgba(255, 168, 50, 0.115), transparent 60%),
+        linear-gradient(113deg, rgba(74, 129, 141, 0.1), transparent 52%),
+        #070907;
+      box-shadow:
+        inset 0 0 0 3px rgba(0, 0, 0, 0.58),
+        inset 0 0 0 5px rgba(184, 139, 72, 0.13),
+        inset 0 0 38px rgba(161, 91, 23, 0.12),
+        0 9px 20px rgba(0, 0, 0, 0.42);
+    }
+
+    .morse-panel::before {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 10px;
+      width: 5px;
+      background: linear-gradient(180deg, #d64d38, #7a2019);
+      box-shadow: 0 0 11px rgba(201, 57, 39, 0.53);
+      content: "";
+    }
+
+    .panel-heading,
+    .work-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin: 0 0 7px;
+    }
+
+    .panel-heading .panel-label,
+    .work-heading .panel-label {
+      margin: 0;
+      text-align: left;
+    }
+
+    .work-heading .panel-label {
+      color: #e2c28a;
+      font-size: 0.76rem;
+    }
+
+    .circuit-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: #918a7c;
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .circuit-lamp {
+      width: 8px;
+      height: 8px;
+      border: 1px solid #5f4627;
+      border-radius: 50%;
+      background: #504433;
+      box-shadow: inset 0 0 2px #111;
+    }
+
+    .circuit-status.active {
+      color: #d2bb91;
+    }
+
+    .circuit-status.active .circuit-lamp {
+      background: var(--amber);
+      box-shadow:
+        0 0 5px rgba(255, 196, 90, 0.9),
+        0 0 12px rgba(222, 128, 26, 0.64);
+    }
+
+    .morse-code {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      max-height: 200px;
+      margin: 0;
+      padding: 6px 6px 2px;
+      overflow: auto;
+      color: var(--amber);
+      font-size: clamp(1.35rem, 4vw, 2.45rem);
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+      text-align: center;
+      text-shadow:
+        0 0 4px rgba(255, 196, 90, 0.92),
+        0 0 13px rgba(220, 127, 31, 0.62);
+    }
+
+    .morse-code.empty {
+      color: var(--muted);
+      font-family: "Special Elite", serif;
+      font-size: 1rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      text-shadow: none;
+    }
+
+    .signal-note {
+      min-height: 1.25em;
+      margin: 7px 0 0;
+      color: var(--danger);
+      font-size: 0.7rem;
+      line-height: 1.35;
+      text-align: center;
+    }
+
+    .work-panel {
+      min-height: 0;
+      padding: 13px 15px 15px;
+      border: 1px solid rgba(95, 151, 162, 0.56);
+      border-radius: 5px;
+      background:
+        repeating-linear-gradient(0deg, transparent 0 27px, rgba(205, 226, 229, 0.035) 27px 28px),
+        linear-gradient(105deg, rgba(116, 169, 178, 0.12), transparent 48%),
+        #1a3035;
+      box-shadow:
+        inset 0 0 0 3px rgba(0, 0, 0, 0.44),
+        0 8px 18px rgba(0, 0, 0, 0.28);
+    }
+
+    .breakdown {
+      display: grid;
+      max-height: 174px;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 7px;
+      margin: 0;
+      padding: 1px 3px 2px;
+      overflow: auto;
+      list-style: none;
+    }
+
+    .mapping {
+      display: grid;
+      min-height: 44px;
+      grid-template-columns: minmax(28px, auto) auto 1fr;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 11px;
+      border: 1px solid rgba(82, 66, 43, 0.58);
+      border-radius: 3px;
+      background:
+        linear-gradient(110deg, rgba(255, 255, 255, 0.24), transparent 42%),
+        #d8cfb8;
+      box-shadow:
+        inset 0 0 0 2px rgba(255, 255, 255, 0.14),
+        0 3px 7px rgba(0, 0, 0, 0.25);
+    }
+
+    .mapping-character {
+      color: #7e251d;
+      font-size: 0.94rem;
+      font-weight: 600;
+    }
+
+    .mapping-equals {
+      color: #756b5a;
+      font-size: 0.82rem;
+    }
+
+    .mapping-code {
+      min-width: 0;
+      color: #272a27;
+      font-size: 0.94rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      overflow-wrap: anywhere;
+      text-align: right;
+    }
+
+    .mapping.unsupported {
+      border-style: dashed;
+      border-color: rgba(117, 39, 29, 0.72);
+      background: #c9bba4;
+    }
+
+    .mapping.unsupported .mapping-code {
+      color: #852e24;
+      font-size: 0.74rem;
+      letter-spacing: 0.02em;
+    }
+
+    .actions {
+      display: grid;
+      width: min(100%, 430px);
+      grid-template-columns: 1fr;
+      gap: 6px;
+      margin: 0 auto;
+    }
+
+    button {
+      position: relative;
+      min-height: 50px;
+      padding: 11px 20px;
+      border: 1px solid #3f1512;
+      border-radius: 4px;
+      color: #ffe0a1;
+      background:
+        linear-gradient(180deg, #bd4534, #7d251d);
+      box-shadow:
+        inset 0 0 0 2px rgba(255, 198, 116, 0.16),
+        inset 0 -4px 0 rgba(55, 14, 11, 0.38),
+        0 5px 0 #381210,
+        0 8px 13px rgba(0, 0, 0, 0.42);
+      font-family: "Oswald", sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: filter 150ms ease, transform 150ms ease;
+    }
+
+    button::before,
+    button::after {
+      position: absolute;
+      top: 50%;
+      width: 9px;
+      height: 9px;
+      border: 1px solid #49301a;
+      border-radius: 50%;
+      background: #c89b50;
+      box-shadow: inset 0 0 0 2px rgba(71, 45, 22, 0.46);
+      content: "";
+      transform: translateY(-50%);
+    }
+
+    button::before {
+      left: 13px;
+    }
+
+    button::after {
+      right: 13px;
+    }
+
+    button:hover:not(:disabled) {
+      filter: brightness(1.13);
+      transform: translateY(-1px);
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(3px);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      filter: grayscale(0.55);
+      opacity: 0.48;
+    }
+
+    .copy-status {
+      min-height: 1.2em;
+      margin: 3px 0 0;
+      color: #b7c8c9;
+      font-size: 0.66rem;
+      text-align: center;
+    }
+
+    footer {
+      position: relative;
+      z-index: 1;
+      width: min(100% - 48px, 940px);
+      margin: 0 auto;
+      padding: 12px 0 20px;
+      border-top: 1px solid rgba(184, 139, 72, 0.27);
+      color: #918774;
+      font-size: clamp(0.53rem, 1.8vw, 0.66rem);
+      line-height: 1.55;
+      text-align: center;
+    }
+
+    footer p {
+      margin: 0;
+    }
+
+    @media (min-width: 900px) and (min-height: 650px) {
+      .console {
+        min-height: 100vh;
+      }
+
+      main {
+        grid-template-rows: auto auto auto;
+        gap: 13px;
+        padding: 26px 0 12px;
+      }
+
+      header {
+        min-height: 74px;
+      }
+
+      h1 {
+        font-size: clamp(3.4rem, 7vh, 4.8rem);
+      }
+
+      .input-panel {
+        padding-top: 13px;
+        padding-bottom: 14px;
+      }
+
+      .readout {
+        grid-template-rows: auto auto auto;
+        gap: 12px;
+      }
+
+      .morse-panel {
+        min-height: 118px;
+      }
+
+      button {
+        min-height: 44px;
+        padding-top: 9px;
+        padding-bottom: 9px;
+      }
+
+      footer {
+        flex: 0 0 auto;
+        padding-top: 8px;
+        padding-bottom: 10px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .console {
+        border-width: 4px;
+      }
+
+      .console::before {
+        inset: 10px;
+      }
+
+      .screw {
+        display: none;
+      }
+
+      main {
+        width: min(100% - 20px, 1050px);
+        gap: 15px;
+        padding-top: 32px;
+      }
+
+      header {
+        gap: 12px;
+        padding: 12px 16px 14px;
+      }
+
+      .key-mark {
+        width: 62px;
+        height: 40px;
+      }
+
+      .key-mark::before {
+        top: 15px;
+        left: 6px;
+        width: 50px;
+      }
+
+      .key-mark::after {
+        right: 0;
+        width: 15px;
+        height: 15px;
+      }
+
+      .key-pivot {
+        display: none;
+      }
+
+      header::after {
+        display: none;
+      }
+
+      h1 {
+        font-size: clamp(3rem, 18vw, 4.5rem);
+        letter-spacing: 0.07em;
+        text-indent: 0.07em;
+      }
+
+      .subtitle {
+        font-size: 0.74rem;
+      }
+
+      .input-panel {
+        padding: 16px 13px;
+      }
+
+      .morse-panel {
+        min-height: 118px;
+        padding-right: 14px;
+        padding-left: 18px;
+      }
+
+      .morse-code {
+        font-size: clamp(1.25rem, 7vw, 2rem);
+      }
+
+      .breakdown {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .mapping {
+        grid-template-columns: minmax(25px, auto) auto 1fr;
+        gap: 5px;
+        padding-right: 7px;
+        padding-left: 7px;
+      }
+    }
+
+    @media (max-width: 340px) {
+      .breakdown {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="console">
+    <span class="screw one" aria-hidden="true"></span>
+    <span class="screw two" aria-hidden="true"></span>
+    <span class="screw three" aria-hidden="true"></span>
+    <span class="screw four" aria-hidden="true"></span>
+
+    <main>
+      <header>
+        <span class="key-mark" aria-hidden="true"><span class="key-pivot"></span></span>
+        <div class="title-block">
+          <p class="station-label">Signal desk 01</p>
+          <h1>Morse</h1>
+          <p class="subtitle">Type a message. Watch it become signal.</p>
+        </div>
+      </header>
+
+      <section class="input-panel" aria-labelledby="message-label">
+        <label id="message-label" for="message-input">Message to transmit</label>
+        <div class="input-wrap">
+          <input
+            id="message-input"
+            name="message"
+            type="text"
+            maxlength="120"
+            autocomplete="off"
+            autocapitalize="sentences"
+            spellcheck="false"
+            enterkeyhint="done"
+            placeholder="Try SOS or type a message"
+            aria-describedby="input-tip"
+          >
+          <p id="input-tip" class="input-tip" role="tooltip">Try SOS, a name, or a short message.</p>
+        </div>
+      </section>
+
+      <section id="readout" class="readout">
+        <div class="morse-panel" aria-live="polite" aria-atomic="true">
+          <div class="panel-heading">
+            <p class="panel-label">Signal</p>
+            <span id="circuit-status" class="circuit-status">
+              <span class="circuit-lamp" aria-hidden="true"></span>
+              <span id="circuit-label">Line ready</span>
+            </span>
+          </div>
+          <p id="morse-code" class="morse-code empty">Your signal will appear here.</p>
+          <p id="signal-note" class="signal-note"></p>
+        </div>
+
+        <div class="work-panel">
+          <div class="work-heading">
+            <p class="panel-label">Show the work</p>
+            <span class="circuit-status">Character register</span>
+          </div>
+          <ul id="breakdown" class="breakdown"></ul>
+        </div>
+
+        <div class="actions">
+          <button id="copy-button" type="button" disabled>Copy signal</button>
+          <p id="copy-status" class="copy-status" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Standard International Morse · deterministic · no randomness · nothing stored or sent</p>
+      <p>AI assisted. Human approved. Powered by NLP.</p>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var morseMap = {
+        "A": ".-", "B": "-...", "C": "-.-.", "D": "-..", "E": ".",
+        "F": "..-.", "G": "--.", "H": "....", "I": "..", "J": ".---",
+        "K": "-.-", "L": ".-..", "M": "--", "N": "-.", "O": "---",
+        "P": ".--.", "Q": "--.-", "R": ".-.", "S": "...", "T": "-",
+        "U": "..-", "V": "...-", "W": ".--", "X": "-..-", "Y": "-.--",
+        "Z": "--..",
+        "0": "-----", "1": ".----", "2": "..---", "3": "...--", "4": "....-",
+        "5": ".....", "6": "-....", "7": "--...", "8": "---..", "9": "----.",
+        ".": ".-.-.-", ",": "--..--", "?": "..--..", "'": ".----.",
+        "/": "-..-.", "(": "-.--.", ")": "-.--.-", ":": "---...",
+        "=": "-...-", "+": ".-.-.", "-": "-....-", "@": ".--.-."
+      };
+
+      var input = document.getElementById("message-input");
+      var codeOutput = document.getElementById("morse-code");
+      var signalNote = document.getElementById("signal-note");
+      var breakdown = document.getElementById("breakdown");
+      var copyButton = document.getElementById("copy-button");
+      var copyStatus = document.getElementById("copy-status");
+      var circuitStatus = document.getElementById("circuit-status");
+      var circuitLabel = document.getElementById("circuit-label");
+      var currentCode = "";
+
+      function toDisplayCode(code) {
+        return code.replace(/\./g, "·").replace(/-/g, "–");
+      }
+
+      function addBreakdownItem(label, code, unsupported) {
+        var item = document.createElement("li");
+        var character = document.createElement("span");
+        var equals = document.createElement("span");
+        var mappingCode = document.createElement("span");
+
+        item.className = "mapping";
+        character.className = "mapping-character";
+        equals.className = "mapping-equals";
+        mappingCode.className = "mapping-code";
+
+        if (unsupported) {
+          item.classList.add("unsupported");
+        }
+
+        character.textContent = label;
+        equals.textContent = "=";
+        mappingCode.textContent = unsupported ? "no code" : code;
+
+        item.appendChild(character);
+        item.appendChild(equals);
+        item.appendChild(mappingCode);
+        breakdown.appendChild(item);
+      }
+
+      function convert(value) {
+        var output = [];
+        var entries = [];
+        var seen = Object.create(null);
+        var unsupportedCount = 0;
+        var pendingWordBreak = false;
+        var characters = Array.from(value);
+        var index;
+
+        for (index = 0; index < characters.length; index += 1) {
+          var original = characters[index];
+          var key = original.toUpperCase();
+
+          if (/\s/.test(original)) {
+            pendingWordBreak = output.length > 0;
+
+            if (!seen.SPACE) {
+              seen.SPACE = true;
+              entries.push({ label: "SPACE", code: "/", unsupported: false });
+            }
+
+            continue;
+          }
+
+          if (morseMap[key]) {
+            if (pendingWordBreak && output[output.length - 1] !== "/") {
+              output.push("/");
+            }
+
+            pendingWordBreak = false;
+            output.push(toDisplayCode(morseMap[key]));
+
+            if (!seen[key]) {
+              seen[key] = true;
+              entries.push({
+                label: key,
+                code: toDisplayCode(morseMap[key]),
+                unsupported: false
+              });
+            }
+          } else {
+            unsupportedCount += 1;
+
+            if (!seen["UNSUPPORTED:" + original]) {
+              seen["UNSUPPORTED:" + original] = true;
+              entries.push({
+                label: original,
+                code: "",
+                unsupported: true
+              });
+            }
+          }
+        }
+
+        return {
+          code: output.join(" "),
+          entries: entries,
+          unsupportedCount: unsupportedCount
+        };
+      }
+
+      function setEmpty() {
+        currentCode = "";
+        codeOutput.textContent = "Your signal will appear here.";
+        codeOutput.classList.add("empty");
+        signalNote.textContent = "";
+        breakdown.textContent = "";
+        copyButton.disabled = true;
+        copyStatus.textContent = "";
+        circuitStatus.classList.remove("active");
+        circuitLabel.textContent = "Line ready";
+      }
+
+      function render() {
+        try {
+          if (input.value.length === 0) {
+            setEmpty();
+            return;
+          }
+
+          var result = convert(input.value);
+          currentCode = result.code;
+          breakdown.textContent = "";
+          copyStatus.textContent = "";
+
+          if (result.code) {
+            codeOutput.textContent = result.code;
+            codeOutput.classList.remove("empty");
+            copyButton.disabled = false;
+            circuitStatus.classList.add("active");
+            circuitLabel.textContent = "Signal live";
+          } else {
+            codeOutput.textContent = "No supported characters yet.";
+            codeOutput.classList.add("empty");
+            copyButton.disabled = true;
+            circuitStatus.classList.remove("active");
+            circuitLabel.textContent = "No signal";
+          }
+
+          result.entries.forEach(function (entry) {
+            addBreakdownItem(entry.label, entry.code, entry.unsupported);
+          });
+
+          if (result.unsupportedCount > 0) {
+            signalNote.textContent = result.unsupportedCount
+              + (result.unsupportedCount === 1
+                ? " character has no Morse code."
+                : " characters have no Morse code.");
+          } else {
+            signalNote.textContent = "";
+          }
+        } catch (error) {
+          currentCode = "";
+          codeOutput.textContent = "This message could not be converted. Try another.";
+          codeOutput.classList.add("empty");
+          signalNote.textContent = "";
+          breakdown.textContent = "";
+          copyButton.disabled = true;
+          circuitStatus.classList.remove("active");
+          circuitLabel.textContent = "Line fault";
+        }
+      }
+
+      async function copySignal() {
+        try {
+          if (!currentCode) {
+            copyStatus.textContent = "Type a supported character first.";
+            return;
+          }
+
+          if (!navigator.clipboard || typeof navigator.clipboard.writeText !== "function") {
+            copyStatus.textContent = "Copy is blocked here. Select the signal instead.";
+            return;
+          }
+
+          await navigator.clipboard.writeText(currentCode);
+          copyStatus.textContent = "Signal copied.";
+        } catch (error) {
+          copyStatus.textContent = "Copy is blocked here. Select the signal instead.";
+        }
+      }
+
+      try {
+        input.addEventListener("input", render);
+        copyButton.addEventListener("click", function () {
+          copySignal().catch(function () {
+            copyStatus.textContent = "Copy is blocked here. Select the signal instead.";
+          });
+        });
+        render();
+      } catch (error) {
+        document.body.textContent = "Morse could not start. Please refresh and try again.";
+      }
+    }());
+  </script>
+</body>
+</html>

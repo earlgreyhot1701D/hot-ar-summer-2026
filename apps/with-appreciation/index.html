@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#5f9d8e">
+  <title>With Appreciation</title>
+  <style>
+    :root{--wall:#70a99a;--wall-dark:#4d8176;--paper:#f7e7bc;--paper-light:#fff5d8;--ink:#292821;--wood:#4b2918;--gold:#d5a86f;--machine:#171922;--muted:#6f6758;--focus:#8b451f}
+    *{box-sizing:border-box}
+    html,body{min-height:100%;margin:0}
+    body{font-family:"Courier New",Courier,monospace;color:var(--ink);background:var(--wall);overflow-x:hidden}
+    button,input{font:inherit}
+    button{cursor:pointer}
+    .scene{min-height:100svh;display:grid;grid-template-rows:1fr auto;position:relative;isolation:isolate;background:repeating-linear-gradient(90deg,transparent 0 12.4%,rgba(28,79,68,.22) 12.5%,rgba(255,255,255,.08) 12.65%,transparent 12.8% 25%),linear-gradient(var(--wall),#62988b)}
+    .scene:before{content:"✿  ·  ✿    ·  ✿  ·    ✿    ·  ✿  ·  ✿";position:absolute;inset:0;z-index:-1;color:#e7c28f;font-size:24px;line-height:5.4;letter-spacing:2.6rem;overflow:hidden;opacity:.72;filter:drop-shadow(0 1px rgba(73,83,62,.3));pointer-events:none}
+    .desk{position:absolute;left:0;right:0;bottom:0;height:27%;z-index:-1;background:repeating-radial-gradient(ellipse at 10% 40%,transparent 0 22px,rgba(19,10,6,.22) 23px 25px,transparent 26px 45px),linear-gradient(90deg,#3c2115,#6a3c22 45%,#402116);border-top:8px solid #2b190f;box-shadow:inset 0 16px 35px rgba(0,0,0,.35)}
+    main{width:min(820px,92vw);margin:clamp(26px,6vh,76px) auto 220px;position:relative}
+    .paper{min-height:500px;padding:clamp(34px,6vw,68px);background:linear-gradient(105deg,var(--paper),var(--paper-light) 52%,#f1dba5);box-shadow:0 12px 24px rgba(39,31,19,.28),inset 0 0 60px rgba(190,139,69,.14);position:relative;display:grid;align-items:center;text-align:center}
+    .paper:after{content:"";position:absolute;inset:0;opacity:.24;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 26px,rgba(93,76,50,.08) 27px)}
+    .content{position:relative;z-index:1;width:min(590px,100%);margin:auto}
+    .eyebrow{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin:0 0 18px}
+    h1{font-family:Georgia,serif;font-weight:400;font-size:clamp(2.1rem,6vw,4.2rem);line-height:.98;margin:0 0 22px}
+    .lede{font-family:Georgia,serif;font-style:italic;font-size:clamp(1rem,2.4vw,1.25rem);line-height:1.6;margin:0 auto 30px;max-width:32rem}
+    .step-count{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
+    label{display:block;font-family:Georgia,serif;font-size:clamp(1.35rem,4vw,2.2rem);line-height:1.2;margin-bottom:28px}
+    input{width:100%;border:0;border-bottom:2px solid rgba(41,40,33,.58);background:transparent;color:var(--ink);padding:11px 4px;font-size:1.05rem;text-align:center;outline:none}
+    input:focus{border-color:var(--focus);box-shadow:0 3px 0 -1px rgba(139,69,31,.2)}
+    .actions{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:28px}
+    .btn{border:1px solid var(--ink);background:var(--ink);color:var(--paper-light);padding:11px 22px;box-shadow:3px 3px 0 rgba(139,69,31,.35);transition:transform .2s,box-shadow .2s}
+    .btn:hover{transform:translateY(-2px);box-shadow:4px 5px 0 rgba(139,69,31,.28)}
+    .btn.secondary{background:transparent;color:var(--ink);box-shadow:none}
+    .btn:focus-visible,input:focus-visible{outline:3px solid #fff;outline-offset:4px}
+    .nudge{min-height:1.3em;color:#874b31;font-size:.82rem;margin:12px 0 0}
+    .quote{font-family:Georgia,serif;font-size:clamp(1.45rem,4vw,2.45rem);line-height:1.35;margin:0}
+    .attribution{margin:22px 0 34px;color:var(--muted)}
+    .together{font-size:.82rem;line-height:1.6;margin:0 auto;max-width:29rem;color:var(--muted)}
+    .close{font-family:Georgia,serif;font-style:italic;color:var(--muted);margin:22px 0 0}
+    .typewriter{position:absolute;left:50%;bottom:-224px;translate:-50% 0;width:min(780px,98vw);height:264px;z-index:3;filter:drop-shadow(0 19px 14px rgba(0,0,0,.52))}
+    .carriage{position:absolute;z-index:5;left:4%;right:4%;top:0;height:30px;border-radius:15px;background:linear-gradient(#5d6068 0 10%,#171922 22% 70%,#08090e 72%);border:2px solid #090a0d;box-shadow:inset 0 4px 3px rgba(255,255,255,.25),0 5px 0 #363944}
+    .carriage:before,.carriage:after{content:"";position:absolute;top:-5px;width:30px;height:40px;border-radius:7px;background:repeating-linear-gradient(90deg,#12141b 0 4px,#40434c 5px 7px);border:2px solid #08090c}
+    .carriage:before{left:-18px}.carriage:after{right:-18px}
+    .body{position:absolute;inset:24px 5% 0;background:linear-gradient(145deg,#343744 0 18%,#171922 46%,#0a0c12 83%);clip-path:polygon(19% 0,81% 0,94% 23%,100% 86%,92% 100%,8% 100%,0 86%,6% 23%);border-radius:35px;box-shadow:inset 0 12px 7px rgba(255,255,255,.08),inset 0 -15px 15px #06070b}
+    .ribbon{position:absolute;z-index:4;left:17%;right:17%;top:43px;height:62px;border-radius:0 0 50% 50%;background:radial-gradient(circle at 16% 25%,#464a54 0 11%,#08090d 12% 17%,#555963 18% 20%,transparent 21%),radial-gradient(circle at 84% 25%,#464a54 0 11%,#08090d 12% 17%,#555963 18% 20%,transparent 21%),repeating-conic-gradient(from 240deg at 50% 105%,#afb1b4 0 2deg,#353841 2deg 4deg,transparent 4deg 6deg)}
+    .ribbon:after{content:"";position:absolute;left:48%;top:12px;width:4%;height:45px;border:4px double #c7c7c2;border-top:0}
+    .keyboard{position:absolute;z-index:6;left:13%;right:13%;top:108px;height:118px;transform:perspective(360px) rotateX(12deg);display:grid;align-content:start;justify-items:center;gap:7px;padding-top:7px}
+    .key-row{display:flex;justify-content:center;gap:clamp(5px,1vw,10px)}
+    .key{display:grid;place-items:center;width:clamp(25px,4vw,35px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 45% 38%,#fffdf4 0 37%,#c9c6bd 39% 50%,#666a74 52% 61%,#101219 63%);color:#292b2d;font:700 clamp(8px,1.35vw,12px) Georgia,serif;text-shadow:0 1px #fff;box-shadow:0 5px 0 #090a0e}
+    .spacebar{width:54%;height:17px;border-radius:9px;background:linear-gradient(#f1eee3,#9fa2a8);border:3px solid #171922;box-shadow:0 5px #08090c;margin-top:2px}
+    footer{padding:25px 20px 28px;text-align:center;background:#161616;color:#d9c9a7;font-size:.72rem;line-height:1.7;letter-spacing:.02em}
+    [hidden]{display:none!important}
+    .fade{animation:reveal .55s ease both}
+    @keyframes reveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+    @media (max-width:650px){main{margin-bottom:148px}.paper{min-height:470px;padding:34px 24px}.typewriter{height:174px;bottom:-145px}.keyboard{top:72px;height:85px;gap:4px}.ribbon{top:30px;height:42px}.key-row{gap:4px}.key{width:22px;font-size:7px;box-shadow:0 3px #090a0e}.spacebar{height:12px}.scene:before{font-size:18px;letter-spacing:1rem}.desk{height:20%}}
+    @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}.fade,.btn{animation:none;transition:none}}
+  </style>
+</head>
+<body>
+  <div class="scene">
+    <main aria-live="polite">
+      <section class="paper" aria-label="Gratitude practice">
+        <div id="intro" class="content fade">
+          <p class="eyebrow">A small pause</p>
+          <h1>Three good things.</h1>
+          <p class="lede">Name three things you are grateful for, one at a time. Nothing you write leaves this page.</p>
+          <button class="btn" id="begin" type="button">Begin gently</button>
+        </div>
+
+        <form id="practice" class="content" hidden novalidate>
+          <p class="step-count" id="stepCount">Thought 1 of 3</p>
+          <label for="gratitude" id="prompt">What’s one thing you’re grateful for?</label>
+          <input id="gratitude" name="gratitude" type="text" maxlength="180" autocomplete="off" enterkeyhint="next" aria-describedby="nudge">
+          <p class="nudge" id="nudge" role="status"></p>
+          <div class="actions">
+            <button class="btn secondary" id="back" type="button" hidden>Back</button>
+            <button class="btn" id="continue" type="submit">Continue</button>
+          </div>
+        </form>
+
+        <div id="complete" class="content" hidden>
+          <p class="eyebrow">Your three good things</p>
+          <h1>They are here.</h1>
+          <p class="lede">Take one easy breath. When you are ready, receive today’s words.</p>
+          <button class="btn" id="receive" type="button">Receive a thought</button>
+        </div>
+
+        <div id="reward" class="content" hidden>
+          <p class="eyebrow">For today</p>
+          <blockquote class="quote" id="quoteText"></blockquote>
+          <p class="attribution" id="quoteAttribution"></p>
+          <p class="together" id="together"></p>
+          <div class="actions"><button class="btn secondary" id="again" type="button">Practice again</button></div>
+          <p class="close">Or let this be enough for today.</p>
+        </div>
+      </section>
+      <div class="typewriter" aria-hidden="true">
+        <div class="carriage"></div>
+        <div class="body"></div>
+        <div class="ribbon"></div>
+        <div class="keyboard">
+          <div class="key-row"><i class="key">Q</i><i class="key">W</i><i class="key">E</i><i class="key">R</i><i class="key">T</i><i class="key">Y</i><i class="key">U</i><i class="key">I</i><i class="key">O</i><i class="key">P</i></div>
+          <div class="key-row"><i class="key">A</i><i class="key">S</i><i class="key">D</i><i class="key">F</i><i class="key">G</i><i class="key">H</i><i class="key">J</i><i class="key">K</i><i class="key">L</i></div>
+          <div class="key-row"><i class="key">Z</i><i class="key">X</i><i class="key">C</i><i class="key">V</i><i class="key">B</i><i class="key">N</i><i class="key">M</i></div>
+          <div class="spacebar"></div>
+        </div>
+      </div>
+    </main>
+    <div class="desk" aria-hidden="true"></div>
+    <footer>Nothing you write is stored or sent.<br>AI assisted. Human approved. Powered by NLP.</footer>
+  </div>
+
+  <script>
+    "use strict";
+
+    /* 72 curated gratitude quotes. Attribution rendered verbatim via textContent. */
+    const QUOTES = [
+      { text: "You noticed something good today. That noticing is the whole practice.", attribution: "" },
+      { text: "Small things counted on purpose become a large life.", attribution: "" },
+      { text: "Nothing here was owed to you, and it came anyway.", attribution: "" },
+      { text: "The ordinary day you almost missed was the gift.", attribution: "" },
+      { text: "Gratitude is just attention pointed somewhere kind.", attribution: "" },
+      { text: "What you have was once something you hoped for.", attribution: "" },
+      { text: "You are allowed to be glad, even now, even here.", attribution: "" },
+      { text: "The list is never as short as the mood says it is.", attribution: "" },
+      { text: "Someone, somewhere, is grateful for you today.", attribution: "" },
+      { text: "Enough is a feeling before it is an amount.", attribution: "" },
+      { text: "You kept going. That counts, and it counts today.", attribution: "" },
+      { text: "The good things are quiet. Lean in and you'll hear them.", attribution: "" },
+      { text: "A roof, a meal, a name someone says gently. Start there.", attribution: "" },
+      { text: "You already have things you once prayed for.", attribution: "" },
+      { text: "Not everything that held you up asked to be thanked.", attribution: "" },
+      { text: "The morning came back. It does not have to, and it did.", attribution: "" },
+      { text: "Look for the light and you become better at finding it.", attribution: "" },
+      { text: "Whatever is still here after the hard year is worth naming.", attribution: "" },
+      { text: "You are practicing being glad. It gets easier with reps.", attribution: "" },
+      { text: "The smallest mercy still counts as a mercy.", attribution: "" },
+      { text: "Someone made the thing you're using right now. Bless their hands.", attribution: "" },
+      { text: "You were carried more than you know.", attribution: "" },
+      { text: "The day gave you something. It usually does.", attribution: "" },
+      { text: "Being here to be grateful is itself the first thing.", attribution: "" },
+      { text: "Warmth, water, a little quiet. The old riches, still yours.", attribution: "" },
+      { text: "What you tend to grows. Tend to the good.", attribution: "" },
+      { text: "You survived the thing you were sure you wouldn't. Notice that.", attribution: "" },
+      { text: "Kindness you received you did not have to earn.", attribution: "" },
+      { text: "Rest is a gift you are allowed to accept.", attribution: "" },
+      { text: "The ones who love you are a fortune most people miss counting.", attribution: "" },
+      { text: "There is more holding you up than you can see.", attribution: "" },
+      { text: "Today asked little and gave a little. Take the little.", attribution: "" },
+      { text: "Your body carried you here. That is not nothing.", attribution: "" },
+      { text: "Some griefs are just love with nowhere to go. Even that is a gift.", attribution: "" },
+      { text: "The good was there the whole time, waiting to be counted.", attribution: "" },
+      { text: "You get to begin again. That is the mercy of mornings.", attribution: "" },
+      { text: "What went right rarely announces itself. Go find it.", attribution: "" },
+      { text: "A stranger was kind to you once and never knew it mattered.", attribution: "" },
+      { text: "You have been forgiven for things. Let that soften you.", attribution: "" },
+      { text: "The plain day, unbroken, is a quiet miracle.", attribution: "" },
+      { text: "Gladness is a muscle. You are using it right now.", attribution: "" },
+      { text: "Whatever you named just now, it was true. Trust it.", attribution: "" },
+      { text: "The world fed you today. Say thank you to it.", attribution: "" },
+      { text: "You are someone's good thing. Live like it.", attribution: "" },
+      { text: "Count slowly. The list outlasts the counting.", attribution: "" },
+      { text: "Gratitude is the memory of the heart.", attribution: "French proverb" },
+      { text: "Enough is as good as a feast.", attribution: "English proverb" },
+      { text: "He who has bread has many troubles; he who has none, only one.", attribution: "old proverb" },
+      { text: "A grateful heart is a garden.", attribution: "old saying" },
+      { text: "Give thanks for a little and you will find a lot.", attribution: "West African proverb" },
+      { text: "When you drink from the stream, remember the spring.", attribution: "Chinese proverb" },
+      { text: "The dawn does not come twice to wake a man, yet it always comes.", attribution: "old saying" },
+      { text: "He is rich who is content with what he has.", attribution: "after a Roman proverb" },
+      { text: "A thankful heart is not only the greatest virtue, but the parent of all others.", attribution: "after Cicero" },
+      { text: "Rejoice in the things that are present.", attribution: "Stoic maxim" },
+      { text: "What we have loved, others will love, and we will teach them how.", attribution: "Wordsworth" },
+      { text: "Reflect upon your present blessings, of which every man has many.", attribution: "Dickens" },
+      { text: "Silent gratitude isn't much use to anyone, so let it be spoken.", attribution: "old saying" },
+      { text: "To speak gratitude is courteous; to live it is grace.", attribution: "old saying" },
+      { text: "The bee is not ashamed to take what the flower freely gives.", attribution: "old saying" },
+      { text: "Contentment is natural wealth.", attribution: "after Socrates" },
+      { text: "Let us be grateful to people who make us happy.", attribution: "Proust" },
+      { text: "He who thanks but with the lips thanks but in part.", attribution: "old saying" },
+      { text: "Gratitude turns what we have into enough.", attribution: "traditional" },
+      { text: "Every day is a messenger; receive it.", attribution: "old saying" },
+      { text: "Praise the bridge that carried you over.", attribution: "English proverb" },
+      { text: "The one who plants a tree, knowing he will never sit in its shade, has understood.", attribution: "old saying" },
+      { text: "Blessings brighten when we count them.", attribution: "old saying" },
+      { text: "Feeling gratitude and not expressing it is like wrapping a gift and not giving it.", attribution: "old saying" },
+      { text: "A small debt makes a debtor; a great one, an enemy. Give thanks and stay free.", attribution: "after a Roman proverb" },
+      { text: "What sunshine is to flowers, kind words are to the soul.", attribution: "traditional" },
+      { text: "Now is the only time we own. Be glad in it.", attribution: "old saying" },
+    ];
+
+    const EPOCH_UTC = Date.UTC(2025, 0, 1);
+    const DAY_MS = 86400000;
+    const entries = ["", "", ""];
+    let step = 0;
+    let repeatOffset = 0;
+
+    const $ = id => document.getElementById(id);
+    const screens = ["intro", "practice", "complete", "reward"];
+    const prompts = [
+      "What’s one thing you’re grateful for?",
+      "What’s another thing you’re grateful for?",
+      "And one more, however small?"
+    ];
+
+    function show(id) {
+      screens.forEach(name => {
+        const el = $(name);
+        el.hidden = name !== id;
+        el.classList.remove("fade");
+      });
+      const active = $(id);
+      active.classList.add("fade");
+    }
+
+    function renderStep() {
+      $("stepCount").textContent = `Thought ${step + 1} of 3`;
+      $("prompt").textContent = prompts[step];
+      $("gratitude").value = entries[step];
+      $("back").hidden = step === 0;
+      $("continue").textContent = step === 2 ? "Complete" : "Continue";
+      $("nudge").textContent = "";
+      show("practice");
+      requestAnimationFrame(() => $("gratitude").focus());
+    }
+
+    function utcDayIndex(date = new Date()) {
+      const todayUTC = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+      return Math.floor((todayUTC - EPOCH_UTC) / DAY_MS);
+    }
+
+
+    function renderReward() {
+      const index = ((utcDayIndex() + repeatOffset) % QUOTES.length + QUOTES.length) % QUOTES.length;
+      const quote = QUOTES[index];
+      $("quoteText").textContent = `“${quote.text}”`;
+      $("quoteAttribution").textContent = quote.attribution ? "— " + quote.attribution : "";
+      $("quoteAttribution").hidden = !quote.attribution;
+      $("together").textContent = "Somewhere right now, someone else is doing exactly this. You are in quiet company.";
+      show("reward");
+      requestAnimationFrame(() => $("again").focus());
+    }
+
+    $("begin").addEventListener("click", renderStep);
+
+    $("practice").addEventListener("submit", event => {
+      event.preventDefault();
+      const value = $("gratitude").value.trim();
+      if (!value) {
+        $("nudge").textContent = "Take your time. A word or a whole thought is enough.";
+        $("gratitude").focus();
+        return;
+      }
+      entries[step] = value;
+      if (step < 2) {
+        step += 1;
+        renderStep();
+      } else {
+        show("complete");
+        requestAnimationFrame(() => $("receive").focus());
+      }
+    });
+
+    $("back").addEventListener("click", () => {
+      entries[step] = $("gratitude").value.trim();
+      if (step > 0) step -= 1;
+      renderStep();
+    });
+
+    $("receive").addEventListener("click", renderReward);
+
+    $("again").addEventListener("click", () => {
+      entries.fill("");
+      step = 0;
+      repeatOffset += 1;
+      renderStep();
+    });
+  </script>
+</body>
+</html>
