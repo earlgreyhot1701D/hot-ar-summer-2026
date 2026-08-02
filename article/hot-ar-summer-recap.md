@@ -1,9 +1,9 @@
 ---
-title: "Hot AR Summer: I Wasn't Going to Enter. 33 Apps Later, Here's the Bill."
-published: false
+title: "Netlify's Hot AR Summer Challenge: I Wasn't Going to Enter. 33 Apps Later, I'm So Glad I Did"
+published: true
 tags: showdev, ai, webdev, buildinpublic
 cover_image:
-canonical_url:
+canonical_url: https://dev.to/earlgreyhot1701d/netlifys-hot-ar-summer-i-wasnt-going-to-enter-33-apps-later-heres-the-bill-1d25
 series: Hot AR Summer
 ---
 

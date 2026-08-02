@@ -7,7 +7,7 @@
 **Builder:** L. Cordero (Shara) · [@earlgreyhot1701d](https://dev.to/earlgreyhot1701d)
 **Showcase wall:** [my builder page](https://hot-ar-summer.netlify.app/showcase/builder/la-shara-cordero)
 **Portfolio:** [Clew Labs](https://earlgreyhot1701d.github.io/Clew-Labs/)
-**Write-up:** [`article/hot-ar-summer-recap.md`](article/hot-ar-summer-recap.md)
+**Write-up:** [the dev.to article](https://dev.to/earlgreyhot1701d/netlifys-hot-ar-summer-i-wasnt-going-to-enter-33-apps-later-heres-the-bill-1d25) (archived here as [`article/hot-ar-summer-recap.md`](article/hot-ar-summer-recap.md))
 
 ---
 
