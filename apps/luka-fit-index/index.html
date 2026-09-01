@@ -5,21 +5,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Luka Fit Index — Lakers 2026 Offseason</title>
 <meta name="description" content="LeBron is gone. It's Luka's team now. Every Lakers move scored against his measurable needs — four axes, visible assumptions, no blended scores, ever.">
+<link rel="canonical" href="https://luka-fit-index.netlify.app/">
 <meta property="og:title" content="Luka Fit Index — Lakers 2026 Offseason">
 <meta property="og:description" content="LeBron is gone. It's Luka's team now. Does the new roster actually fit the way he plays?">
 <meta property="og:type" content="website">
 <!-- TODO before deploy: add og:image (1200x630 screenshot of the hero) for social shares -->
+<meta property="og:url" content="https://luka-fit-index.netlify.app/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Luka Fit Index — Lakers 2026 Offseason">
+<meta name="twitter:description" content="Does the new Lakers roster actually fit the way Luka plays? Four separate axes, visible assumptions, no blended score.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Archivo:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-  :root { --purple:#552583; --gold:#FDB927; --cream:#f6efdb; --ink:#241535; --mut:#6d5f80; --card:#fffaf0; }
+  :root { --purple:#552583; --gold:#FDB927; --cream:#f6efdb; --ink:#241535; --mut:#625570; --card:#fffaf0; --danger:#a52f25; --success:#2f6f3d; }
   * { box-sizing:border-box; margin:0; }
   html { scroll-behavior:smooth; }
   body { background:var(--cream); color:var(--ink); font-family:'Archivo',sans-serif; line-height:1.6; background-image:repeating-linear-gradient(0deg, transparent, transparent 34px, rgba(85,37,131,0.045) 34px, rgba(85,37,131,0.045) 35px); }
   .wrap { max-width:1080px; margin:0 auto; padding:0 20px 80px; }
   ::selection { background:var(--purple); color:var(--gold); }
   section { scroll-margin-top:58px; }
+  .skip-link { position:fixed; top:8px; left:8px; z-index:20; background:var(--gold); color:var(--ink); border:3px solid var(--ink); padding:8px 14px; font-weight:800; transform:translateY(-160%); }
+  .skip-link:focus { transform:translateY(0); }
+  a:focus-visible { outline:4px solid var(--gold); outline-offset:3px; }
+  main:focus { outline:none; }
 
   .hero { background:var(--purple); border-bottom:8px solid var(--gold); padding:64px 20px 48px; text-align:center; position:relative; overflow:hidden; }
   .hero::before { content:""; position:absolute; inset:0; background:repeating-linear-gradient(-45deg, transparent, transparent 26px, rgba(253,185,39,0.07) 26px, rgba(253,185,39,0.07) 52px); }
@@ -28,6 +37,8 @@
   .hero h1 { font-family:'Alfa Slab One',serif; font-size:clamp(44px,8.5vw,96px); line-height:1.02; color:var(--gold); text-transform:uppercase; margin:18px 0 10px; text-shadow:4px 4px 0 #241535; }
   .hero .sub { color:#e8dcf7; font-size:16px; max-width:600px; margin:0 auto; line-height:1.65; }
   .hero .stamp { display:inline-block; margin-top:20px; border:3px solid var(--gold); color:var(--gold); font-weight:800; font-size:13px; letter-spacing:0.12em; text-transform:uppercase; padding:8px 22px; transform:rotate(1deg); }
+  .hero .freshness { color:#fffaf0; font-size:12px; font-weight:800; letter-spacing:0.06em; margin-top:18px; }
+  .hero .question { color:var(--gold); }
 
   .ticker { background:var(--ink); color:var(--gold); font-weight:800; font-size:12px; letter-spacing:0.18em; text-transform:uppercase; padding:10px 0; overflow:hidden; white-space:nowrap; }
   .ticker span { display:inline-block; padding-left:100%; animation:tick 28s linear infinite; }
@@ -46,6 +57,7 @@
 
   .story { text-align:center; }
   .story h2.sec { margin-top:56px; }
+  .story-copy { margin-top:20px; }
   .lede { max-width:640px; margin:0 auto 18px; text-align:left; font-size:16px; color:var(--ink); font-weight:600; line-height:1.75; }
   .lede strong { background:var(--gold); padding:0 4px; }
 
@@ -69,8 +81,8 @@
   .rule h3 { font-size:15px; font-weight:800; text-transform:uppercase; margin:8px 0 6px; }
   .rule p { font-size:13.5px; color:var(--mut); }
   .rule .pill { display:inline-block; font-size:10px; font-weight:800; letter-spacing:0.16em; padding:3px 12px; background:var(--purple); color:var(--gold); transform:rotate(-1deg); }
-  .rule.never { box-shadow:6px 6px 0 #c0392b; }
-  .rule.never .pill { background:#c0392b; color:#fff; }
+  .rule.never { box-shadow:6px 6px 0 var(--danger); }
+  .rule.never .pill { background:var(--danger); color:#fff; }
   .rule.why { box-shadow:6px 6px 0 var(--purple); border-color:var(--purple); }
   .rule.why .pill { background:var(--gold); color:var(--purple); }
 
@@ -94,7 +106,7 @@
   .tag { display:inline-block; font-size:11px; font-weight:800; padding:4px 12px; margin-bottom:14px; border:2px solid var(--ink); transform:rotate(-0.8deg); }
   .tag.warn { background:var(--gold); color:var(--ink); }
   .tag.hot { background:var(--purple); color:var(--gold); }
-  .tag.ok { background:#2f7a43; color:#fff; border-color:#1d4d2a; }
+  .tag.ok { background:var(--success); color:#fff; border-color:#1d4d2a; }
   .tag.rank { background:var(--ink); color:var(--gold); }
 
   .ax { display:grid; grid-template-columns:104px 1fr 82px; align-items:center; gap:10px; font-size:13px; margin-bottom:9px; }
@@ -110,16 +122,23 @@
 
   .note { font-size:12.5px; color:var(--mut); margin-top:14px; padding-top:12px; border-top:2px dashed var(--purple); line-height:1.55; }
   table.split { width:100%; border-collapse:collapse; margin-top:14px; font-size:12px; border:2px solid var(--ink); table-layout:fixed; }
+  table.split caption { text-align:left; color:var(--ink); font-weight:800; padding:0 0 6px; }
   table.split th:first-child, table.split td:first-child { width:31%; }
   table.split th { background:var(--purple); color:var(--gold); font-size:10px; letter-spacing:0.06em; text-transform:uppercase; text-align:left; padding:6px 5px; }
   table.split td { padding:6px 5px; border-top:1px solid #d8cbb2; color:var(--mut); font-variant-numeric:tabular-nums; overflow-wrap:break-word; }
   table.split tr td:first-child { color:var(--ink); font-weight:600; }
+  table.split tbody th { background:transparent; color:var(--ink); font-size:12px; letter-spacing:0; text-transform:none; border-top:1px solid #d8cbb2; }
 
   .verdict { background:var(--gold); border:3px solid var(--ink); box-shadow:6px 6px 0 var(--ink); padding:16px 24px; margin:30px 0 0; font-family:'Alfa Slab One',serif; font-size:clamp(16px,2.4vw,22px); text-transform:uppercase; color:var(--purple); transform:rotate(-0.4deg); }
   .verdict small { display:block; font-family:'Archivo',sans-serif; font-size:12.5px; text-transform:none; color:#4a3208; font-weight:600; margin-top:4px; }
 
   .devrow { background:var(--ink); color:#cdbfe0; padding:18px 24px; margin-top:22px; font-size:13.5px; line-height:1.8; }
   .devrow b { color:var(--gold); text-transform:uppercase; font-size:11.5px; letter-spacing:0.1em; }
+  .pattern-card { background:var(--gold); }
+  .pattern-card .mt, .pattern-card .note { color:#4a3208; }
+  .pattern-card .note { border-top-color:var(--ink); font-weight:600; }
+  .featured-card { box-shadow:8px 8px 0 var(--gold); border-color:var(--purple); }
+  .market-history { margin-top:22px; }
 
   .lens { background:var(--gold); border:3px solid var(--ink); box-shadow:8px 8px 0 var(--ink); padding:22px 26px; margin:26px 0; }
   .lens h3 { font-family:'Alfa Slab One',serif; font-size:20px; text-transform:uppercase; color:var(--purple); margin-bottom:8px; }
@@ -131,25 +150,31 @@
   .about { background:var(--card); border:3px solid var(--ink); box-shadow:8px 8px 0 var(--gold); padding:26px 30px; margin-top:30px; }
   .about h3 { font-family:'Alfa Slab One',serif; font-size:22px; text-transform:uppercase; color:var(--purple); margin-bottom:8px; }
   .about p { font-size:14px; color:var(--mut); max-width:720px; margin-bottom:8px; }
+  .about .approval { color:var(--purple); font-weight:800; }
   .about a.cta { display:inline-block; margin-top:10px; background:var(--purple); color:var(--gold); text-decoration:none; font-weight:800; font-size:13px; letter-spacing:0.1em; text-transform:uppercase; padding:10px 22px; border:3px solid var(--ink); box-shadow:4px 4px 0 var(--ink); transition:transform .15s, box-shadow .15s; }
   .about a.cta:hover { transform:translate(-2px,-2px); box-shadow:6px 6px 0 var(--ink); }
 
   footer.honesty { margin-top:72px; background:var(--purple); border-top:8px solid var(--gold); padding:44px 20px; }
   footer.honesty .in { max-width:1080px; margin:0 auto; }
-  footer.honesty h3 { font-family:'Alfa Slab One',serif; font-size:26px; text-transform:uppercase; color:var(--gold); margin-bottom:12px; }
+  footer.honesty h2 { font-family:'Alfa Slab One',serif; font-size:26px; text-transform:uppercase; color:var(--gold); margin-bottom:12px; }
   footer.honesty p { color:#dccdf2; font-size:13.5px; max-width:820px; margin-bottom:10px; }
+  footer.honesty .disclaimer { color:#c7b3df; margin-top:20px; font-size:12px; }
+  @media (max-width:360px) { .wrap { padding-inline:12px; } .grid { grid-template-columns:minmax(0,1fr); } .card { padding:18px 14px; } nav.chapters .row { padding-inline:8px; } }
 </style>
 </head>
 <body>
 
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
 <div class="hero">
   <div class="kicker">Lakers 2026 offseason &middot; a fan-built fit tool</div>
   <h1>Luka Fit Index</h1>
-  <div class="sub">LeBron is gone. Ayton got traded. Four strangers signed in 35 minutes. It's Luka's team now &mdash; and this tool asks the only question that matters about every single move: <strong style="color:#FDB927;">does it actually fit the way Luka plays?</strong></div>
+  <div class="sub">LeBron is gone. Ayton got traded. Eight new Lakers arrived. It's Luka's team now &mdash; and this tool asks the only question that matters about every single move: <strong class="question">does it actually fit the way Luka plays?</strong></div>
+  <div class="freshness">Player performance: 2025&ndash;26 &middot; Roster &amp; market updated Aug. 30, 2026</div>
   <div class="stamp">No blended scores, ever</div>
 </div>
 
-<div class="ticker" aria-hidden="true"><span>Roster as of Jul 5, 2026 &nbsp;&#9733;&nbsp; Luka: 38.0 USG, led the NBA &nbsp;&#9733;&nbsp; 53-29, swept by OKC &nbsp;&#9733;&nbsp; LeBron declined to re-sign &nbsp;&#9733;&nbsp; Ayton traded to Washington &nbsp;&#9733;&nbsp; 13 of 15 roster spots filled &nbsp;&#9733;&nbsp; three guards over 24 USG &nbsp;&#9733;&nbsp; data: StatMuse 2025-26 &nbsp;&#9733;&nbsp;</span></div>
+<div class="ticker" aria-hidden="true"><span>Roster &amp; market updated Aug. 30, 2026 &nbsp;&#9733;&nbsp; player data: 2025-26 &nbsp;&#9733;&nbsp; Luka: 38.0 USG, led the NBA &nbsp;&#9733;&nbsp; 53-29, swept by OKC &nbsp;&#9733;&nbsp; eight offseason arrivals &nbsp;&#9733;&nbsp; Looney adds center insurance &nbsp;&#9733;&nbsp; Thybulle adds perimeter defense &nbsp;&#9733;&nbsp; Ziaire adds wing size &nbsp;&#9733;&nbsp;</span></div>
 
 <nav class="chapters"><div class="row">
   <a href="#story">The story</a>
@@ -162,18 +187,18 @@
   <a href="#about">About</a>
 </div></nav>
 
-<div class="wrap">
+<main class="wrap" id="main-content" tabindex="-1">
 
 <section class="story" id="story">
 <h2 class="sec"><span class="tab">The story so far</span></h2>
-<div style="margin-top:20px;">
-  <p class="lede">The Lakers won 53 games, took the 4 seed, and got swept out of the playoffs by Oklahoma City. Then the real season started. LeBron James declined to re-sign after 23 years. Deandre Ayton was traded to Washington for a bench guard and picks. In one 35-minute stretch of free agency, the front office signed four new players &mdash; a center coming off shoulder surgery, a 3&amp;D wing coming off the worst shooting year of his career, a bench bucket-getter, and a stretch big off a career season.</p>
-  <p class="lede">Every one of those bets rides on one player: <strong>Luka Dončić</strong>, who just led the NBA in usage and scoring. The roster isn't finished &mdash; two spots are still open and the rumor mill is loud. So this page does what the hot-take machine won't: it scores every arrival, every returnee, and every affordable name still on the market against Luka's measurable needs, with the assumptions on the table and the receipts one scroll away.</p>
+<div class="story-copy">
+  <p class="lede">The Lakers won 53 games, took the 4 seed, and got swept out of the playoffs by Oklahoma City. Then the real season started. LeBron James declined to re-sign after 23 years. Deandre Ayton was traded to Washington. The first five arrivals made the July board; Kevon Looney, Matisse Thybulle, and Ziaire Williams changed the roster math after it.</p>
+  <p class="lede">Every bet rides on one player: <strong>Luka Dončić</strong>, who led the NBA in 2025&ndash;26 usage and scoring. This Aug. 30 snapshot scores eight arrivals, the returning rotation, and only the affordable names still on the late-summer board. New-Laker scores remain projections; returning-Laker scores retain the stronger evidence of shared floor time.</p>
 </div>
 <div class="chapters-grid">
-  <a class="chap" href="#in"><span class="pill">CH. 1</span><h3>Who came in</h3><p>Five arrivals, zero shared possessions with Luka. Every score is a hypothesis &mdash; and two of them get flagged.</p><span class="go">Jump to chapter &rarr;</span></a>
+  <a class="chap" href="#in"><span class="pill">CH. 1</span><h3>Who came in</h3><p>Eight arrivals, zero 2025&ndash;26 possessions with Luka. Every score is a projection, not shared-floor proof.</p><span class="go">Jump to chapter &rarr;</span></a>
   <a class="chap" href="#stayed"><span class="pill">CH. 2</span><h3>Who stayed</h3><p>The returnees are the only players with real shared-floor data. It's where the tool caught its own biggest mistake.</p><span class="go">Jump to chapter &rarr;</span></a>
-  <a class="chap" href="#chase"><span class="pill">CH. 3</span><h3>Who to chase</h3><p>Two open roster spots, vet-minimum money, and a countable hole: 7 guards, 3 forwards, 1.5 healthy centers.</p><span class="go">Jump to chapter &rarr;</span></a>
+  <a class="chap" href="#chase"><span class="pill">CH. 3</span><h3>Who to chase</h3><p>The July board moved. Three former targets signed elsewhere; only two plausible late-August fits remain.</p><span class="go">Jump to chapter &rarr;</span></a>
 </div>
 </section>
 
@@ -196,10 +221,11 @@
   <div class="rule why"><span class="pill">WHY USAGE?</span><h3>The whole thesis</h3><p>Usage rate is the share of team possessions a player ends &mdash; a shot, free throws, or a turnover. It's the cleanest measurable answer to "who has the ball?" Luka ends more possessions than anyone alive, so every teammate's fit starts with one question: can you be great without it?</p></div>
   <div class="rule never"><span class="pill">NEVER</span><h3>No blended score</h3><p>One composite number implies a verdict the data can't back. Four axes stay four axes. If you want a single number, this is the wrong tool on purpose.</p></div>
   <div class="rule"><span class="pill">AXES</span><h3>Four measurable needs</h3><p>Spacing (3P% + volume), play finishing (TS% without the ball), defensive cover (who guards so Luka doesn't), and ball-need &mdash; inverted: lower usage scores higher next to the league's highest-usage player.</p></div>
-  <div class="rule"><span class="pill">MUST</span><h3>Confidence tags are first-class</h3><p>Sample size, team context, and injury status sit next to every score, not in a footnote. Tags changed the verdict on 2 of the first 4 players scored.</p></div>
+  <div class="rule"><span class="pill">MUST</span><h3>Confidence tags are first-class</h3><p>Sample size, shooting volume, team context, role, and injury status sit next to every score, not in a footnote. A bar without its context tag is an incomplete claim.</p></div>
   <div class="rule"><span class="pill">FOUND</span><h3>The Luka rest problem</h3><p>Season usage blends minutes next to Luka with minutes while he rests &mdash; opposite signals. Fix: with/without splits. Applying it softened the tool's own loudest take (see Reaves).</p></div>
-  <div class="rule"><span class="pill">UPGRADED</span><h3>Defense, second pass</h3><p>Cover scores originally leaned on steals, blocks, and reputation. They're now rescored on individual defensive rating &mdash; points allowed per 100 possessions on court &mdash; pulled for all 14 scored players. Still box-derived and team-flavored; the tracking-data tier stays stubbed and the skeleton stays visible.</p></div>
-  <div class="rule"><span class="pill">LENS</span><h3>Fit and need never merge</h3><p>Fit asks "does his game complement Luka." Need asks "does this roster have room for his body type" &mdash; with 7 guards, 3 forwards, and 1.5 healthy centers, need is countable, not a vibe. Two lenses, shown separately.</p></div>
+  <div class="rule"><span class="pill">UPGRADED</span><h3>Defense, second pass</h3><p>Cover scores originally leaned on steals, blocks, and reputation. They now start with individual defensive rating &mdash; points allowed per 100 possessions on court. It remains box-derived and team-flavored, so reputation never overrides the number and team context stays visible.</p></div>
+  <div class="rule"><span class="pill">LENS</span><h3>Fit and need never merge</h3><p>Fit asks "does his game complement Luka?" Need asks "does this current roster need his role?" Looney, Thybulle, and Williams materially changed the need answer without changing the fit axes. The two lenses stay separate.</p></div>
+  <div class="rule"><span class="pill">RUBRIC</span><h3>Editorial, not algorithmic</h3><p>The bars are disclosed editorial ratings informed by the displayed statistic, role, and volume: 0 means the skill is absent; 1 poor; 2 below average; 3 workable; 4 strong; 5 elite for a Luka complement. Ball-need reverses usage. No arithmetic combines the axes, and context tags can lower confidence without secretly changing a bar.</p></div>
 </div>
 
 <div class="legend">
@@ -212,7 +238,7 @@
 
 <section id="in">
 <h2 class="sec"><span class="tab">Ch. 1 &middot; Who came in</span></h2>
-<div class="secsub">Five new Lakers &mdash; four free agency signings plus a trade arrival &mdash; scored on prior-team context. Zero shared possessions with Luka; every score here is a hypothesis.</div>
+<div class="secsub">Eight new Lakers scored on 2025&ndash;26 prior-team context (Kessler uses 2024&ndash;25 because his 2025&ndash;26 sample was five games). Zero shared possessions with Luka; every score here is a projection.</div>
 <div class="grid">
 
   <div class="card">
@@ -222,7 +248,7 @@
     <div class="ax"><span>Play finishing</span><div class="bars b5" role="img" aria-label="Play finishing fit 5 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>66.3 FG%</em></div>
     <div class="ax"><span>Defensive cover</span><div class="bars b4" role="img" aria-label="Defensive cover fit 4 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>114.6 DRtg</em></div>
     <div class="ax"><span>Ball-need fit</span><div class="bars b5" role="img" aria-label="Ball-need fit 5 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>13.7 USG</em></div>
-    <div class="note">Best on-paper fit of the four. Lowest confidence on the board: the sample is a year old and the shoulder is surgically repaired.</div>
+    <div class="note">Best rim-running profile on the board. Lowest confidence among the arrivals: the sample is a year old and the shoulder is surgically repaired; Looney now keeps that risk from being the entire center plan.</div>
   </div>
 
   <div class="card">
@@ -237,7 +263,7 @@
 
   <div class="card flag">
     <div class="who"><div class="ava" aria-hidden="true">CS</div><div><div class="nm">Collin Sexton</div><div class="mt">G &middot; 68 GP, Charlotte/Chicago</div></div></div>
-    <span class="tag hot">&#9873; Fit flag &middot; highest usage of the four signings</span>
+    <span class="tag hot">&#9873; Fit flag &middot; high-usage bench scorer</span>
     <div class="ax"><span>Spacing</span><div class="bars b5" role="img" aria-label="Spacing fit 5 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>40.1 3P%</em></div>
     <div class="ax"><span>Play finishing</span><div class="bars b3" role="img" aria-label="Play finishing fit 3 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>61.5 TS%</em></div>
     <div class="ax"><span>Defensive cover</span><div class="bars b2" role="img" aria-label="Defensive cover fit 2 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>117.1 DRtg</em></div>
@@ -265,8 +291,38 @@
     <div class="note">The 39.7 3P% looks like a spacing win until you see it took 24.5 usage on the league's worst team to produce. Same archetype as Sexton, worse context &mdash; and like every arrival, zero shared possessions with Luka.</div>
   </div>
 
+  <div class="card">
+    <div class="who"><div class="ava" aria-hidden="true">KL</div><div><div class="nm">Kevon Looney</div><div class="mt">C &middot; 70 GP, Golden State &middot; low-minute veteran role</div></div></div>
+    <span class="tag warn">&#9888; Shooting percentage is noise at near-zero volume</span>
+    <div class="ax"><span>Spacing</span><div class="bars b0" role="img" aria-label="Spacing fit 0 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>low volume</em></div>
+    <div class="ax"><span>Play finishing</span><div class="bars b4" role="img" aria-label="Play finishing fit 4 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>62.1 TS%</em></div>
+    <div class="ax"><span>Defensive cover</span><div class="bars b4" role="img" aria-label="Defensive cover fit 4 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>113.8 DRtg</em></div>
+    <div class="ax"><span>Ball-need fit</span><div class="bars b5" role="img" aria-label="Ball-need fit 5 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>10.2 USG</em></div>
+    <div class="note">Not a spacer, but a low-usage screener, finisher, rebounder, and credible center body. Looney changes the roster-need conclusion more than the fit thesis: Kessler's repaired shoulder is no longer backed only by small-ball options.</div>
+  </div>
+
+  <div class="card">
+    <div class="who"><div class="ava" aria-hidden="true">MT</div><div><div class="nm">Matisse Thybulle</div><div class="mt">G/F &middot; 61 GP, Portland &middot; perimeter specialist</div></div></div>
+    <span class="tag warn">&#9888; Low offensive volume &middot; defense carries team context</span>
+    <div class="ax"><span>Spacing</span><div class="bars b2" role="img" aria-label="Spacing fit 2 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>35.8 low vol</em></div>
+    <div class="ax"><span>Play finishing</span><div class="bars b3" role="img" aria-label="Play finishing fit 3 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>57.8 TS%</em></div>
+    <div class="ax"><span>Defensive cover</span><div class="bars b4" role="img" aria-label="Defensive cover fit 4 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>112.9 DRtg</em></div>
+    <div class="ax"><span>Ball-need fit</span><div class="bars b5" role="img" aria-label="Ball-need fit 5 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>11.4 USG</em></div>
+    <div class="note">The measured defensive rating supports the reputation, but does not make the offense disappear. Thybulle supplies the point-of-attack option the July roster lacked; his low-volume shot means lineup spacing still needs protection.</div>
+  </div>
+
+  <div class="card">
+    <div class="who"><div class="ava" aria-hidden="true">ZW</div><div><div class="nm">Ziaire Williams</div><div class="mt">F &middot; 72 GP, Brooklyn &middot; wing-size bet</div></div></div>
+    <span class="tag warn">&#9888; Team-context flag &middot; rotation role still projected</span>
+    <div class="ax"><span>Spacing</span><div class="bars b3" role="img" aria-label="Spacing fit 3 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>36.7 3P%</em></div>
+    <div class="ax"><span>Play finishing</span><div class="bars b3" role="img" aria-label="Play finishing fit 3 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>58.1 TS%</em></div>
+    <div class="ax"><span>Defensive cover</span><div class="bars b2" role="img" aria-label="Defensive cover fit 2 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>118.0 DRtg</em></div>
+    <div class="ax"><span>Ball-need fit</span><div class="bars b4" role="img" aria-label="Ball-need fit 4 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>17.2 USG</em></div>
+    <div class="note">The size and shooting shape fit better than the defensive number. Williams eases the raw wing-count problem, but 118.0 DRtg does not support calling him defensive cover; that job still belongs to Thybulle and Vanderbilt.</div>
+  </div>
+
 </div>
-<div class="verdict">Verdict: two clean fits, one shoulder-shaped hypothesis, two flags.<small>Mamukelashvili and Grimes-if-he-shoots fit the system. Kessler fits perfectly if he's healthy. Sexton and trade-arrival Hardy are the bets that don't match the blueprint.</small></div>
+<div class="verdict">Verdict: the second wave fixed roles, not every fit.<small>Looney insures the center spot, Thybulle supplies real perimeter cover, and Williams adds wing size. Mamukelashvili remains the clean two-way statistical fit; Sexton and Hardy still duplicate ball-heavy guard creation.</small></div>
 </section>
 
 <section id="stayed">
@@ -282,10 +338,13 @@
     <div class="ax"><span>Defensive cover</span><div class="bars b2" role="img" aria-label="Defensive cover fit 2 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>117.8 DRtg</em></div>
     <div class="ax"><span class="h">Ball-need fit</span><div class="bars fl b2" role="img" aria-label="Ball-need fit 2 of 5, flagged"><i></i><i></i><i></i><i></i><i></i></div><em class="h">25.2 w/ Luka</em></div>
     <table class="split">
-      <tr><th>Reaves 25-26</th><th>GP</th><th>USG%</th><th>PPG</th><th>APG</th><th>+/-</th></tr>
-      <tr><td>Season</td><td>51</td><td>26.6</td><td>23.3</td><td>5.5</td><td>+182</td></tr>
-      <tr><td>With Luka</td><td>41</td><td>25.2</td><td>22.0</td><td>4.9</td><td>+184</td></tr>
-      <tr><td>No Luka</td><td>10</td><td>34.3</td><td>28.6</td><td>8.0</td><td>-2</td></tr>
+      <caption>Austin Reaves, 2025&ndash;26 season and Luka availability splits</caption>
+      <thead><tr><th scope="col">Split</th><th scope="col">GP</th><th scope="col">USG%</th><th scope="col">PPG</th><th scope="col">APG</th><th scope="col">+/-</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Season</th><td>51</td><td>26.6</td><td>23.3</td><td>5.5</td><td>+182</td></tr>
+        <tr><th scope="row">With Luka</th><td>41</td><td>25.2</td><td>22.0</td><td>4.9</td><td>+184</td></tr>
+        <tr><th scope="row">No Luka</th><td>10</td><td>34.3</td><td>28.6</td><td>8.0</td><td>-2</td></tr>
+      </tbody>
     </table>
     <div class="note">The tool's best self-correction. His season usage was inflated by 10 solo games at a 34.3 rate and 67.5 TS%. That's not a fit problem &mdash; that's your co-star proving he can carry the Luka-off minutes.</div>
   </div>
@@ -297,7 +356,7 @@
     <div class="ax"><span>Play finishing</span><div class="bars b2" role="img" aria-label="Play finishing fit 2 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>54.4 TS%</em></div>
     <div class="ax"><span>Defensive cover</span><div class="bars b4" role="img" aria-label="Defensive cover fit 4 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>113.4 DRtg</em></div>
     <div class="ax"><span>Ball-need fit</span><div class="bars b5" role="img" aria-label="Ball-need fit 5 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>11.7 w/ Luka</em></div>
-    <div class="note">One of two low-usage glue players in the rotation. The spacing hole means he can't share the floor with other non-shooters.</div>
+    <div class="note">A returning low-usage glue player with real shared-floor evidence. The spacing hole means he cannot share the floor with too many of the roster's new non-shooters.</div>
   </div>
 
   <div class="card">
@@ -307,7 +366,7 @@
     <div class="ax"><span>Play finishing</span><div class="bars b3" role="img" aria-label="Play finishing fit 3 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>57.1 TS%</em></div>
     <div class="ax"><span>Defensive cover</span><div class="bars b3" role="img" aria-label="Defensive cover fit 3 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>115.7 DRtg</em></div>
     <div class="ax"><span>Ball-need fit</span><div class="bars b5" role="img" aria-label="Ball-need fit 5 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>14.4 w/ Luka</em></div>
-    <div class="note">The other glue player, and statistically the most role-stable Laker: his usage is identical with or without Luka on the floor (14.4 vs 14.3). Played all 82 nights.</div>
+    <div class="note">The most role-stable returning Laker: his usage is identical with or without Luka on the floor (14.4 vs 14.3). Played all 82 nights; the new low-usage arrivals make that connector role less isolated.</div>
   </div>
 
   <div class="card">
@@ -320,119 +379,89 @@
     <div class="note">The shooting profile fits on paper. 553 minutes isn't enough evidence to bet a rotation spot on.</div>
   </div>
 
-  <div class="card" style="background:var(--gold);">
-    <div class="who"><div class="ava" aria-hidden="true">!</div><div><div class="nm">Pattern found</div><div class="mt" style="color:#4a3208;">Roster construction, not one player</div></div></div>
-    <div class="note" style="border-top-color:var(--ink); color:#4a3208; font-weight:600;">Three guards over 24 season usage (Reaves 26.6, Sexton 25.9, Hardy 24.5) orbiting a 38.0 usage franchise player. Staggering absorbs it in the regular season. Rotations shrink in the playoffs &mdash; that's when the overlap gets real. Vanderbilt and LaRavia are the only low-usage rotation glue on the roster.</div>
+  <div class="card pattern-card">
+    <div class="who"><div class="ava" aria-hidden="true">!</div><div><div class="nm">Pattern found</div><div class="mt">Roster construction, not one player</div></div></div>
+    <div class="note">The high-usage guard overlap remains: Reaves, Sexton, and Hardy all need creation possessions. But the low-usage connector group is no longer just Vanderbilt and LaRavia. Looney and Thybulle add defense without demanding the ball, while Williams adds real wing size. The tradeoff moved from pure scarcity to lineup compatibility: Looney, Thybulle, and Vanderbilt cannot all solve defense at once without squeezing spacing.</div>
   </div>
 
 </div>
-<div class="verdict">Verdict: the glue is real, the guard math isn't.<small>And the tool publicly corrected itself on Reaves &mdash; the with/without split turned its loudest take into its best finding.</small></div>
+<div class="verdict">Verdict: the glue room grew; the guard overlap stayed.<small>Thybulle changes the perimeter-defense conclusion, Looney changes the center-insurance conclusion, and Williams changes the wing-count conclusion. None removes the need to stagger Luka, Reaves, Sexton, and Hardy.</small></div>
 
 <div class="devrow">
-  <b>Development roster</b> (standard contracts, not scored &mdash; small n by design): Bronny James, Adou Thiero, Cameron Carr. &nbsp;
+  <b>Development roster</b> (not scored &mdash; small n by design): Bronny James, Adou Thiero, Cameron Carr. &nbsp;
   <b>Two-way:</b> Chris Manon, AK Okereke, Peter Suder. &nbsp;
-  <b>Roster math:</b> 13 of 15 standard spots filled. &nbsp;
-  <b>Departed:</b> LeBron James (declined to re-sign), Deandre Ayton (traded to WAS Jul 3).
+  <b>Roster snapshot:</b> 15 standard contracts and three two-way contracts on Aug. 30. &nbsp;
+  <b>Departed:</b> LeBron James (declined to re-sign), Deandre Ayton (traded to Washington July 3).
 </div>
 </section>
 
 <section id="chase">
 <h2 class="sec"><span class="tab">Ch. 3 &middot; Who to chase</span></h2>
-<div class="secsub">Remaining unsigned players the Lakers could realistically get at the veteran minimum, ranked through both lenses: fit against Luka's needs, and roster need (7 guards, 3 forwards, 1.5 healthy centers).</div>
+<div class="secsub">The Lakers reached 15 standard contracts by Aug. 30, so this is no longer an open-roster-spot shopping list. It is a contingency board for a later transaction, restricted to two late-August names whose roles still make basketball sense.</div>
 
 <div class="lens">
   <h3>Two lenses, never merged</h3>
-  <p>Fit says the best signing is whoever complements Luka's game. Need says it's whoever fills the wing and center scarcity. When the lenses disagree, both verdicts are shown &mdash; the tool doesn't average away a real tension. Applying the need lens re-ranked this board and demoted the analyst's own No. 2.</p>
+  <p>Luka fit asks whether the player can space, finish, cover defensively, and work without the ball. Roster need asks what remains after Looney added center insurance, Thybulle added point-of-attack defense, and Williams added wing size. Those additions lowered urgency; they did not turn fit and need into one number.</p>
 </div>
 
 <div class="grid">
 
-  <div class="card" style="box-shadow:8px 8px 0 var(--gold); border-color:var(--purple);">
-    <span class="tag rank">No. 1 &middot; wins both lenses</span>
-    <div class="who"><div class="ava" aria-hidden="true">BB</div><div><div class="nm">Bruce Brown</div><div class="mt">G/F &middot; 82 GP, Denver &middot; 7.9 ppg, 3.9 rpg</div></div></div>
+  <div class="card featured-card">
+    <span class="tag rank">No. 1 &middot; best contingency fit</span>
+    <div class="who"><div class="ava" aria-hidden="true">BB</div><div><div class="nm">Bruce Brown</div><div class="mt">G/F &middot; 82 GP, Denver &middot; unsigned in late-August review</div></div></div>
     <div class="ax"><span>Spacing</span><div class="bars b3" role="img" aria-label="Spacing fit 3 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>38.5 low vol</em></div>
     <div class="ax"><span>Play finishing</span><div class="bars b3" role="img" aria-label="Play finishing fit 3 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>56.2 TS%</em></div>
     <div class="ax"><span>Defensive cover</span><div class="bars b3" role="img" aria-label="Defensive cover fit 3 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>117.1 DRtg</em></div>
     <div class="ax"><span>Ball-need fit</span><div class="bars b5" role="img" aria-label="Ball-need fit 5 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>14.5 USG</em></div>
-    <div class="note">Won a ring as the low-usage connector next to Jokić &mdash; the only other 35+ usage heliocentric offense in basketball. The closest thing to proof-of-fit an outside signing can offer, and he plays the scarce position.</div>
+    <div class="note">The low-usage connector archetype still fits Luka, but the need case softened once Thybulle and Williams arrived. His 117.1 defensive rating is workable, not reputation-driven proof of stopper value.</div>
   </div>
 
   <div class="card">
-    <span class="tag rank">No. 2 &middot; the board's blind spot</span>
-    <div class="who"><div class="ava" aria-hidden="true">NB</div><div><div class="nm">Nicolas Batum</div><div class="mt">F &middot; 74 GP, Clippers &middot; 17.5 mpg, age 37</div></div></div>
+    <span class="tag rank">No. 2 &middot; spacing-forward contingency</span>
+    <div class="who"><div class="ava" aria-hidden="true">NB</div><div><div class="nm">Nicolas Batum</div><div class="mt">F &middot; 74 GP, Clippers &middot; listed in late-August market review</div></div></div>
     <div class="ax"><span>Spacing</span><div class="bars b4" role="img" aria-label="Spacing fit 4 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>40.4 3P%</em></div>
     <div class="ax"><span>Play finishing</span><div class="bars b3" role="img" aria-label="Play finishing fit 3 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>60.3 TS%</em></div>
     <div class="ax"><span>Defensive cover</span><div class="bars b3" role="img" aria-label="Defensive cover fit 3 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>116.8 DRtg</em></div>
     <div class="ax"><span>Ball-need fit</span><div class="bars b5" role="img" aria-label="Ball-need fit 5 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>9.7 USG</em></div>
-    <div class="note">Nearly went unscored, then posted the best profile-per-dollar on the board: 9.7 usage &mdash; the lowest of anyone on this page &mdash; with 40.4% shooting, at the exact position the roster lacks. Age is the entire risk. The board correcting itself, again.</div>
-  </div>
-
-  <div class="card">
-    <span class="tag rank">No. 3 &middot; need lens</span>
-    <div class="who"><div class="ava" aria-hidden="true">NR</div><div><div class="nm">Nick Richards</div><div class="mt">C &middot; 48 GP &middot; 5.8 ppg, 5.1 rpg, 0.7 bpg</div></div></div>
-    <div class="ax"><span>Spacing</span><div class="bars b0" role="img" aria-label="Spacing fit 0 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>non-shooter</em></div>
-    <div class="ax"><span>Play finishing</span><div class="bars b3" role="img" aria-label="Play finishing fit 3 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>56.2 TS%</em></div>
-    <div class="ax"><span>Defensive cover</span><div class="bars b3" role="img" aria-label="Defensive cover fit 3 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>114.4 DRtg</em></div>
-    <div class="ax"><span>Ball-need fit</span><div class="bars b3" role="img" aria-label="Ball-need fit 3 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>18.1 USG</em></div>
-    <div class="note">Modest fit axes, decisive roster math. The starting center has a surgically repaired shoulder and a 5-game season. If the Kessler news worsens, this becomes No. 1 by need alone.</div>
-  </div>
-
-  <div class="card">
-    <span class="tag rank">No. 4 &middot; the spacing bet</span>
-    <div class="who"><div class="ava" aria-hidden="true">GT</div><div><div class="nm">Gary Trent Jr.</div><div class="mt">G &middot; 65 GP, Milwaukee &middot; 8.1 ppg</div></div></div>
-    <div class="ax"><span>Spacing</span><div class="bars b4" role="img" aria-label="Spacing fit 4 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>36.0 on 5.3/g</em></div>
-    <div class="ax"><span>Play finishing</span><div class="bars b1" role="img" aria-label="Play finishing fit 1 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>53.3 TS%</em></div>
-    <div class="ax"><span>Defensive cover</span><div class="bars b1" role="img" aria-label="Defensive cover fit 1 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>124.0 DRtg</em></div>
-    <div class="ax"><span>Ball-need fit</span><div class="bars b4" role="img" aria-label="Ball-need fit 4 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>17.3 USG</em></div>
-    <div class="note">Real catch-and-shoot volume, career-low efficiency on a 32-50 team. The same bounce-back bet the front office already made on Grimes &mdash; doubling it doubles the risk. Also: another guard.</div>
-  </div>
-
-  <div class="card">
-    <span class="tag rank">Demoted &middot; lenses disagree</span>
-    <div class="who"><div class="ava" aria-hidden="true">GP</div><div><div class="nm">Gary Payton II</div><div class="mt">G &middot; 73 GP, Golden State &middot; 7.5 ppg, 15.6 mpg</div></div></div>
-    <div class="ax"><span>Spacing</span><div class="bars b1" role="img" aria-label="Spacing fit 1 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>29.1 3P%</em></div>
-    <div class="ax"><span>Play finishing</span><div class="bars b4" role="img" aria-label="Play finishing fit 4 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>63.2 TS%</em></div>
-    <div class="ax"><span>Defensive cover</span><div class="bars b4" role="img" aria-label="Defensive cover fit 4 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>113.2 DRtg</em></div>
-    <div class="ax"><span>Ball-need fit</span><div class="bars b3" role="img" aria-label="Ball-need fit 3 of 5"><i></i><i></i><i></i><i></i><i></i></div><em>18.5 USG</em></div>
-    <div class="note">The fit lens loves him and the rescore backed the reputation: 113.2 is the best defensive rating of any free agent scored here, though "elite" took a haircut to 4 once the data replaced the rep. The need lens still doesn't budge: he'd be the eighth guard.</div>
+    <div class="note">The best pure spacing-and-ball-need profile left on the old board. Williams reduced the wing emergency, but Batum's shooting would make low-spacing defensive lineups easier to build. Age 37 keeps the context flag attached.</div>
   </div>
 
 </div>
-<div class="verdict">Verdict: Bruce Brown, and it isn't close.<small>He wins fit, wins need, and proved the archetype next to Jokić. Batum &mdash; nearly left unscored &mdash; lands No. 2 on data the board almost skipped. Richards jumps everything if the Kessler shoulder news worsens.</small></div>
+<div class="verdict">Verdict: hold, unless another move creates the opening.<small>Brown is the connector contingency; Batum is the spacing-forward contingency. With the standard roster full in this snapshot, neither is presented as an immediately signable sixteenth contract.</small></div>
 
-<div class="devrow" style="margin-top:22px;">
-  <b>Avoid list (the axes say no):</b> Jordan Clarkson (would be the fourth 24+ USG guard), Russell Westbrook (high usage, no spacing), Bradley Beal (hip fracture, missed nearly all of 25-26). &nbsp;
-  <b>Above the minimum:</b> LeBron James, James Harden, Jalen Duren, Jonathan Kuminga, and Bennedict Mathurin remain unsigned but are not vet-minimum targets.
+<div class="devrow market-history">
+  <b>Off the board since our last update:</b> Gary Trent Jr. re-signed with Milwaukee on July 16; Gary Payton II returned to Golden State on Aug. 1; Nick Richards signed with Miami on Aug. 27. The July rankings remain part of the page's history, but they are no longer active recommendations.
 </div>
 </section>
 
 <section id="data">
 <h2 class="sec"><span class="tab">The data</span></h2>
-<div class="secsub">Every number on this page traces to a public source. Nothing is scraped, nothing is invented, and the one reputation-based rating is labeled as one.</div>
+<div class="secsub">Every displayed statistic traces to the sources below. Ratings are human-reviewed editorial judgments, not a hidden formula, and context labels identify where a clean number would overstate certainty.</div>
 <div class="credits">
-  <div class="rule"><span class="pill">STATS</span><h3>StatMuse</h3><p>All player stats and usage rates, 2025-26 season, via <a href="https://www.statmuse.com/nba">statmuse.com</a> &mdash; including the game-level with/without splits that changed the Reaves verdict.</p></div>
-  <div class="rule"><span class="pill">ROSTER</span><h3>Bleacher Report + Spotrac</h3><p>Roster construction, contracts, and cap position after the Ayton trade and the free agency signings, via <a href="https://bleacherreport.com/articles/25450796-lakers-updated-roster-2026-nba-salary-cap-after-deandre-ayton-trade-free-agency">Bleacher Report</a> and <a href="https://www.spotrac.com/nba/los-angeles-lakers/cap/_/year/2026">Spotrac</a>.</p></div>
-  <div class="rule"><span class="pill">MARKET</span><h3>NBC Sports + ESPN</h3><p>Remaining free agent rankings via <a href="https://www.nbcsports.com/nba/news/top-15-remaining-2026-nba-free-agents-jalen-duren-lebron-james-james-harden-still-available">NBC Sports</a>. Injury reporting via <a href="https://www.espn.com/nba/">ESPN</a> and <a href="https://www.nba.com/news/utah-jazz-walker-kessler-season-ending-shoulder-surgery">NBA.com</a>.</p></div>
-  <div class="rule"><span class="pill">METHOD</span><h3>The 0&ndash;5 bars</h3><p>Analyst-mapped from the real stats shown beside them; a deterministic formula replaces the mapping in the build phase. Defensive cover is scored on individual defensive rating &mdash; box-derived and team-flavored, which is why it's labeled. Ball-need uses with-Luka game splits for returnees, season usage where splits can't exist.</p></div>
+  <div class="rule"><span class="pill">STATS</span><h3>StatMuse, 2025&ndash;26</h3><p>Player totals, shooting, true shooting, usage, defensive rating, and the Reaves availability splits come from <a href="https://www.statmuse.com/nba">StatMuse</a>. Kessler alone uses his 2024&ndash;25 full-season line because the following season ended after five games.</p></div>
+  <div class="rule"><span class="pill">ROSTER</span><h3>NBA + Lakers + Spotrac</h3><p>The Aug. 30 snapshot uses the <a href="https://www.nba.com/lakers/roster">official Lakers roster</a>, <a href="https://www.nba.com/lakers/news">Lakers announcements</a>, and <a href="https://www.spotrac.com/nba/los-angeles-lakers/cap/_/year/2026">Spotrac's 2026 cap table</a> as its transaction and contract source register.</p></div>
+  <div class="rule"><span class="pill">NEW ARRIVALS</span><h3>Same prior-team standard</h3><p>Looney, Thybulle, and Williams use the same 2025&ndash;26 StatMuse categories as the July arrivals: 3P% with volume context, TS%, individual DRtg, USG%, games, role, and prior team. Their Lakers fit remains a projection until shared-floor data exists.</p></div>
+  <div class="rule"><span class="pill">MARKET</span><h3>Late-August transaction check</h3><p>The active board was checked against the <a href="https://www.nba.com/players/free-agent-tracker/2026">NBA free-agent tracker</a> and team transaction reporting. Signed former targets remain visible with dates so the original July conclusion is corrected rather than erased.</p></div>
+  <div class="rule"><span class="pill">METHOD</span><h3>The 0&ndash;5 bars</h3><p>The bars are editorial ratings, using the disclosed 0 absent / 1 poor / 2 below average / 3 workable / 4 strong / 5 elite rubric. Defensive cover begins with individual DRtg but retains a team-context warning. Ball-need reverses usage and uses with-Luka splits for returnees, season usage for arrivals. The four bars are never averaged.</p></div>
 </div>
 
 <div class="about" id="about">
   <h3>About this project</h3>
   <p>The Luka Fit Index is a for-fun analytics experiment built in one brainstorming session: a bias-visibility tool disguised as a sports dashboard. The interesting part was never the scores &mdash; it's that the assumptions are printed on the page, and the tool corrected itself twice when the data disagreed with its takes.</p>
   <p>Built PRD-first with a multi-LLM workflow. Deterministic structure, labeled interpretation, receipts kept in a spike file the whole way.</p>
-  <p style="font-weight:800; color:var(--purple);">AI assisted. Human approved. Powered by NLP.</p>
+  <p class="approval">AI assisted. Human reviewed. Powered by NLP.</p>
   <a class="cta" href="https://earlgreyhot1701d.github.io/Clew-Labs/">See more of my work &rarr;</a>
 </div>
 </section>
 
-</div>
+</main>
 
 <footer class="honesty">
   <div class="in">
-    <h3>The honesty layer</h3>
+    <h2>The honesty layer</h2>
     <p>Fit scores describe stat profiles against Luka Dončić's measurable needs. They cannot prove causality, predict chemistry, or account for lineups that have never shared a possession. Signing scores use prior-team context. Free agent scores use the same, at minimum-contract expectations.</p>
-    <p>Data: StatMuse, 2025-26 NBA season. Kessler scored on 2024-25, his last season with 40+ games. Roster and market as of July 5, 2026 &mdash; both are still moving. This page is designed to be provably wrong later: every score here can be graded against the 2026-27 season, and will be.</p>
-    <p style="color:#b39ad1; margin-top:20px; font-size:12px;">Built for fun by a Lakers fan. Not affiliated with the Los Angeles Lakers or the NBA.</p>
+    <p>Player performance: StatMuse, 2025&ndash;26 NBA season. Kessler is scored on 2024&ndash;25, his last season with 40+ games. Roster and market snapshot: Aug. 30, 2026. Market status can change after that date; this page preserves the date so every conclusion can be audited later.</p>
+    <p class="disclaimer">Built for fun by a Lakers fan. AI-assisted code and copy were human-reviewed before release. Not affiliated with the Los Angeles Lakers or the NBA.</p>
   </div>
 </footer>
 
